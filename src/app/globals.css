@@ -1,26 +1,61 @@
-@import "tailwindcss";
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css');
+@import 'tailwindcss';
+@source '../**/*.{ts,tsx}';
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* 배경 / 표면 */
+  --background: #f5f6f8;
+  --surface: #ffffff;
+  --surface-line: #eceef1;
+
+  /* 텍스트 */
+  --foreground: #17181b;
+  --muted: #8b8f96;
+
+  /* 브랜드 파랑 (참고: 세번째 시안 rgb(78,127,236)) */
+  --primary: #4e7fec;
+  --primary-pressed: #3f6ad6;
+  --primary-soft: #e9eefc;
+
+  /* 상태 */
+  --safe: #4e7fec;
+  --safe-soft: #e9eefc;
+  --warning: #e0922f;
+  --warning-soft: #fbeed6;
+  --danger: #e05353;
+  --danger-soft: #fbe0e0;
+
+  /* 플레이스홀더 (참고: 세번째 시안 #e3e3e3) */
+  --placeholder: #e3e3e3;
 }
 
 @theme inline {
   --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-surface-line: var(--surface-line);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+  --color-muted: var(--muted);
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --color-primary: var(--primary);
+  --color-primary-pressed: var(--primary-pressed);
+  --color-primary-soft: var(--primary-soft);
+
+  --color-safe: var(--safe);
+  --color-safe-soft: var(--safe-soft);
+  --color-warning: var(--warning);
+  --color-warning-soft: var(--warning-soft);
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
+
+  --color-placeholder: var(--placeholder);
+
+  --font-sans:
+    'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, system-ui, Roboto,
+    'Helvetica Neue', 'Segoe UI', 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
 }
