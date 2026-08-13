@@ -137,7 +137,22 @@ builtin → external(react 최우선) → internal(@/) → parent/sibling
 | `type-empty`        | `[2, 'never']`       | ⚠️ **기본값과 동일 (중복 선언).** 동작에 영향 없음                                                                                   |
 | `header-max-length` | `[2, 'always', 120]` | ✅ 기본값 100 → 120으로 완화. 커밋 컨벤션이 `유형: 상세설명 (#이슈번호)`라 이슈 번호 자리를 감안한 것. 파일에 주석으로도 명시돼 있음 |
 
-> `config-conventional`의 `subject-case`(문장 첫 글자 대문자 금지 등)는 그대로 상속된다. 커밋 메시지를 한글로 쓰면 걸리지 않는다.
+### ⚠️ 상속되는 `subject-case` — 실제로 걸린다
+
+`config-conventional`의 `subject-case`가 그대로 상속됩니다. 값은 `[2, 'never', ['sentence-case', 'start-case', 'pascal-case', 'upper-case']]`입니다.
+
+한글 제목은 대소문자 개념이 없어 대체로 통과하지만, **제목이 영문 대문자로 시작하면 막힙니다.**
+
+```
+✗ refactor: SafeShot 프로토타입 제거하고 빈 랜딩 페이지로 교체
+  → subject must not be sentence-case, start-case, pascal-case, upper-case
+
+✓ refactor: 아이디어톤 프로토타입 제거하고 빈 랜딩 페이지로 교체
+```
+
+이 저장소는 SafeShot에서 리네임한 프로젝트라 초기 세팅 커밋에서 실제로 걸렸습니다. **제품명·컴포넌트명 같은 영문 고유명사를 제목 맨 앞에 두지 말고**, 문장 중간이나 본문으로 내리면 통과합니다.
+
+⚠️ **팀 확인 필요** — 영문 고유명사를 제목 앞에 쓸 일이 잦다면 `subject-case`를 `[0]`으로 끄는 선택지도 있습니다. 지금은 켜 둔 상태입니다.
 
 ---
 
