@@ -1,41 +1,55 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
-
-# dependencies
+# 의존성
 /node_modules
-/.pnp
+.pnp
 .pnp.*
-.yarn/*
-!.yarn/patches
-!.yarn/plugins
-!.yarn/releases
-!.yarn/versions
 
-# testing
-/coverage
-
-# next.js
+# 빌드 / 실행 결과물 (Next.js)
 /.next/
 /out/
-
-# production
 /build
+/dist
+*.tsbuildinfo
+next-env.d.ts
 
-# misc
-.DS_Store
-*.pem
+# 테스트 / 커버리지
+/coverage
 
-# debug
+# 로그
+*.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files (can opt-in for committing if needed)
-.env*
+# 캐시
+.eslintcache
 
-# vercel
+# 환경변수 (.env.local.example 견본만 추적)
+.env
+.env.*
+!.env.local.example
+
+# 배포 (Vercel)
 .vercel
 
-# typescript
-*.tsbuildinfo
-next-env.d.ts
+# Agent work notes
+checklist.md
+context-notes.md
+
+# Claude Code
+.claude/settings.local.json
+.claude/.local/
+.claude/launch.json
+CLAUDE.local.md
+.omc/
+
+# Codex
+.codex/
+
+# OS / 에디터
+.DS_Store
+Thumbs.db
+*.pem
+.idea/
+.vscode/*
+!.vscode/extensions.json

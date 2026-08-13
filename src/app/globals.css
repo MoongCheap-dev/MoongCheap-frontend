@@ -2,30 +2,30 @@
 @import 'tailwindcss';
 @source '../**/*.{ts,tsx}';
 
+/* TODO: 디자인 시안 확정 후 브랜드 컬러 채우기. 현재는 중립 팔레트. */
 :root {
   /* 배경 / 표면 */
-  --background: #f5f6f8;
+  --background: #ffffff;
   --surface: #ffffff;
-  --surface-line: #eceef1;
+  --surface-line: #e5e7eb;
 
   /* 텍스트 */
   --foreground: #17181b;
   --muted: #8b8f96;
 
-  /* 브랜드 파랑 (참고: 세번째 시안 rgb(78,127,236)) */
-  --primary: #4e7fec;
-  --primary-pressed: #3f6ad6;
-  --primary-soft: #e9eefc;
+  /* 브랜드 */
+  --primary: #17181b;
+  --primary-pressed: #000000;
+  --primary-soft: #f3f4f6;
 
   /* 상태 */
-  --safe: #4e7fec;
-  --safe-soft: #e9eefc;
+  --success: #16a34a;
+  --success-soft: #dcfce7;
   --warning: #e0922f;
   --warning-soft: #fbeed6;
   --danger: #e05353;
   --danger-soft: #fbe0e0;
 
-  /* 플레이스홀더 (참고: 세번째 시안 #e3e3e3) */
   --placeholder: #e3e3e3;
 }
 
@@ -40,8 +40,8 @@
   --color-primary-pressed: var(--primary-pressed);
   --color-primary-soft: var(--primary-soft);
 
-  --color-safe: var(--safe);
-  --color-safe-soft: var(--safe-soft);
+  --color-success: var(--success);
+  --color-success-soft: var(--success-soft);
   --color-warning: var(--warning);
   --color-warning-soft: var(--warning-soft);
   --color-danger: var(--danger);
