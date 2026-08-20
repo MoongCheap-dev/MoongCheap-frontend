@@ -1,7 +1,7 @@
 name: '🚀 기능 제안'
 description: '새로운 기능이나 개선사항을 제안해주세요.'
 title: '[FEAT] : '
-labels: ['enhancement']
+labels: ['✨ feature']
 body:
   - type: markdown
     attributes:
