@@ -23,7 +23,9 @@ kt cloud TECH UP 2기 통합 프로젝트 2팀. 프론트엔드 2명, 백엔드�
 
 Next.js 16 (App Router) · React 19 · TypeScript · Tailwind CSS v4 · ESLint · Prettier · husky + commitlint
 
-**아직 설치하지 않은 것**: 상태 관리(TanStack Query / Zustand), 폼(react-hook-form), 검증(zod). 필요한 시점에 추가합니다. → [`docs/deferred-setup.md`](docs/deferred-setup.md)
+**폼·검증**: react-hook-form · zod · @hookform/resolvers (인증 폼 착수 시 도입, PR #5).
+
+**아직 설치하지 않은 것**: 상태 관리(TanStack Query / Zustand), 테스트 러너(미정). 필요한 시점에 추가합니다. → [`docs/deferred-setup.md`](docs/deferred-setup.md)
 
 ## 지금은 초기 세팅 단계입니다
 

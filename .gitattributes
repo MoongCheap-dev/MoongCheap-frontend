@@ -1,0 +1,18 @@
+# 줄바꿈 정규화: 각 개발자의 git 설정(core.autocrlf)과 무관하게
+# 저장소·체크아웃 모두 LF로 통일한다. Windows ↔ macOS 협업 시 유령 diff 방지.
+# prettier(endOfLine: "lf")·eslint 기준과도 일치한다.
+* text=auto eol=lf
+
+# 바이너리(줄바꿈 정규화 대상에서 제외)
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.webp binary
+*.avif binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.otf binary
+*.pdf binary

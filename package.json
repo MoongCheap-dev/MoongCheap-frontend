@@ -12,6 +12,11 @@
     "typecheck": "tsc --noEmit --pretty false",
     "prepare": "husky"
   },
+  "overrides": {
+    "postcss": {
+      "nanoid": "^3.3.18"
+    }
+  },
   "dependencies": {
     "@hookform/resolvers": "^5.9.1",
     "clsx": "^2.1.1",
