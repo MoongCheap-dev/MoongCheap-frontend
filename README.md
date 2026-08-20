@@ -131,5 +131,6 @@ npm run typecheck     # TypeScript 타입 체크
 ## 📚 문서 가이드
 
 - [브랜치·커밋·PR 규칙](./docs/convention/README.md) — 오늘부터 적용
+- [개발 컨벤션(.agents)](./.agents/README.md) — 코드 스타일·폴더 구조·디자인 (SKILLS.md, 에이전트 자동 로드)
 - [설정 근거](./docs/setup-decisions.md) — 각 도구가 하는 일, 커스텀 룰 설명
 - [보류한 설정](./docs/deferred-setup.md) — 언제 무엇을 가져올지

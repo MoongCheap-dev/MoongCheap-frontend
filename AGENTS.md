@@ -15,6 +15,7 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 프로젝트 설명과 작업 규칙은 [`CLAUDE.md`](./CLAUDE.md)에 있습니다. Codex 등 `AGENTS.md`만 읽는 에이전트도 아래 문서를 함께 읽고 따르세요.
 
 - [`CLAUDE.md`](./CLAUDE.md) — 프로젝트 개요, 백엔드 도메인 분할, 미확정 사항, 핵심 규칙
+- [`.agents/README.md`](./.agents/README.md) — 코드 스타일 · 폴더 구조 · 디자인 컨벤션 (`SKILLS.md`)
 - [`docs/convention/README.md`](./docs/convention/README.md) — 브랜치 · 커밋 · PR 규칙
 - [`docs/setup-decisions.md`](./docs/setup-decisions.md) — 도구 설정 근거
 - [`docs/deferred-setup.md`](./docs/deferred-setup.md) — 아직 도입하지 않은 것

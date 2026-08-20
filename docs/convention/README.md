@@ -31,6 +31,7 @@ main ← develop ← feat
 | `chore`    | 빌드 설정, 의존성 관리, 패키지 설치 등                       |
 | `docs`     | 프로젝트 문서(README, API 명세 등) 작성 및 수정              |
 | `init`     | 프로젝트 초기 세팅                                           |
+| `ci`       | GitHub Actions 등 CI 워크플로 설정 변경                      |
 
 ## Commit Convention
 
