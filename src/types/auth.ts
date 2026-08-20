@@ -33,5 +33,5 @@ export interface FieldError {
 export type AuthResult<T> =
   { ok: true; data: T } | { ok: false; message: string; fieldErrors?: FieldError[] };
 
-/** 소셜 로그인 제공자. 채택 여부 미확정이며 확정 전까지 화면에 노출하지 않는다. */
+/** 소셜 로그인 제공자. 채택 예정(피그마 확인). 백엔드 OAuth 규격 확정 후 화면에 노출한다. */
 export type OAuthProvider = 'kakao' | 'google';

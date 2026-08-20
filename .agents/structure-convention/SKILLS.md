@@ -30,11 +30,12 @@ src/
   lib/                    # 유틸 (cn.ts 등)
   constants/              # 공용 상수 (routes, queryKeys 등)
   types/                  # 공용/전역 타입
-  mocks/                  # 목 데이터·핸들러 (전략 미정)
+  schemas/                # zod 검증 스키마 (인증 폼 도입, PR #5)
+  mocks/                  # 목 데이터. async 함수가 결과 타입을 반환, 연동 시 본문만 API로 교체
   tests/                  # 테스트
 ```
 
-> 위 최상위 폴더(`components`/`hooks`/`lib`/`constants`/`types`/`mocks`/`tests`)는 **현재 저장소에 이미 존재**합니다(`.gitkeep`). `features/`만 새로 추가되는 개념이며, 하위 도메인 폴더는 나중에 채웁니다.
+> 위 최상위 폴더(`components`/`hooks`/`lib`/`constants`/`types`/`mocks`/`tests`)는 **초기 세팅부터 존재**합니다(`.gitkeep`). `schemas/`는 인증 폼(PR #5)과 함께 추가됐습니다. `features/`만 새로 추가되는 개념이며, 하위 도메인 폴더는 나중에 채웁니다.
 
 ## 3. `features/<도메인>` 내부 규칙
 
