@@ -13,7 +13,9 @@
     "prepare": "husky"
   },
   "overrides": {
-    "nanoid": "^3.3.18"
+    "postcss": {
+      "nanoid": "^3.3.18"
+    }
   },
   "dependencies": {
     "@hookform/resolvers": "^5.9.1",
