@@ -40,14 +40,16 @@ Next.js 16 (App Router) · React 19 · TypeScript · Tailwind CSS v4 · ESLint �
 
 ## 문서
 
+- [`.agents/README.md`](.agents/README.md) — 코드 스타일·폴더 구조·디자인 컨벤션 (`SKILLS.md`, 항상 로드)
 - [`docs/convention/README.md`](docs/convention/README.md) — 브랜치·커밋·PR 규칙 (**오늘부터 적용**)
 - [`docs/setup-decisions.md`](docs/setup-decisions.md) — 각 도구 설정의 근거, 커스텀 룰 설명
 - [`docs/deferred-setup.md`](docs/deferred-setup.md) — 지금 가져오지 않은 것과 재검토 시점
+- [`docs/security-baseline.md`](docs/security-baseline.md) — 인프라/백엔드에 요청하는 보안 최소 요건
 
 ## 핵심 규칙 요약
 
 - 커밋: `유형: 상세설명 (#이슈번호)` / 브랜치: `유형/#이슈/설명`
-- 허용 커밋 타입: `feat` `fix` `hotfix` `style` `refactor` `chore` `docs` `init` (`commitlint.config.mjs`가 강제)
+- 허용 커밋 타입: `feat` `fix` `hotfix` `style` `refactor` `chore` `docs` `init` `ci` (`commitlint.config.mjs`가 강제)
 - `develop`에서 브랜치 → PR → **squash 머지** (팀원 1명 승인 + CI 통과)
 - `export function` 사용(default export 지양 — App Router 예약 파일·설정 파일은 예외), `any` 금지, 인라인 스타일 금지
 - import 순서는 `import/order`가 자동 정렬 (`npm run lint -- --fix`)
