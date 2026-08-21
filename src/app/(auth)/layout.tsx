@@ -5,9 +5,10 @@ export default function AuthLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // 모바일 전용 디자인이므로 인증 화면은 여기서 모바일 폭(393px)으로 중앙 고정한다.
+  // 393 = Figma 기준 폭(Responsive_Size). 태블릿/웹 브레이크포인트가 확정되면 여기에 반응형을 얹는다.
   return (
-    <div className="flex min-h-svh flex-col justify-center px-4 py-10">
-      {/* 화면 폭은 루트 레이아웃(body)에서 고정한다. 여기서는 좌우 여백·세로 정렬만 담당. */}
+    <div className="mx-auto flex min-h-svh w-full max-w-[393px] flex-col justify-center px-4 py-10">
       <main className="w-full">{children}</main>
     </div>
   );

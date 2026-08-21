@@ -71,8 +71,8 @@ export function AlertDialog({
           type="button"
           onClick={onClose}
           // 모달이 열리면 브라우저가 이 버튼에 자동 포커스한다(Enter=확인, Esc=닫기 동작 유지).
-          // 다만 포커스 표시(테두리/링)는 노출하지 않는다 — 기본 검은 outline 제거, 별도 링도 없음.
-          className="bg-primary-soft text-foreground active:bg-surface-line h-12 rounded-full font-medium outline-none"
+          // 키보드 포커스는 focus-visible 링으로 위치를 알려 준다(마우스 클릭 시엔 안 보여 시안을 해치지 않는다).
+          className="bg-primary-soft text-foreground active:bg-surface-line focus-visible:ring-foreground h-12 rounded-full font-medium outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
         >
           {confirmLabel}
         </button>

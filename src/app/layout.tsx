@@ -19,13 +19,12 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  // 모바일 전용 디자인이므로 앱 전체를 모바일 폭으로 중앙 고정한다. 393 = Figma 기준 폭
-  // (Responsive_Size). 태블릿/웹 브레이크포인트가 확정되면 이 값에 반응형을 얹는다.
+  // body는 배경만 책임진다. 모바일 폭 고정(393px)은 인증 화면 셸((auth)/layout.tsx) 등
+  // 각 라우트 그룹에서 준다. 셀러 화면(사이드바)처럼 전체 폭이 필요한 레이아웃도 있어
+  // 전역에 폭을 고정하면 다크모드에서 393px 바깥 배경이 비고 사이드바가 잘린다.
   return (
     <html lang="ko" className="h-full antialiased">
-      <body className="bg-background mx-auto flex min-h-svh w-full max-w-[393px] flex-col">
-        {children}
-      </body>
+      <body className="bg-background min-h-svh">{children}</body>
     </html>
   );
 }

@@ -3,6 +3,7 @@
 import { useState } from 'react';
 
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useRouter } from 'next/navigation';
 import { useForm, useWatch, type SubmitErrorHandler } from 'react-hook-form';
 
 import { AlertDialog } from '@/components/ui/AlertDialog';
@@ -49,6 +50,7 @@ function ClearButton({ hasError, label, onClear }: ClearButtonProps) {
 }
 
 export function LoginForm() {
+  const router = useRouter();
   // 검증·로그인 실패 안내는 모달로 띄운다. 메시지가 있으면 열린 상태.
   const [dialogMessage, setDialogMessage] = useState<string | null>(null);
   // 로그인 실패(자격증명 불일치)는 어느 쪽이 틀렸는지 특정하지 않으므로 두 필드를 함께 빨갛게 한다.
@@ -86,7 +88,9 @@ export function LoginForm() {
       return;
     }
 
-    // TODO: 세션 확립 후 이동 처리. 백엔드 인증 규격 확정 후 작성한다.
+    // 로그인 성공: 홈으로 이동한다. replace로 히스토리를 남기지 않아 뒤로가기가 로그인으로 돌아오지 않는다.
+    // TODO: 백엔드 인증 규격 확정 후 세션 확립(토큰/쿠키) 처리 추가. 이동 목적지도 이후 화면에 맞춰 조정한다.
+    router.replace('/');
   };
 
   const onInvalid: SubmitErrorHandler<LoginValues> = (formErrors) => {
