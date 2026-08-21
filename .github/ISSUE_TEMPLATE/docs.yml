@@ -1,7 +1,7 @@
 name: '📄 문서 작업'
 description: 'README, 주석, Wiki, 변경 이력 등 문서 관련 작업을 등록해주세요.'
 title: '[DOCS] : '
-labels: ['docs']
+labels: ['📃 docs']
 body:
   - type: markdown
     attributes:
