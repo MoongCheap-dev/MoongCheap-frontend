@@ -40,7 +40,7 @@ export function LoginForm() {
   return (
     <form onSubmit={onSubmit} noValidate className="flex flex-col gap-4">
       {formError !== null && (
-        <p role="alert" className="text-danger bg-danger-soft rounded px-3 py-2 text-sm">
+        <p role="alert" className="text-content-error bg-surface-error rounded px-3 py-2 text-sm">
           {formError}
         </p>
       )}
@@ -55,11 +55,11 @@ export function LoginForm() {
           autoComplete="email"
           aria-invalid={errors.email !== undefined}
           aria-describedby={errors.email !== undefined ? 'login-email-error' : undefined}
-          className="border-surface-line placeholder:text-placeholder h-11 rounded-lg border px-3"
+          className="border-border-subtle placeholder:text-content-quinary rounded-8 h-11 border px-3"
           {...register('email')}
         />
         {errors.email !== undefined && (
-          <p id="login-email-error" role="alert" className="text-danger text-sm">
+          <p id="login-email-error" role="alert" className="text-content-error text-sm">
             {errors.email.message}
           </p>
         )}
@@ -75,11 +75,11 @@ export function LoginForm() {
           autoComplete="current-password"
           aria-invalid={errors.password !== undefined}
           aria-describedby={errors.password !== undefined ? 'login-password-error' : undefined}
-          className="border-surface-line placeholder:text-placeholder h-11 rounded-lg border px-3"
+          className="border-border-subtle placeholder:text-content-quinary rounded-8 h-11 border px-3"
           {...register('password')}
         />
         {errors.password !== undefined && (
-          <p id="login-password-error" role="alert" className="text-danger text-sm">
+          <p id="login-password-error" role="alert" className="text-content-error text-sm">
             {errors.password.message}
           </p>
         )}
@@ -88,7 +88,7 @@ export function LoginForm() {
       <button
         type="submit"
         disabled={isSubmitting}
-        className="bg-primary h-11 rounded-lg font-medium text-white disabled:opacity-50"
+        className="bg-surface-button-primary-default hover:bg-surface-button-primary-hover active:bg-surface-button-primary-pressed disabled:bg-surface-disabled-primary disabled:text-content-disabled-primary text-content-oncolor text-button-16 rounded-8 h-11"
       >
         {isSubmitting ? '로그인 중' : '로그인'}
       </button>

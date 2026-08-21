@@ -14,9 +14,9 @@ export default function LoginPage() {
 
       <LoginForm />
 
-      <p className="text-muted text-center text-sm">
+      <p className="text-content-quarternary text-center text-sm">
         아직 회원이 아니신가요?{' '}
-        <Link href="/signup" className="text-foreground underline">
+        <Link href="/signup" className="text-content-primary underline">
           회원가입
         </Link>
       </p>

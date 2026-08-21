@@ -10,7 +10,7 @@ export default function OAuthCallbackPage() {
   return (
     <div className="flex flex-col items-center gap-2">
       <p className="text-sm">로그인 처리 중입니다</p>
-      <p className="text-muted text-sm">잠시만 기다려 주세요</p>
+      <p className="text-content-quarternary text-sm">잠시만 기다려 주세요</p>
     </div>
   );
 }

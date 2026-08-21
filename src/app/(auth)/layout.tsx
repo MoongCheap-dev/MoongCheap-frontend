@@ -7,7 +7,7 @@ export default function AuthLayout({
 }>) {
   return (
     <div className="flex min-h-svh flex-col justify-center px-4 py-10">
-      <main className="mx-auto w-full max-w-[393px]">{children}</main>
+      <main className="max-w-mobile mx-auto w-full">{children}</main>
     </div>
   );
 }
