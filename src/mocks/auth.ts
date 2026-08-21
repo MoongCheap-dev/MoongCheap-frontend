@@ -29,12 +29,12 @@ function delay(ms: number): Promise<void> {
 
 export async function mockLogin(values: LoginValues): Promise<AuthResult<SessionUser>> {
   await delay(MOCK_LATENCY_MS);
+  void values; // 실제 API 연동 시 사용. 지금은 항상 실패라 참조하지 않는다.
 
-  if (values.password === 'wrongpassword') {
-    return { ok: false, message: '이메일 또는 비밀번호가 올바르지 않습니다' };
-  }
-
-  return { ok: true, data: { ...mockUser, email: values.email } };
+  // 백엔드 인증이 아직 없어 어떤 자격증명으로도 실제 로그인에 성공할 수 없다.
+  // 규격 확정 전까지 모든 시도를 실패로 돌려 에러 모달을 노출한다.
+  // 실제 API 연동 시 이 함수 본문만 교체하면 성공/실패 분기가 살아난다(반환 타입은 유지).
+  return { ok: false, message: '아이디 또는 비밀번호가 일치하지 않습니다.' };
 }
 
 export async function mockSignup(values: SignupValues): Promise<AuthResult<SessionUser>> {

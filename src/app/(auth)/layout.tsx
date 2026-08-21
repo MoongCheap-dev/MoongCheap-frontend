@@ -7,7 +7,8 @@ export default function AuthLayout({
 }>) {
   return (
     <div className="flex min-h-svh flex-col justify-center px-4 py-10">
-      <main className="mx-auto w-full max-w-[393px]">{children}</main>
+      {/* 화면 폭은 루트 레이아웃(body)에서 고정한다. 여기서는 좌우 여백·세로 정렬만 담당. */}
+      <main className="w-full">{children}</main>
     </div>
   );
 }

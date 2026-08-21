@@ -19,9 +19,13 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // 모바일 전용 디자인이므로 앱 전체를 모바일 폭으로 중앙 고정한다. 393 = Figma 기준 폭
+  // (Responsive_Size). 태블릿/웹 브레이크포인트가 확정되면 이 값에 반응형을 얹는다.
   return (
     <html lang="ko" className="h-full antialiased">
-      <body className="flex min-h-full flex-col">{children}</body>
+      <body className="bg-background mx-auto flex min-h-svh w-full max-w-[393px] flex-col">
+        {children}
+      </body>
     </html>
   );
 }
