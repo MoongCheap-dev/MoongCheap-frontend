@@ -19,9 +19,12 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // body는 배경만 책임진다. 모바일 폭 고정(393px)은 인증 화면 셸((auth)/layout.tsx) 등
+  // 각 라우트 그룹에서 준다. 셀러 화면(사이드바)처럼 전체 폭이 필요한 레이아웃도 있어
+  // 전역에 폭을 고정하면 다크모드에서 393px 바깥 배경이 비고 사이드바가 잘린다.
   return (
     <html lang="ko" className="h-full antialiased">
-      <body className="flex min-h-full flex-col">{children}</body>
+      <body className="bg-background min-h-svh">{children}</body>
     </html>
   );
 }

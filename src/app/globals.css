@@ -23,7 +23,9 @@
   --success-soft: #dcfce7;
   --warning: #e0922f;
   --warning-soft: #fbeed6;
-  --danger: #e05353;
+  /* Figma content/error = border/error = red/400-p (color-semantic, light). */
+  --danger: #ff2569;
+  /* surface/error(= red/400 20%)는 정확한 값 미수령이라 손대지 않는다. globals.css 토큰 배선 시 확정. */
   --danger-soft: #fbe0e0;
 
   --placeholder: #e3e3e3;
