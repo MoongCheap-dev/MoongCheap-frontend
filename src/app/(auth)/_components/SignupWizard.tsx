@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
@@ -8,6 +8,7 @@ import { useForm, useWatch } from 'react-hook-form';
 
 import { AlertDialog } from '@/components/ui/AlertDialog';
 import { AUTH_ERROR_MESSAGES, AUTH_SUCCESS_MESSAGES } from '@/constants/authMessages';
+import { useKeyboardHeight } from '@/hooks/useKeyboardHeight';
 import { cn } from '@/lib/cn';
 import { mockCheckIdDuplicate, mockSignup } from '@/mocks/auth';
 import { signupEmailSchema, signupPasswordSchema, type SignupStep } from '@/schemas/auth';
@@ -33,15 +34,31 @@ function isSignupStep(value: string | null): value is SignupStep {
   return value === 'email' || value === 'id' || value === 'password' || value === 'complete';
 }
 
-/** 값이 있으면서 유효하면 success, 값이 있는데 무효이고 한 번 벗어난(touched) 뒤면 error. */
-function deriveStatus(value: string, isValid: boolean, isTouched: boolean): FieldStatus {
+// AuthLayout의 main(flex-1 세로 컬럼)을 채우는 화면 컬럼. 자식 중 하단 CTA에 mt-auto를 주면
+// 바닥에 고정된다(Figma 7-1·10). 뷰포트 높이를 직접 계산하지 않고 부모를 flex-1로 채우므로
+// AuthLayout의 패딩이 바뀌어도 안전하다. 회원가입 스텝 화면과 완료 화면이 공유한다.
+function ScreenColumn({ children }: { children: React.ReactNode }) {
+  return <div className="flex flex-1 flex-col">{children}</div>;
+}
+
+// 값이 있으면서 유효하면(포커스 여부와 무관하게) 즉시 success.
+// 무효일 때 error는 "한 번 벗어난(touched) 뒤 && 지금 포커스가 없을 때"만 준다.
+// 포커스 중(타이핑 중)엔 빨강을 숨겨, 수정하는 내내 에러가 깜빡이지 않게 한다.
+// 인자는 같은 타입 불리언이 여러 개라 순서 뒤바뀜을 막으려 객체로 받는다.
+function deriveStatus(args: {
+  value: string;
+  isValid: boolean;
+  isTouched: boolean;
+  isFocused: boolean;
+}): FieldStatus {
+  const { value, isValid, isTouched, isFocused } = args;
   if (value.length === 0) {
     return 'default';
   }
   if (isValid) {
     return 'success';
   }
-  return isTouched ? 'error' : 'default';
+  return isTouched && !isFocused ? 'error' : 'default';
 }
 
 export function SignupWizard() {
@@ -82,6 +99,23 @@ export function SignupWizard() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [dialogMessage, setDialogMessage] = useState<string | null>(null);
+  // 한 번에 한 필드만 보이므로 단일 불리언으로 현재 입력칸의 포커스 여부를 추적한다.
+  // deriveStatus가 포커스 중엔 에러를 숨기는 데 쓴다.
+  const [isFieldFocused, setIsFieldFocused] = useState(false);
+
+  // 키보드가 올라오면 하단 CTA를 그 높이만큼 위로 끌어올린다(Figma 7-2).
+  // 컨테이너 높이를 줄이면 AuthLayout의 justify-center가 되살아나 레이아웃이 흔들리므로,
+  // 높이는 그대로 두고 버튼 행만 transform으로 이동시킨다. 값이 뷰포트 측정 기반이라
+  // Tailwind 클래스로 표현할 수 없어, 하드코딩 스타일이 아닌 런타임 값으로 ref에 직접 적용한다.
+  const keyboardHeight = useKeyboardHeight();
+  const footerRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const footer = footerRef.current;
+    if (footer === null) {
+      return;
+    }
+    footer.style.transform = keyboardHeight > 0 ? `translateY(-${keyboardHeight}px)` : '';
+  }, [keyboardHeight]);
 
   const emailValid = signupEmailSchema.safeParse(emailValue).success;
   const passwordValid = signupPasswordSchema.safeParse(passwordValue).success;
@@ -167,6 +201,7 @@ export function SignupWizard() {
                   : undefined
             }
             value={idValue}
+            onFocusChange={setIsFieldFocused}
             field={{
               ...idField,
               onChange: (event) => {
@@ -198,7 +233,12 @@ export function SignupWizard() {
     }
 
     if (step === 'password') {
-      const status = deriveStatus(passwordValue, passwordValid, touchedFields.password === true);
+      const status = deriveStatus({
+        value: passwordValue,
+        isValid: passwordValid,
+        isTouched: touchedFields.password === true,
+        isFocused: isFieldFocused,
+      });
       return {
         subtitle: '비밀번호를 설정해주세요.',
         field: (
@@ -215,6 +255,7 @@ export function SignupWizard() {
                 : AUTH_ERROR_MESSAGES.password.rule
             }
             value={passwordValue}
+            onFocusChange={setIsFieldFocused}
             field={register('password')}
             onClear={() => {
               setValue('password', '');
@@ -228,7 +269,12 @@ export function SignupWizard() {
     }
 
     // step === 'email'
-    const status = deriveStatus(emailValue, emailValid, touchedFields.email === true);
+    const status = deriveStatus({
+      value: emailValue,
+      isValid: emailValid,
+      isTouched: touchedFields.email === true,
+      isFocused: isFieldFocused,
+    });
     return {
       subtitle: '이메일을 입력해주세요.',
       field: (
@@ -247,6 +293,7 @@ export function SignupWizard() {
                 : undefined
           }
           value={emailValue}
+          onFocusChange={setIsFieldFocused}
           field={register('email')}
           onClear={() => {
             setValue('email', '');
@@ -261,15 +308,22 @@ export function SignupWizard() {
 
   return (
     <>
-      <div className="flex flex-col gap-8">
-        <div className="flex flex-col gap-2">
-          <h1 className="text-xl font-bold">계정 정보 입력</h1>
-          <p className="text-muted text-sm">{stepView.subtitle}</p>
+      {/* Figma 7-1(이메일-empty) 시안: 제목·입력칸은 상단, 이전/다음 버튼은 화면 하단 고정.
+          ScreenColumn이 main(flex-1)을 채우고, 버튼 행을 mt-auto로 바닥에 붙인다. */}
+      <ScreenColumn>
+        <div className="flex flex-col gap-8">
+          <div className="flex flex-col gap-2">
+            <h1 className="text-xl font-bold">계정 정보 입력</h1>
+            <p className="text-muted text-sm">{stepView.subtitle}</p>
+          </div>
+
+          {stepView.field}
         </div>
 
-        {stepView.field}
-
-        <div className="mt-4 flex gap-3">
+        <div
+          ref={footerRef}
+          className="mt-auto flex gap-3 pt-8 transition-transform duration-200 ease-out"
+        >
           <button
             type="button"
             onClick={goPrev}
@@ -291,7 +345,7 @@ export function SignupWizard() {
             {isSubmitting ? '처리 중' : '다음'}
           </button>
         </div>
-      </div>
+      </ScreenColumn>
 
       <AlertDialog
         isOpen={dialogMessage !== null}
@@ -303,25 +357,28 @@ export function SignupWizard() {
 }
 
 function CompleteScreen() {
+  // 앞 스텝(이메일·아이디·비밀번호)과 동일하게 제목·일러스트는 상단, CTA는 하단 고정(Figma 10).
+  // 스텝 간 버튼 위치가 튀지 않도록 같은 ScreenColumn + mt-auto 패턴을 쓴다.
   return (
-    <div className="flex flex-col gap-8">
-      <div className="flex flex-col gap-2">
-        <h1 className="text-xl font-bold">가입이 완료되었습니다!</h1>
-        {/* TODO: 완료 화면 부제 정확한 문구 Figma에서 확정. 임시 안내. */}
-        <p className="text-muted text-sm">이제 로그인하고 뭉치를 시작해보세요.</p>
-      </div>
+    <ScreenColumn>
+      <div className="flex flex-col gap-8">
+        <div className="flex flex-col gap-2">
+          <h1 className="text-xl font-bold">가입이 완료되었습니다!</h1>
+          <p className="text-muted text-sm">뭉치와 함께 알뜰한 쇼핑하세요</p>
+        </div>
 
-      {/* Figma: "추후에 여기에 일러스트나 아이콘 추가" 자리. 확정 전 플레이스홀더. */}
-      <div className="border-surface-line text-muted flex h-56 items-center justify-center rounded-lg border border-dashed text-sm">
-        일러스트 자리
+        {/* Figma: "추후에 여기에 일러스트나 아이콘 추가" 자리. 확정 전 플레이스홀더. */}
+        <div className="border-surface-line text-muted flex h-56 items-center justify-center rounded-lg border border-dashed text-sm">
+          일러스트 자리
+        </div>
       </div>
 
       <Link
         href="/login"
-        className="bg-primary active:bg-primary-pressed focus-visible:ring-foreground mt-4 flex h-13 items-center justify-center rounded-lg font-medium text-white outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
+        className="bg-primary active:bg-primary-pressed focus-visible:ring-foreground mt-auto flex h-13 items-center justify-center rounded-lg font-medium text-white outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
       >
-        로그인하러 가기
+        로그인하러가기
       </Link>
-    </div>
+    </ScreenColumn>
   );
 }

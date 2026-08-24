@@ -14,7 +14,8 @@ const RECOVERY_LINKS = ['아이디 찾기', '비밀번호 찾기'] as const;
 
 export default function LoginPage() {
   return (
-    <div className="flex flex-col">
+    // main(flex-1)을 채워 세로 중앙 정렬한다(예전 AuthLayout의 justify-center를 페이지로 옮김).
+    <div className="flex flex-1 flex-col justify-center">
       <h1 className="mb-8 text-2xl leading-snug font-bold">
         원하는 상품을 모아
         <br />더 좋은 조건으로 구매하세요

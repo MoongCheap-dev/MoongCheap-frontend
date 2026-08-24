@@ -65,6 +65,8 @@ interface StepFieldProps {
   value: string;
   field: UseFormRegisterReturn;
   onClear: () => void;
+  /** 포커스 진입/이탈 알림. 위저드가 "타이핑 중엔 에러 숨김"을 결정하는 데 쓴다. */
+  onFocusChange?: (focused: boolean) => void;
   /** 오른쪽 인라인 컨트롤(예: 아이디 중복확인 버튼). 있으면 Clear(X) 대신 노출한다. */
   rightSlot?: React.ReactNode;
 }
@@ -80,6 +82,7 @@ export function StepField({
   value,
   field,
   onClear,
+  onFocusChange,
   rightSlot,
 }: StepFieldProps) {
   const hasValue = value.length > 0;
@@ -117,6 +120,13 @@ export function StepField({
                   : 'border-surface-line focus:border-foreground',
           )}
           {...field}
+          // field.onBlur(RHF의 touched 갱신)를 먼저 호출한 뒤 포커스 이탈을 알린다.
+          // 스프레드 뒤에 둬야 field의 onBlur를 덮어쓰지 않고 감쌀 수 있다.
+          onFocus={() => onFocusChange?.(true)}
+          onBlur={(event) => {
+            field.onBlur(event);
+            onFocusChange?.(false);
+          }}
         />
         <div className="absolute top-1/2 right-3 flex -translate-y-1/2 items-center gap-2">
           {status === 'success' && <CheckIcon />}
