@@ -42,7 +42,7 @@ MoongCheap은 반대입니다. 백엔드가 별도 저장소에서 REST API를 �
 
 관련 코드를 임의로 작성하지 않고 비워 둔 상태입니다.
 
-- **인증 방식** — Authorization 헤더 vs httpOnly 쿠키
+- ~~**인증 방식** — Authorization 헤더 vs httpOnly 쿠키~~ → **확정: httpOnly 쿠키(SID)**. 소셜/일반 로그인 동일 구조([결정된 사항](#결정된-사항) 참고)
 - **공용 응답 포맷** — 성공/실패 응답의 공통 래핑 여부와 필드명
 - **API 베이스 URL** — 도메인 A·B가 단일 게이트웨이 뒤에 있는지, 분리돼 있는지
 - **에러 코드 체계** — HTTP status만 쓰는지, 별도 비즈니스 에러 코드가 있는지
@@ -57,7 +57,14 @@ MoongCheap은 반대입니다. 백엔드가 별도 저장소에서 REST API를 �
 
 ## 결정된 사항
 
-- **소셜 로그인(카카오/구글) 채택** — 피그마 디자인에서 소셜 로그인 확인, **채택 예정**. `src/app/(auth)/oauth/callback` 라우트 유지. 실제 연동은 백엔드 OAuth 규격 확정 후.
+- **소셜 로그인(카카오/구글) 채택 · 백엔드 OAuth 규격 확정** — 웹 OAuth 전체 리다이렉트 방식(모바일 웹, PWA 예정). 백엔드와 아래 규격 합의 완료.
+  - **진입**: 프론트는 `{baseUrl}/oauth2/authorization/kakao`(또는 `.../google`)로 단순 이동(`location.href`/`<a>`, fetch 아님).
+  - **콜백**: 백엔드가 provider와 code 교환 → **SID(httpOnly 쿠키)** 세션 발급 후 프론트로 리다이렉트. **쿼리로 토큰을 넘기지 않음** → 프론트는 토큰 저장/파싱 없음([`security-baseline.md`](./security-baseline.md) 요건 1 충족).
+  - **착지 URL**: 성공 `https://moongcheap.com/oauth/callback`(`src/app/(auth)/oauth/callback` 라우트 유지) · 실패 `https://moongcheap.com/oauth/failed?reason=denied|provider_error|server_error`.
+  - **가입/연동**: 최초 로그인 = 즉시 가입 완료(추가 입력 UI 불필요, 프로필은 provider 동의화면에서 수집). 동일 이메일이어도 **자동 연동 없이 별개 계정** 신규 가입.
+  - **세션**: 일반 로그인과 세션·갱신·로그아웃 구조 동일.
+  - **env**: `KAKAO_CLIENT_ID` / `GOOGLE_CLIENT_ID`를 백엔드가 제공 예정(키 이름 확정 후 `.env.local` 배선).
+  - **보류**: 로그인 후 "원래 가려던 페이지로 복귀"는 보호 라우트 가드 도입 시 프론트 `sessionStorage` 방식으로 추가 예정(백엔드 지원 불필요, 고정 URL로 충분).
 - **목(mock) 전략** — MSW 없이 async 함수가 `AuthResult`를 반환하는 방식으로 진행(뼈대 작성자 의도). 실제 연동 시 함수 본문만 API 호출로 교체하고 반환 타입은 유지([`src/mocks/auth.ts`](../src/mocks/auth.ts)).
 
 ## 제거한 멘헤링 전용 의존성
