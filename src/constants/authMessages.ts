@@ -47,7 +47,9 @@ const OAUTH_FALLBACK_MESSAGE = '로그인에 실패했어요. 잠시 후 다시 
 
 /** reason 쿼리값을 안내 문구로 매핑한다. 규약에 없거나 누락된 값은 기본 문구로 떨어진다. */
 export function getOAuthFailureMessage(reason: string | undefined): string {
-  if (reason !== undefined && reason in OAUTH_FAILURE_MESSAGES) {
+  // Object.hasOwn으로 자체 키만 확인한다. `in`은 프로토타입 키(toString·constructor 등)까지
+  // 매칭돼, `?reason=toString` 같은 값이 함수/객체를 반환하고 렌더에서 깨질 수 있다.
+  if (reason !== undefined && Object.hasOwn(OAUTH_FAILURE_MESSAGES, reason)) {
     return OAUTH_FAILURE_MESSAGES[reason as OAuthFailureReason];
   }
   return OAUTH_FALLBACK_MESSAGE;
