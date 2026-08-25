@@ -3,7 +3,7 @@
 import type { ReactNode } from 'react';
 
 import { cn } from '@/lib/cn';
-import { getOAuthAuthorizeUrl } from '@/lib/oauth';
+import { getOAuthAuthorizeUrl, isOAuthConfigured } from '@/lib/oauth';
 import type { OAuthProvider } from '@/types/auth';
 
 // 소셜 로그인 버튼 줄(카카오·네이버·구글·애플). Figma 로그인 시안 기준.
@@ -15,7 +15,13 @@ import type { OAuthProvider } from '@/types/auth';
 // 공통 Button 프리미티브(Social-Login variant)가 확정되면 이 마크업을 그 컴포넌트로 치환한다.
 
 // 실제 인가 플로우에 연결된 제공자. 나머지(naver·apple)는 껍데기.
-const CONNECTED_PROVIDERS: ReadonlySet<string> = new Set<OAuthProvider>(['kakao', 'google']);
+const CONNECTED_PROVIDERS = new Set<OAuthProvider>(['kakao', 'google']);
+
+// provider.id(string)를 OAuthProvider로 좁히는 타입 가드. `as` 단언 대신 이걸 통과한 값만
+// startOAuth에 넘겨, 연결 집합·OAuthProvider 유니온·PROVIDERS id가 어긋나면 컴파일에서 잡히게 한다.
+function isConnectedProvider(id: string): id is OAuthProvider {
+  return (CONNECTED_PROVIDERS as ReadonlySet<string>).has(id);
+}
 
 function startOAuth(provider: OAuthProvider) {
   const authorizeUrl = getOAuthAuthorizeUrl(provider);
@@ -25,6 +31,15 @@ function startOAuth(provider: OAuthProvider) {
   }
   // OAuth는 전체 페이지 리다이렉트다. 라우터가 아니라 브라우저 내비게이션으로 백엔드로 넘긴다.
   window.location.href = authorizeUrl;
+}
+
+// 연결된 제공자면 클릭 핸들러를, 아니면(naver·apple) undefined를 돌려준다. 가드를 지역 변수 id에
+// 적용해 좁혀진 값을 클로저가 캡처하므로, startOAuth 호출부에 `as` 단언이 필요 없다.
+function getProviderClickHandler(id: string): (() => void) | undefined {
+  if (!isConnectedProvider(id)) {
+    return undefined;
+  }
+  return () => startOAuth(id);
 }
 
 interface SocialProvider {
@@ -93,19 +108,24 @@ const PROVIDERS: SocialProvider[] = [
 ];
 
 export function SocialLoginButtons() {
+  // 베이스 URL 미배선이면 카카오·구글 이동이 불가능하므로, 연결된 버튼을 비활성화해
+  // 반응 없는 죽은 클릭 대신 눌리지 않는 상태로 보여준다(배선되면 자동 활성화).
+  const oauthReady = isOAuthConfigured();
   return (
     <div className="flex items-center justify-center gap-4">
       {PROVIDERS.map((provider) => {
-        const isConnected = CONNECTED_PROVIDERS.has(provider.id);
+        // 카카오·구글만 핸들러가 붙는다. 네이버·애플은 undefined라 눌러도 동작하지 않는다.
+        const handleClick = getProviderClickHandler(provider.id);
         return (
           <button
             key={provider.id}
             type="button"
             aria-label={provider.label}
-            // 카카오·구글만 인가 플로우로 이동한다. 네이버·애플은 핸들러가 없어 동작하지 않는다.
-            onClick={isConnected ? () => startOAuth(provider.id as OAuthProvider) : undefined}
+            disabled={handleClick !== undefined && !oauthReady}
+            onClick={handleClick}
             className={cn(
               'flex size-12 items-center justify-center rounded-full',
+              'disabled:cursor-not-allowed disabled:opacity-50',
               provider.className,
             )}
           >

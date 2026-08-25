@@ -34,3 +34,11 @@ export function getOAuthAuthorizeUrl(provider: OAuthProvider): string | null {
   }
   return `${baseUrl}${AUTHORIZE_PATH}/${provider}`;
 }
+
+/**
+ * 베이스 URL(env)이 배선돼 인가 이동이 가능한 상태인지.
+ * 미배선이면 클릭해도 이동할 수 없으므로, UI에서 연결된 버튼을 비활성화해 죽은 클릭을 막는다.
+ */
+export function isOAuthConfigured(): boolean {
+  return getApiBaseUrl() !== null;
+}
