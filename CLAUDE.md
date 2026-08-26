@@ -33,10 +33,11 @@ Next.js 16 (App Router) · React 19 · TypeScript · Tailwind CSS v4 · ESLint �
 
 **임의로 채우지 마세요.** 아래는 백엔드와 합의되지 않았습니다.
 
-- **인증 방식** — Authorization 헤더 / httpOnly 쿠키 미정
 - **공용 응답 포맷** — 성공/실패 응답의 래핑 여부·필드명 미정
 - **API 베이스 URL** — 도메인 A·B가 단일 게이트웨이인지 분리인지 미정
 - **PWA 채택 여부** — 미정
+
+**결정됨** — **인증 방식**: 세션은 **httpOnly 쿠키(SID)**로 확정(소셜/일반 로그인 동일 구조, 토큰을 JS로 저장하지 않음). 백엔드 소셜 로그인 규격 합의 시 확정 → [`docs/deferred-setup.md`](docs/deferred-setup.md) 참고.
 
 관련 코드(`api-client`, 스키마, 환경변수)를 추측으로 작성하지 말고, 규격이 나온 뒤에 만듭니다.
 
