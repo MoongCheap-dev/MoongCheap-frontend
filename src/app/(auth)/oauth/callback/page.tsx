@@ -8,7 +8,8 @@ export const metadata: Metadata = {
 // 제공자가 이 경로로 리다이렉트하면, 여기서 세션 확립 후 이동시킨다.
 export default function OAuthCallbackPage() {
   return (
-    <div className="flex flex-col items-center gap-2">
+    // main(flex-1)을 채워 상하좌우 중앙 정렬한다.
+    <div className="flex flex-1 flex-col items-center justify-center gap-2">
       <p className="text-sm">로그인 처리 중입니다</p>
       <p className="text-content-quarternary text-sm">잠시만 기다려 주세요</p>
     </div>

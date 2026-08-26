@@ -1,0 +1,383 @@
+'use client';
+
+import { useEffect, useRef, useState } from 'react';
+
+import Link from 'next/link';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { useForm, useWatch } from 'react-hook-form';
+
+import { AlertDialog } from '@/components/ui/AlertDialog';
+import { AUTH_ERROR_MESSAGES, AUTH_SUCCESS_MESSAGES } from '@/constants/authMessages';
+import { useKeyboardHeight } from '@/hooks/useKeyboardHeight';
+import { cn } from '@/lib/cn';
+import { mockCheckIdDuplicate, mockSignup } from '@/mocks/auth';
+import { signupEmailSchema, signupPasswordSchema, type SignupStep } from '@/schemas/auth';
+
+import { StepField, type FieldStatus } from './StepField';
+
+// 회원가입 위저드. Figma 08.22(수정후) "A. 로그인 및 회원가입" 시안대로 이메일→아이디→비밀번호→
+// 가입완료를 한 라우트(/signup)에서 진행한다. 스텝은 URL 쿼리(?step=)로 표현해 브라우저 뒤로가기가
+// 이전 스텝으로 가게 하고, 쿼리만 바뀌는 소프트 내비라 이 컴포넌트는 마운트를 유지해 입력값이 스텝
+// 간 보존된다. useSearchParams는 클라이언트 훅이라 page.tsx에서 <Suspense>로 감싼다.
+//
+// 입력 상호작용(포커스 시 키보드 오버레이, 유효 시 CTA 활성)은 모바일 네이티브 키보드 동작이라
+// 웹에선 OS가 처리한다. 하단 버튼을 키보드 위로 항상 보이게 고정하는 처리는 후속(visualViewport).
+//
+// 팔레트는 시맨틱 토큰(#15) 머지에 맞춰 교체 완료. 버튼 변형은 MoongCheap_DS Button 컴포넌트
+//   기준이다: 검정 CTA(다음·중복확인·로그인하러가기)=tertiary, 이전(아웃라인)=quarternary,
+//   비활성=disabled-primary. 코랄(primary)은 브랜드 CTA용이라 이 화면엔 쓰지 않는다.
+//   ※ 로그인 화면의 CTA는 #15에서 코랄(primary)로 바뀌었다. 두 화면의 CTA 색이 갈리는 것이
+//     시안대로인지 디자인팀 확인이 필요하다(확인되면 한쪽으로 맞춘다).
+
+function isSignupStep(value: string | null): value is SignupStep {
+  return value === 'email' || value === 'id' || value === 'password' || value === 'complete';
+}
+
+// AuthLayout의 main(flex-1 세로 컬럼)을 채우는 화면 컬럼. 자식 중 하단 CTA에 mt-auto를 주면
+// 바닥에 고정된다(Figma 7-1·10). 뷰포트 높이를 직접 계산하지 않고 부모를 flex-1로 채우므로
+// AuthLayout의 패딩이 바뀌어도 안전하다. 회원가입 스텝 화면과 완료 화면이 공유한다.
+function ScreenColumn({ children }: { children: React.ReactNode }) {
+  return <div className="flex flex-1 flex-col">{children}</div>;
+}
+
+// 값이 있으면서 유효하면(포커스 여부와 무관하게) 즉시 success.
+// 무효일 때 error는 "한 번 벗어난(touched) 뒤 && 지금 포커스가 없을 때"만 준다.
+// 포커스 중(타이핑 중)엔 빨강을 숨겨, 수정하는 내내 에러가 깜빡이지 않게 한다.
+// 인자는 같은 타입 불리언이 여러 개라 순서 뒤바뀜을 막으려 객체로 받는다.
+function deriveStatus(args: {
+  value: string;
+  isValid: boolean;
+  isTouched: boolean;
+  isFocused: boolean;
+}): FieldStatus {
+  const { value, isValid, isTouched, isFocused } = args;
+  if (value.length === 0) {
+    return 'default';
+  }
+  if (isValid) {
+    return 'success';
+  }
+  return isTouched && !isFocused ? 'error' : 'default';
+}
+
+export function SignupWizard() {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  const stepParam = searchParams.get('step');
+  const step: SignupStep = isSignupStep(stepParam) ? stepParam : 'email';
+
+  const {
+    register,
+    control,
+    setValue,
+    setFocus,
+    formState: { touchedFields },
+  } = useForm<{ email: string; id: string; password: string }>({
+    mode: 'onChange',
+    defaultValues: { email: '', id: '', password: '' },
+  });
+
+  // useWatch는 watch()와 달리 메모이제이션 안전(React Compiler 호환)이라 이걸 쓴다.
+  // defaultValue를 줘 첫 렌더부터 문자열을 반환하게 한다(없으면 undefined→'' 전환으로 입력칸이
+  // uncontrolled→controlled로 바뀌었다는 React 경고가 난다).
+  const emailValue = useWatch({ control, name: 'email', defaultValue: '' });
+  const idValue = useWatch({ control, name: 'id', defaultValue: '' });
+  const passwordValue = useWatch({ control, name: 'password', defaultValue: '' });
+
+  // 아이디는 형식이 아니라 중복확인(서버/mock)으로 통과가 결정된다. 어떤 값에 대해 확인했는지
+  // 함께 저장해, 확인 후 값을 고치면 통과를 무효화한다.
+  const [idCheck, setIdCheck] = useState<{
+    state: 'idle' | 'checking' | 'available' | 'taken';
+    forValue: string;
+  }>({
+    state: 'idle',
+    forValue: '',
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+  const [dialogMessage, setDialogMessage] = useState<string | null>(null);
+  // 한 번에 한 필드만 보이므로 단일 불리언으로 현재 입력칸의 포커스 여부를 추적한다.
+  // deriveStatus가 포커스 중엔 에러를 숨기는 데 쓴다.
+  const [isFieldFocused, setIsFieldFocused] = useState(false);
+
+  // 키보드가 올라오면 하단 CTA를 그 높이만큼 위로 끌어올린다(Figma 7-2).
+  // 컨테이너 높이를 줄이면 AuthLayout의 justify-center가 되살아나 레이아웃이 흔들리므로,
+  // 높이는 그대로 두고 버튼 행만 transform으로 이동시킨다. 값이 뷰포트 측정 기반이라
+  // Tailwind 클래스로 표현할 수 없어, 하드코딩 스타일이 아닌 런타임 값으로 ref에 직접 적용한다.
+  const keyboardHeight = useKeyboardHeight();
+  const footerRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const footer = footerRef.current;
+    if (footer === null) {
+      return;
+    }
+    footer.style.transform = keyboardHeight > 0 ? `translateY(-${keyboardHeight}px)` : '';
+  }, [keyboardHeight]);
+
+  const emailValid = signupEmailSchema.safeParse(emailValue).success;
+  const passwordValid = signupPasswordSchema.safeParse(passwordValue).success;
+  const idResolved = idCheck.forValue === idValue ? idCheck.state : 'idle';
+  const idPassed = idResolved === 'available';
+
+  // 스텝을 건너뛴 진입(딥링크·새로고침) 가드. 선행 조건이 없으면 가능한 앞 스텝으로 되돌린다.
+  useEffect(() => {
+    if (step === 'id' && !emailValid) {
+      router.replace(`${pathname}?step=email`);
+    } else if (step === 'password' && (!emailValid || !idPassed)) {
+      router.replace(`${pathname}?step=${emailValid ? 'id' : 'email'}`);
+    } else if (step === 'complete' && !submitted) {
+      router.replace(`${pathname}?step=email`);
+    }
+  }, [step, emailValid, idPassed, submitted, pathname, router]);
+
+  const goTo = (next: SignupStep) => {
+    router.push(`${pathname}?step=${next}`);
+  };
+
+  const goPrev = () => {
+    // 이후 스텝(아이디·비밀번호)은 push로 쌓인 히스토리를 back()으로 팝해 브라우저 뒤로가기와 맞춘다.
+    // 다만 첫 스텝(이메일)에서 back()은 위저드가 브라우저 첫 진입(딥링크·새 탭)일 때 사이트 밖으로
+    // 나가버리므로, 앱 내 진입점인 홈으로 명시 이동한다.
+    if (step === 'email') {
+      router.push('/');
+    } else {
+      router.back();
+    }
+  };
+
+  const handleCheckId = async () => {
+    if (idValue.length === 0 || idCheck.state === 'checking') {
+      return;
+    }
+    setIdCheck({ state: 'checking', forValue: idValue });
+    const result = await mockCheckIdDuplicate(idValue);
+    setIdCheck({ state: result.ok ? 'available' : 'taken', forValue: idValue });
+  };
+
+  const handleSubmitPassword = async () => {
+    if (!passwordValid || isSubmitting) {
+      return;
+    }
+    setIsSubmitting(true);
+    const result = await mockSignup({ email: emailValue, id: idValue, password: passwordValue });
+    setIsSubmitting(false);
+
+    if (!result.ok) {
+      // happy-path mock이라 실제로는 도달하지 않지만, 서버 연동 시 실패 응답을 대비해 안내한다.
+      setDialogMessage(result.message);
+      return;
+    }
+    setSubmitted(true);
+    goTo('complete');
+  };
+
+  if (step === 'complete') {
+    return <CompleteScreen />;
+  }
+
+  // 스텝별 화면 구성. 상태·헬퍼 문구는 여기서 결정하고 표현은 StepField가 맡는다.
+  const stepView = (() => {
+    if (step === 'id') {
+      const status: FieldStatus =
+        idResolved === 'available' ? 'success' : idResolved === 'taken' ? 'error' : 'default';
+      const idField = register('id');
+      return {
+        subtitle: '아이디를 입력한 뒤 중복확인을 해주세요.',
+        field: (
+          <StepField
+            id="signup-id"
+            label="아이디"
+            autoComplete="username"
+            placeholder="아이디를 입력해주세요."
+            status={status}
+            helper={
+              status === 'success'
+                ? AUTH_SUCCESS_MESSAGES.confirmed
+                : status === 'error'
+                  ? AUTH_ERROR_MESSAGES.id.taken
+                  : undefined
+            }
+            value={idValue}
+            onFocusChange={setIsFieldFocused}
+            field={{
+              ...idField,
+              onChange: (event) => {
+                // 값을 고치면 직전 중복확인 결과를 무효화한다(다시 확인해야 다음으로).
+                setIdCheck({ state: 'idle', forValue: '' });
+                return idField.onChange(event);
+              },
+            }}
+            onClear={() => {
+              setValue('id', '');
+              setIdCheck({ state: 'idle', forValue: '' });
+              setFocus('id');
+            }}
+            rightSlot={
+              <button
+                type="button"
+                onClick={handleCheckId}
+                disabled={idValue.length === 0 || idCheck.state === 'checking'}
+                className="bg-surface-button-tertiary-default hover:bg-surface-button-tertiary-hover active:bg-surface-button-tertiary-pressed text-content-oncolor focus-visible:ring-effect-focus-ring-primary rounded-md px-3 py-1.5 text-xs font-medium outline-none focus-visible:ring-2 focus-visible:ring-offset-1 disabled:opacity-40"
+              >
+                {idCheck.state === 'checking' ? '확인 중' : '중복확인'}
+              </button>
+            }
+          />
+        ),
+        canProceed: idPassed,
+        onNext: () => goTo('password'),
+      };
+    }
+
+    if (step === 'password') {
+      const status = deriveStatus({
+        value: passwordValue,
+        isValid: passwordValid,
+        isTouched: touchedFields.password === true,
+        isFocused: isFieldFocused,
+      });
+      return {
+        subtitle: '비밀번호를 설정해주세요.',
+        field: (
+          <StepField
+            id="signup-password"
+            label="비밀번호"
+            type="password"
+            autoComplete="new-password"
+            placeholder="비밀번호를 입력해주세요."
+            status={status}
+            helper={
+              status === 'success'
+                ? AUTH_SUCCESS_MESSAGES.confirmed
+                : AUTH_ERROR_MESSAGES.password.rule
+            }
+            value={passwordValue}
+            onFocusChange={setIsFieldFocused}
+            field={register('password')}
+            onClear={() => {
+              setValue('password', '');
+              setFocus('password');
+            }}
+          />
+        ),
+        canProceed: passwordValid && !isSubmitting,
+        onNext: handleSubmitPassword,
+      };
+    }
+
+    // step === 'email'
+    const status = deriveStatus({
+      value: emailValue,
+      isValid: emailValid,
+      isTouched: touchedFields.email === true,
+      isFocused: isFieldFocused,
+    });
+    return {
+      subtitle: '이메일을 입력해주세요.',
+      field: (
+        <StepField
+          id="signup-email"
+          label="이메일"
+          type="email"
+          autoComplete="email"
+          placeholder="moongcheap@gmail.com"
+          status={status}
+          helper={
+            status === 'success'
+              ? AUTH_SUCCESS_MESSAGES.confirmed
+              : status === 'error'
+                ? AUTH_ERROR_MESSAGES.email.invalid
+                : undefined
+          }
+          value={emailValue}
+          onFocusChange={setIsFieldFocused}
+          field={register('email')}
+          onClear={() => {
+            setValue('email', '');
+            setFocus('email');
+          }}
+        />
+      ),
+      canProceed: emailValid,
+      onNext: () => goTo('id'),
+    };
+  })();
+
+  return (
+    <>
+      {/* Figma 7-1(이메일-empty) 시안: 제목·입력칸은 상단, 이전/다음 버튼은 화면 하단 고정.
+          ScreenColumn이 main(flex-1)을 채우고, 버튼 행을 mt-auto로 바닥에 붙인다. */}
+      <ScreenColumn>
+        <div className="flex flex-col gap-8">
+          <div className="flex flex-col gap-2">
+            <h1 className="text-xl font-bold">계정 정보 입력</h1>
+            <p className="text-content-quarternary text-sm">{stepView.subtitle}</p>
+          </div>
+
+          {stepView.field}
+        </div>
+
+        <div
+          ref={footerRef}
+          className="mt-auto flex gap-3 pt-8 transition-transform duration-200 ease-out"
+        >
+          <button
+            type="button"
+            onClick={goPrev}
+            className="border-border-button-quarternary bg-surface-button-quarternary-default hover:bg-surface-button-quarternary-hover active:bg-surface-button-quarternary-pressed text-content-primary focus-visible:ring-effect-focus-ring-primary rounded-8 h-13 flex-1 border font-medium outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
+          >
+            이전
+          </button>
+          <button
+            type="button"
+            onClick={stepView.onNext}
+            disabled={!stepView.canProceed}
+            className={cn(
+              'focus-visible:ring-effect-focus-ring-primary rounded-8 h-13 flex-1 font-medium outline-none focus-visible:ring-2 focus-visible:ring-offset-2',
+              stepView.canProceed
+                ? 'bg-surface-button-tertiary-default hover:bg-surface-button-tertiary-hover active:bg-surface-button-tertiary-pressed text-content-oncolor'
+                : 'bg-surface-disabled-primary text-content-disabled-primary cursor-not-allowed',
+            )}
+          >
+            {isSubmitting ? '처리 중' : '다음'}
+          </button>
+        </div>
+      </ScreenColumn>
+
+      <AlertDialog
+        isOpen={dialogMessage !== null}
+        message={dialogMessage ?? ''}
+        onClose={() => setDialogMessage(null)}
+      />
+    </>
+  );
+}
+
+function CompleteScreen() {
+  // 앞 스텝(이메일·아이디·비밀번호)과 동일하게 제목·일러스트는 상단, CTA는 하단 고정(Figma 10).
+  // 스텝 간 버튼 위치가 튀지 않도록 같은 ScreenColumn + mt-auto 패턴을 쓴다.
+  return (
+    <ScreenColumn>
+      <div className="flex flex-col gap-8">
+        <div className="flex flex-col gap-2">
+          <h1 className="text-xl font-bold">가입이 완료되었습니다!</h1>
+          <p className="text-content-quarternary text-sm">뭉치와 함께 알뜰한 쇼핑하세요</p>
+        </div>
+
+        {/* Figma: "추후에 여기에 일러스트나 아이콘 추가" 자리. 확정 전 플레이스홀더. */}
+        <div className="border-border-subtle text-content-quarternary rounded-8 flex h-56 items-center justify-center border border-dashed text-sm">
+          일러스트 자리
+        </div>
+      </div>
+
+      <Link
+        href="/login"
+        className="bg-surface-button-tertiary-default hover:bg-surface-button-tertiary-hover active:bg-surface-button-tertiary-pressed text-content-oncolor focus-visible:ring-effect-focus-ring-primary rounded-8 mt-auto flex h-13 items-center justify-center font-medium outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
+      >
+        로그인하러가기
+      </Link>
+    </ScreenColumn>
+  );
+}

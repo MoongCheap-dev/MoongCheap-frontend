@@ -1,3 +1,4 @@
+import { AUTH_ERROR_MESSAGES } from '@/constants/authMessages';
 import type { LoginValues, SignupValues } from '@/schemas/auth';
 import type { AuthResult, SessionUser } from '@/types/auth';
 
@@ -11,8 +12,8 @@ import type { AuthResult, SessionUser } from '@/types/auth';
 
 const MOCK_LATENCY_MS = 600;
 
-/** 이미 가입된 것으로 취급할 이메일. 중복 가입 오류 화면을 확인하기 위한 값이다. */
-const TAKEN_EMAIL = 'taken@moongcheap.dev';
+/** 이미 사용 중인 것으로 취급할 아이디. 중복확인 실패(에러) 화면을 확인하기 위한 값이다. */
+const TAKEN_ID = 'moongchi';
 
 /**
  * 목 로그인에 성공하는 데모 계정. 백엔드 인증 규격 확정 전, 로그인 이후 화면
@@ -47,19 +48,31 @@ export async function mockLogin(values: LoginValues): Promise<AuthResult<Session
   return { ok: false, message: '아이디 또는 비밀번호가 일치하지 않습니다.' };
 }
 
+/**
+ * 아이디 중복확인 목. 회원가입 아이디 단계의 `중복확인` 버튼이 호출한다.
+ * `TAKEN_ID`만 사용 불가로 돌려 error 화면을 확인하고, 나머지는 사용 가능으로 처리한다.
+ * 실제 연동 시 이 본문만 실제 조회 API로 교체한다(반환 타입 유지).
+ */
+export async function mockCheckIdDuplicate(id: string): Promise<AuthResult<{ available: true }>> {
+  await delay(MOCK_LATENCY_MS);
+
+  if (id === TAKEN_ID) {
+    return { ok: false, message: AUTH_ERROR_MESSAGES.id.taken };
+  }
+
+  return { ok: true, data: { available: true } };
+}
+
+/**
+ * 회원가입 목. 비밀번호 단계까지 통과한 값으로 계정 생성을 시도한다.
+ * 백엔드 미연동이라 항상 성공을 돌려 가입완료 화면으로 진입할 수 있게 한다(happy-path).
+ * 실제 연동 시 이 본문만 교체하면 서버 검증 실패(필드 오류)도 `AuthResult`로 흘러온다.
+ */
 export async function mockSignup(values: SignupValues): Promise<AuthResult<SessionUser>> {
   await delay(MOCK_LATENCY_MS);
 
-  if (values.email === TAKEN_EMAIL) {
-    return {
-      ok: false,
-      message: '가입할 수 없는 정보가 있습니다',
-      fieldErrors: [{ field: 'email', message: '이미 사용 중인 이메일입니다' }],
-    };
-  }
-
   return {
     ok: true,
-    data: { ...mockUser, email: values.email, nickname: values.nickname },
+    data: { ...mockUser, id: values.id, email: values.email },
   };
 }
