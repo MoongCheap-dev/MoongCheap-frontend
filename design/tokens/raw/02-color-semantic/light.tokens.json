@@ -10,10 +10,29 @@
       },
       "$extensions": {
         "com.figma.variableId": "VariableID:19:437",
-        "com.figma.scopes": ["FRAME_FILL", "SHAPE_FILL"],
+        "com.figma.scopes": ["FRAME_FILL", "SHAPE_FILL", "STROKE"],
         "com.figma.aliasData": {
           "targetVariableId": "VariableID:14205cea1ee9761ff0d64890c509a9dc924c925f/-1:-1",
           "targetVariableName": "normal/1",
+          "targetVariableSetId": "VariableCollectionId:c24e12e716d6803d12d1081d00e9d3154ecae7d3/-1:-1",
+          "targetVariableSetName": "1. color-primitives"
+        }
+      }
+    },
+    "subtle": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [0.9803921580314636, 0.9803921580314636, 0.9803921580314636],
+        "alpha": 1,
+        "hex": "#FAFAFA"
+      },
+      "$extensions": {
+        "com.figma.variableId": "VariableID:409:1989",
+        "com.figma.scopes": ["FRAME_FILL", "SHAPE_FILL", "STROKE"],
+        "com.figma.aliasData": {
+          "targetVariableId": "VariableID:273b5a77eafa68c2ed4c117dcfecf6390ad83cdb/-1:-1",
+          "targetVariableName": "coolgray/50",
           "targetVariableSetId": "VariableCollectionId:c24e12e716d6803d12d1081d00e9d3154ecae7d3/-1:-1",
           "targetVariableSetName": "1. color-primitives"
         }
@@ -1178,9 +1197,9 @@
         "$type": "color",
         "$value": {
           "colorSpace": "srgb",
-          "components": [0.8392156958580017, 0.8392156958580017, 0.8392156958580017],
+          "components": [0.9607843160629272, 0.9607843160629272, 0.9607843160629272],
           "alpha": 1,
-          "hex": "#D6D6D6"
+          "hex": "#F5F5F5"
         },
         "$extensions": {
           "com.figma.variableId": "VariableID:83:5789",
@@ -1189,8 +1208,8 @@
             "WEB": "var(--border-disabled)"
           },
           "com.figma.aliasData": {
-            "targetVariableId": "VariableID:61c49c877d8937a4bafe759d46df268241f550f1/-1:-1",
-            "targetVariableName": "coolgray/300",
+            "targetVariableId": "VariableID:caa4861f8793aa1869d054de9fdaccd9502f2d8f/-1:-1",
+            "targetVariableName": "coolgray/100",
             "targetVariableSetId": "VariableCollectionId:c24e12e716d6803d12d1081d00e9d3154ecae7d3/-1:-1",
             "targetVariableSetName": "1. color-primitives"
           }
@@ -1223,6 +1242,27 @@
     }
   },
   "effect": {
+    "shadow": {
+      "primary": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [0, 0, 0],
+          "alpha": 0.20000000298023224,
+          "hex": "#000000"
+        },
+        "$extensions": {
+          "com.figma.variableId": "VariableID:423:2141",
+          "com.figma.scopes": ["ALL_SCOPES"],
+          "com.figma.aliasData": {
+            "targetVariableId": "VariableID:c79f12be6ff6b4aa2e50c5937ec5e1509c4e3da9/-1:-1",
+            "targetVariableName": "opacity/normal/0-A20",
+            "targetVariableSetId": "VariableCollectionId:c24e12e716d6803d12d1081d00e9d3154ecae7d3/-1:-1",
+            "targetVariableSetName": "1. color-primitives"
+          }
+        }
+      }
+    },
     "focus-ring": {
       "primary": {
         "$type": "color",

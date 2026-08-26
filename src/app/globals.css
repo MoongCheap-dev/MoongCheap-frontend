@@ -10,8 +10,9 @@
 /* ── 1층: 모드가 갈리는 값. 이름을 2층과 분리해야 다크모드가 동작합니다 ── */
 :root {
   --background-default: #ffffff;
+  --background-subtle: #fafafa;
   --border-brand: #ff5f66;
-  --border-button-quarternary: #d6d6d6;
+  --border-button-quarternary: #f5f5f5;
   --border-button-secondary: #ffe0e1;
   --border-button-tertiary: #d6d6d6;
   --border-disabled-primary: #e6e6e6;
@@ -44,6 +45,7 @@
   --divider-default: #e6e6e6;
   --effect-focus-ring-primary: #ff5f6633;
   --effect-focus-ring-secondary: #a5a5a533;
+  --effect-shadow-primary: #00000033;
   --surface-brand: #ff5f66;
   --surface-button-primary-default: #ff5f66;
   --surface-button-primary-hover: #ff7378;
@@ -75,6 +77,7 @@
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme='light']) {
     --background-default: #1a1a1a;
+    --background-subtle: #303030;
     --border-brand: #ff7378;
     --border-button-quarternary: #575757;
     --border-button-secondary: #ff5f6633;
@@ -109,6 +112,7 @@
     --divider-default: #434343;
     --effect-focus-ring-primary: #ff5f6633;
     --effect-focus-ring-secondary: #a5a5a533;
+    --effect-shadow-primary: #00000033;
     --surface-brand: #ff7378;
     --surface-button-primary-default: #ff7378;
     --surface-button-primary-hover: #ff9397;
@@ -141,6 +145,7 @@
 .dark,
 [data-theme='dark'] {
   --background-default: #1a1a1a;
+  --background-subtle: #303030;
   --border-brand: #ff7378;
   --border-button-quarternary: #575757;
   --border-button-secondary: #ff5f6633;
@@ -175,6 +180,7 @@
   --divider-default: #434343;
   --effect-focus-ring-primary: #ff5f6633;
   --effect-focus-ring-secondary: #a5a5a533;
+  --effect-shadow-primary: #00000033;
   --surface-brand: #ff7378;
   --surface-button-primary-default: #ff7378;
   --surface-button-primary-hover: #ff9397;
@@ -205,6 +211,7 @@
 /* ── 2층: Tailwind 배선. inline이라 유틸리티가 var()를 그대로 참조합니다 ── */
 @theme inline {
   --color-background-default: var(--background-default);
+  --color-background-subtle: var(--background-subtle);
   --color-border-brand: var(--border-brand);
   --color-border-button-quarternary: var(--border-button-quarternary);
   --color-border-button-secondary: var(--border-button-secondary);
@@ -239,6 +246,7 @@
   --color-divider-default: var(--divider-default);
   --color-effect-focus-ring-primary: var(--effect-focus-ring-primary);
   --color-effect-focus-ring-secondary: var(--effect-focus-ring-secondary);
+  --color-effect-shadow-primary: var(--effect-shadow-primary);
   --color-surface-brand: var(--surface-brand);
   --color-surface-button-primary-default: var(--surface-button-primary-default);
   --color-surface-button-primary-hover: var(--surface-button-primary-hover);

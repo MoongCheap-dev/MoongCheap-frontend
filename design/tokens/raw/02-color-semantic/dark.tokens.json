@@ -10,10 +10,29 @@
       },
       "$extensions": {
         "com.figma.variableId": "VariableID:19:437",
-        "com.figma.scopes": ["FRAME_FILL", "SHAPE_FILL"],
+        "com.figma.scopes": ["FRAME_FILL", "SHAPE_FILL", "STROKE"],
         "com.figma.aliasData": {
           "targetVariableId": "VariableID:cd9c3195f83ffc61eb56a16399faee691fd8d7f9/-1:-1",
           "targetVariableName": "coolgray/900",
+          "targetVariableSetId": "VariableCollectionId:c24e12e716d6803d12d1081d00e9d3154ecae7d3/-1:-1",
+          "targetVariableSetName": "1. color-primitives"
+        }
+      }
+    },
+    "subtle": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [0.1882352977991104, 0.1882352977991104, 0.1882352977991104],
+        "alpha": 1,
+        "hex": "#303030"
+      },
+      "$extensions": {
+        "com.figma.variableId": "VariableID:409:1989",
+        "com.figma.scopes": ["FRAME_FILL", "SHAPE_FILL", "STROKE"],
+        "com.figma.aliasData": {
+          "targetVariableId": "VariableID:e5e6fdc50e26e196a8456b81df1185171308c5b1/-1:-1",
+          "targetVariableName": "coolgray/800",
           "targetVariableSetId": "VariableCollectionId:c24e12e716d6803d12d1081d00e9d3154ecae7d3/-1:-1",
           "targetVariableSetName": "1. color-primitives"
         }
@@ -1223,6 +1242,27 @@
     }
   },
   "effect": {
+    "shadow": {
+      "primary": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [0, 0, 0],
+          "alpha": 0.20000000298023224,
+          "hex": "#000000"
+        },
+        "$extensions": {
+          "com.figma.variableId": "VariableID:423:2141",
+          "com.figma.scopes": ["ALL_SCOPES"],
+          "com.figma.aliasData": {
+            "targetVariableId": "VariableID:c79f12be6ff6b4aa2e50c5937ec5e1509c4e3da9/-1:-1",
+            "targetVariableName": "opacity/normal/0-A20",
+            "targetVariableSetId": "VariableCollectionId:c24e12e716d6803d12d1081d00e9d3154ecae7d3/-1:-1",
+            "targetVariableSetName": "1. color-primitives"
+          }
+        }
+      }
+    },
     "focus-ring": {
       "primary": {
         "$type": "color",
