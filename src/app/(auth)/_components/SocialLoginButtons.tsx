@@ -114,14 +114,14 @@ export function SocialLoginButtons() {
   return (
     <div className="flex items-center justify-center gap-4">
       {PROVIDERS.map((provider) => {
-        // 카카오·구글만 핸들러가 붙는다. 네이버·애플은 undefined라 눌러도 동작하지 않는다.
+        // 카카오·구글만 핸들러가 붙는다. 네이버·애플은 undefined라 항상 비활성(죽은 클릭 방지).
         const handleClick = getProviderClickHandler(provider.id);
         return (
           <button
             key={provider.id}
             type="button"
             aria-label={provider.label}
-            disabled={handleClick !== undefined && !oauthReady}
+            disabled={handleClick === undefined || !oauthReady}
             onClick={handleClick}
             className={cn(
               'flex size-12 items-center justify-center rounded-full',
