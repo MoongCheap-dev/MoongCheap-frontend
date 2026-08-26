@@ -1,0 +1,13 @@
+{
+  "responsive-size": {
+    "$type": "number",
+    "$value": 393,
+    "$extensions": {
+      "com.figma.variableId": "VariableID:9:9",
+      "com.figma.scopes": ["WIDTH_HEIGHT"]
+    }
+  },
+  "$extensions": {
+    "com.figma.modeName": "Mobile"
+  }
+}

@@ -54,7 +54,7 @@ export function SignupForm() {
   return (
     <form onSubmit={onSubmit} noValidate className="flex flex-col gap-4">
       {formError !== null && (
-        <p role="alert" className="text-danger bg-danger-soft rounded px-3 py-2 text-sm">
+        <p role="alert" className="text-content-error bg-surface-error rounded px-3 py-2 text-sm">
           {formError}
         </p>
       )}
@@ -69,11 +69,11 @@ export function SignupForm() {
           autoComplete="email"
           aria-invalid={errors.email !== undefined}
           aria-describedby={errors.email !== undefined ? 'signup-email-error' : undefined}
-          className="border-surface-line placeholder:text-placeholder h-11 rounded-lg border px-3"
+          className="border-border-subtle placeholder:text-content-quinary rounded-8 h-11 border px-3"
           {...register('email')}
         />
         {errors.email !== undefined && (
-          <p id="signup-email-error" role="alert" className="text-danger text-sm">
+          <p id="signup-email-error" role="alert" className="text-content-error text-sm">
             {errors.email.message}
           </p>
         )}
@@ -89,11 +89,11 @@ export function SignupForm() {
           autoComplete="nickname"
           aria-invalid={errors.nickname !== undefined}
           aria-describedby={errors.nickname !== undefined ? 'signup-nickname-error' : undefined}
-          className="border-surface-line placeholder:text-placeholder h-11 rounded-lg border px-3"
+          className="border-border-subtle placeholder:text-content-quinary rounded-8 h-11 border px-3"
           {...register('nickname')}
         />
         {errors.nickname !== undefined && (
-          <p id="signup-nickname-error" role="alert" className="text-danger text-sm">
+          <p id="signup-nickname-error" role="alert" className="text-content-error text-sm">
             {errors.nickname.message}
           </p>
         )}
@@ -109,11 +109,11 @@ export function SignupForm() {
           autoComplete="new-password"
           aria-invalid={errors.password !== undefined}
           aria-describedby={errors.password !== undefined ? 'signup-password-error' : undefined}
-          className="border-surface-line placeholder:text-placeholder h-11 rounded-lg border px-3"
+          className="border-border-subtle placeholder:text-content-quinary rounded-8 h-11 border px-3"
           {...register('password')}
         />
         {errors.password !== undefined && (
-          <p id="signup-password-error" role="alert" className="text-danger text-sm">
+          <p id="signup-password-error" role="alert" className="text-content-error text-sm">
             {errors.password.message}
           </p>
         )}
@@ -131,18 +131,18 @@ export function SignupForm() {
           aria-describedby={
             errors.passwordConfirm !== undefined ? 'signup-password-confirm-error' : undefined
           }
-          className="border-surface-line placeholder:text-placeholder h-11 rounded-lg border px-3"
+          className="border-border-subtle placeholder:text-content-quinary rounded-8 h-11 border px-3"
           {...register('passwordConfirm')}
         />
         {errors.passwordConfirm !== undefined && (
-          <p id="signup-password-confirm-error" role="alert" className="text-danger text-sm">
+          <p id="signup-password-confirm-error" role="alert" className="text-content-error text-sm">
             {errors.passwordConfirm.message}
           </p>
         )}
       </div>
 
       {/* 명세에 약관 동의 이력 저장 요구사항이 있어 항목을 분리해 둔다. */}
-      <fieldset className="border-surface-line flex flex-col gap-2 rounded-lg border p-3">
+      <fieldset className="border-border-subtle rounded-8 flex flex-col gap-2 border p-3">
         <legend className="px-1 text-sm font-medium">약관 동의</legend>
 
         <label htmlFor="signup-terms" className="flex items-center gap-2 text-sm">
@@ -155,7 +155,7 @@ export function SignupForm() {
           이용약관 동의 (필수)
         </label>
         {errors.termsAgreed !== undefined && (
-          <p role="alert" className="text-danger text-sm">
+          <p role="alert" className="text-content-error text-sm">
             {errors.termsAgreed.message}
           </p>
         )}
@@ -170,7 +170,7 @@ export function SignupForm() {
           개인정보 처리방침 동의 (필수)
         </label>
         {errors.privacyAgreed !== undefined && (
-          <p role="alert" className="text-danger text-sm">
+          <p role="alert" className="text-content-error text-sm">
             {errors.privacyAgreed.message}
           </p>
         )}
@@ -189,7 +189,7 @@ export function SignupForm() {
       <button
         type="submit"
         disabled={isSubmitting}
-        className="bg-primary h-11 rounded-lg font-medium text-white disabled:opacity-50"
+        className="bg-surface-button-primary-default hover:bg-surface-button-primary-hover active:bg-surface-button-primary-pressed disabled:bg-surface-disabled-primary disabled:text-content-disabled-primary text-content-oncolor text-button-16 rounded-8 h-11"
       >
         {isSubmitting ? '가입 중' : '회원가입'}
       </button>

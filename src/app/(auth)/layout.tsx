@@ -8,7 +8,7 @@ export default function AuthLayout({
   // 모바일 전용 디자인이므로 인증 화면은 여기서 모바일 폭(393px)으로 중앙 고정한다.
   // 393 = Figma 기준 폭(Responsive_Size). 태블릿/웹 브레이크포인트가 확정되면 여기에 반응형을 얹는다.
   return (
-    <div className="mx-auto flex min-h-svh w-full max-w-[393px] flex-col justify-center px-4 py-10">
+    <div className="max-w-mobile mx-auto flex min-h-svh w-full flex-col justify-center px-4 py-10">
       <main className="w-full">{children}</main>
     </div>
   );
