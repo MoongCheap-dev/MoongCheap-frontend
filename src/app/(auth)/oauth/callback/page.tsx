@@ -1,17 +1,10 @@
-import type { Metadata } from 'next';
+import { redirect } from 'next/navigation';
 
-export const metadata: Metadata = {
-  title: '로그인 처리 중',
-};
-
-// 소셜 로그인(카카오·구글) 채택 예정(피그마 디자인 확인). 백엔드 OAuth 규격 확정 전이라 자리만 잡아 둔다.
-// 제공자가 이 경로로 리다이렉트하면, 여기서 세션 확립 후 이동시킨다.
+// 소셜 로그인(카카오·구글) 성공 착지 경로(#18). 백엔드가 code 교환과 SID(httpOnly 쿠키) 세션
+// 발급을 마친 뒤 이 경로로 리다이렉트한다. 즉 여기 도착 = 로그인 성공이며(실패는 /oauth/failed로 감),
+// 토큰은 쿼리로 오지 않고 쿠키에 있어 프론트가 파싱할 것이 없다. 서버에서 곧장 홈으로 넘겨
+// '처리 중' 화면 플래시 없이 이동시킨다.
+// TODO(별도 이슈): 전역 세션 조회가 생기면 이동 전에 사용자 정보를 확립하도록 확장한다.
 export default function OAuthCallbackPage() {
-  return (
-    // main(flex-1)을 채워 상하좌우 중앙 정렬한다.
-    <div className="flex flex-1 flex-col items-center justify-center gap-2">
-      <p className="text-sm">로그인 처리 중입니다</p>
-      <p className="text-content-quarternary text-sm">잠시만 기다려 주세요</p>
-    </div>
-  );
+  redirect('/');
 }
