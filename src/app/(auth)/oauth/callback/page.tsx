@@ -11,7 +11,7 @@ export default function OAuthCallbackPage() {
     // main(flex-1)을 채워 상하좌우 중앙 정렬한다.
     <div className="flex flex-1 flex-col items-center justify-center gap-2">
       <p className="text-sm">로그인 처리 중입니다</p>
-      <p className="text-muted text-sm">잠시만 기다려 주세요</p>
+      <p className="text-content-quarternary text-sm">잠시만 기다려 주세요</p>
     </div>
   );
 }

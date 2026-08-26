@@ -26,20 +26,20 @@ export default function LoginPage() {
       {/* 비회원 둘러보기. 로그인 없이 홈으로 진입한다. */}
       <Link
         href="/"
-        className="border-surface-line bg-surface text-foreground mt-3 flex h-13 items-center justify-center rounded-lg border font-medium"
+        className="border-border-subtle bg-surface-primary text-content-primary rounded-8 mt-3 flex h-13 items-center justify-center border font-medium"
       >
         일단 둘러보기
       </Link>
 
-      <nav className="text-muted mt-5 flex items-center justify-center gap-3 text-xs">
-        <Link href="/signup" className="hover:text-foreground">
+      <nav className="text-content-quarternary mt-5 flex items-center justify-center gap-3 text-xs">
+        <Link href="/signup" className="hover:text-content-primary">
           회원가입
         </Link>
         {RECOVERY_LINKS.map((label) => (
           <span key={label} className="contents">
-            <span aria-hidden="true" className="bg-surface-line h-3 w-px" />
+            <span aria-hidden="true" className="bg-divider-default h-3 w-px" />
             {/* TODO: 찾기 플로우 경로 확정 후 Link로 교체 */}
-            <button type="button" className="hover:text-foreground">
+            <button type="button" className="hover:text-content-primary">
               {label}
             </button>
           </span>

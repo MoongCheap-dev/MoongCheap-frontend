@@ -53,7 +53,7 @@ export function AlertDialog({
       // 제목이 있으면 제목이 이름, 없으면 메시지를 이름으로 삼아 모달에 항상 접근성 이름을 준다.
       aria-labelledby={title !== undefined ? 'alert-dialog-title' : 'alert-dialog-message'}
       aria-describedby={title !== undefined ? 'alert-dialog-message' : undefined}
-      className="bg-surface m-auto w-[calc(100%-4rem)] max-w-xs rounded-2xl p-0 shadow-xl backdrop:bg-black/40"
+      className="bg-surface-primary m-auto w-[calc(100%-4rem)] max-w-xs rounded-2xl p-0 shadow-xl backdrop:bg-black/40"
     >
       <div className="flex flex-col gap-4 p-5">
         <div className="flex flex-col gap-1.5">
@@ -62,7 +62,7 @@ export function AlertDialog({
               {title}
             </p>
           )}
-          <p id="alert-dialog-message" className="text-muted text-sm">
+          <p id="alert-dialog-message" className="text-content-quarternary text-sm">
             {message}
           </p>
         </div>
@@ -72,7 +72,7 @@ export function AlertDialog({
           onClick={onClose}
           // 모달이 열리면 브라우저가 이 버튼에 자동 포커스한다(Enter=확인, Esc=닫기 동작 유지).
           // 키보드 포커스는 focus-visible 링으로 위치를 알려 준다(마우스 클릭 시엔 안 보여 시안을 해치지 않는다).
-          className="bg-primary-soft text-foreground active:bg-surface-line focus-visible:ring-foreground h-12 rounded-full font-medium outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
+          className="bg-surface-button-secondary-default text-content-primary active:bg-surface-button-secondary-pressed focus-visible:ring-effect-focus-ring-primary h-12 rounded-full font-medium outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
         >
           {confirmLabel}
         </button>

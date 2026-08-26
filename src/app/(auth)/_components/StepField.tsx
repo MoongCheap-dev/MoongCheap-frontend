@@ -9,22 +9,24 @@ import { cn } from '@/lib/cn';
 // 입력칸 아래 인라인 헬퍼로 노출한다(Figma 회원가입 시안). 마크업이 로그인과 겹치는 것은 의도한
 // 것이다(공통 UI 프리미티브 규약 확정 전까지 임의 추출하지 않는다 — CLAUDE.md).
 //
-// ⚠️ 디자인 토큰(#15) 머지 후 시맨틱 클래스로 교체할 지점이 이 파일에 집중돼 있다.
-//   border-success→border-border-success · text-success→text-content-success ·
-//   border-danger→border-border-error · text-danger→text-content-error ·
-//   border-surface-line→border-border-subtle · border-foreground→border-border-primary(확인).
-//   버튼 토큰 매핑은 SignupWizard 상단 주석 참고(검정 CTA=tertiary, 이전=quarternary — DS로 확인).
+// 디자인 토큰(#15) 머지에 맞춰 시맨틱 클래스로 교체 완료.
+//   버튼 변형 기준은 SignupWizard 상단 주석 참고(검정 CTA=tertiary, 이전=quarternary — DS로 확인).
 
 /** 입력칸 시각 상태. success=녹색 체크, error=빨강, default=회색(값 있으면 검정). */
 export type FieldStatus = 'default' | 'success' | 'error';
 
 // 라벨은 상태와 무관하게 항상 기본 회색(로그인 시안과 동일 규칙).
 const FLOATING_LABEL_CLASS =
-  'text-muted bg-background absolute -top-2 left-3 px-1 text-xs font-medium';
+  'text-content-quarternary bg-background-default absolute -top-2 left-3 px-1 text-xs font-medium';
 
 function CheckIcon() {
   return (
-    <svg viewBox="0 0 20 20" aria-hidden="true" className="text-success size-5" fill="currentColor">
+    <svg
+      viewBox="0 0 20 20"
+      aria-hidden="true"
+      className="text-content-success size-5"
+      fill="currentColor"
+    >
       <path d="M10 2a8 8 0 100 16 8 8 0 000-16zm-1 11.4L5.6 10l1.1-1.1L9 11.2l4.3-4.3L14.4 8 9 13.4z" />
     </svg>
   );
@@ -32,7 +34,12 @@ function CheckIcon() {
 
 function ErrorIcon() {
   return (
-    <svg viewBox="0 0 20 20" aria-hidden="true" className="text-danger size-5" fill="currentColor">
+    <svg
+      viewBox="0 0 20 20"
+      aria-hidden="true"
+      className="text-content-error size-5"
+      fill="currentColor"
+    >
       <path d="M10 2a8 8 0 100 16 8 8 0 000-16zm3.54 10.48l-1.06 1.06L10 11.06l-2.48 2.48-1.06-1.06L8.94 10 6.46 7.52l1.06-1.06L10 8.94l2.48-2.48 1.06 1.06L11.06 10z" />
     </svg>
   );
@@ -45,7 +52,13 @@ interface ClearButtonProps {
 
 function ClearButton({ label, onClear }: ClearButtonProps) {
   return (
-    <button type="button" aria-label={label} tabIndex={-1} onClick={onClear} className="text-muted">
+    <button
+      type="button"
+      aria-label={label}
+      tabIndex={-1}
+      onClick={onClear}
+      className="text-content-quarternary"
+    >
       <svg viewBox="0 0 20 20" aria-hidden="true" className="size-5" fill="currentColor">
         <path d="M10 2a8 8 0 100 16 8 8 0 000-16zm3.54 10.48l-1.06 1.06L10 11.06l-2.48 2.48-1.06-1.06L8.94 10 6.46 7.52l1.06-1.06L10 8.94l2.48-2.48 1.06 1.06L11.06 10z" />
       </svg>
@@ -107,17 +120,17 @@ export function StepField({
           // useWatch가 초기 렌더에 undefined를 줄 수 있어 ''로 보정한다(안 하면 uncontrolled→controlled 경고).
           value={value ?? ''}
           className={cn(
-            'placeholder:text-placeholder h-14 w-full rounded-lg border px-4 text-sm outline-none',
+            'placeholder:text-content-quinary rounded-8 h-14 w-full border px-4 text-sm outline-none',
             // 오른쪽 컨트롤 폭만큼 패딩을 벌려 텍스트가 겹치지 않게 한다.
             rightSlot !== undefined ? 'pr-28' : 'pr-11',
             // 빈 값: 회색(포커스 시 검정) / 값 있음: 검정 / success: 녹색 / error: 빨강
             status === 'success'
-              ? 'border-success'
+              ? 'border-border-success'
               : status === 'error'
-                ? 'border-danger'
+                ? 'border-border-error'
                 : hasValue
-                  ? 'border-foreground'
-                  : 'border-surface-line focus:border-foreground',
+                  ? 'border-border-primary'
+                  : 'border-border-subtle focus:border-border-primary',
           )}
           {...field}
           // field.onBlur(RHF의 touched 갱신)를 먼저 호출한 뒤 포커스 이탈을 알린다.
@@ -145,10 +158,10 @@ export function StepField({
           className={cn(
             'text-xs',
             status === 'success'
-              ? 'text-success'
+              ? 'text-content-success'
               : status === 'error'
-                ? 'text-danger'
-                : 'text-muted',
+                ? 'text-content-error'
+                : 'text-content-quarternary',
           )}
         >
           {helper}

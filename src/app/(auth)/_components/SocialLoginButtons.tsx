@@ -40,7 +40,7 @@ const PROVIDERS: SocialProvider[] = [
   {
     id: 'google',
     label: '구글로 로그인',
-    className: 'border-surface-line border bg-white',
+    className: 'border-border-subtle border bg-white',
     icon: (
       <svg viewBox="0 0 48 48" aria-hidden="true" className="size-6">
         <path

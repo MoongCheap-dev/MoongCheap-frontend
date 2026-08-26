@@ -12,7 +12,7 @@ export default function AuthLayout({
   // 중앙정렬(로그인/oauth: justify-center)이나 하단 고정(signup: mt-auto)을 스스로 한다.
   // (예전엔 여기서 justify-center로 묶어, signup이 뷰포트에서 이 패딩을 빼는 매직넘버가 필요했다.)
   return (
-    <div className="mx-auto flex min-h-svh w-full max-w-[393px] flex-col px-4 py-10">
+    <div className="max-w-mobile mx-auto flex min-h-svh w-full flex-col px-4 py-10">
       <main className="flex w-full flex-1 flex-col">{children}</main>
     </div>
   );

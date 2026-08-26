@@ -22,7 +22,7 @@ import { loginSchema, type LoginValues } from '@/schemas/auth';
 
 // 라벨은 상태와 무관하게 항상 기본 회색. 에러 시에도 빨갛게 하지 않는다(Figma 시안 기준).
 const FLOATING_LABEL_CLASS =
-  'text-muted bg-background absolute -top-2 left-3 px-1 text-xs font-medium';
+  'text-content-quarternary bg-background-default absolute -top-2 left-3 px-1 text-xs font-medium';
 
 interface ClearButtonProps {
   hasError: boolean;
@@ -39,7 +39,7 @@ function ClearButton({ hasError, label, onClear }: ClearButtonProps) {
       onClick={onClear}
       className={cn(
         'absolute top-1/2 right-3 -translate-y-1/2',
-        hasError ? 'text-danger' : 'text-muted',
+        hasError ? 'text-content-error' : 'text-content-quarternary',
       )}
     >
       <svg viewBox="0 0 20 20" aria-hidden="true" className="size-5" fill="currentColor">
@@ -131,13 +131,13 @@ export function LoginForm() {
               aria-invalid={isIdInvalid}
               aria-describedby={errors.id !== undefined ? 'login-id-error' : undefined}
               className={cn(
-                'placeholder:text-placeholder h-14 w-full rounded-lg border px-4 pr-11 text-sm outline-none',
+                'placeholder:text-content-quinary rounded-8 h-14 w-full border px-4 pr-11 text-sm outline-none',
                 // 빈 값: 회색(포커스 시 검정) / 값 있음: 검정 / 에러: 빨강
                 hasIdError
-                  ? 'border-danger'
+                  ? 'border-border-error'
                   : idValue.length > 0
-                    ? 'border-foreground'
-                    : 'border-surface-line focus:border-foreground',
+                    ? 'border-border-primary'
+                    : 'border-border-subtle focus:border-border-primary',
               )}
               {...idField}
               onChange={(event) => {
@@ -177,13 +177,13 @@ export function LoginForm() {
               aria-invalid={isPasswordInvalid}
               aria-describedby={errors.password !== undefined ? 'login-password-error' : undefined}
               className={cn(
-                'placeholder:text-placeholder h-14 w-full rounded-lg border px-4 pr-11 text-sm outline-none',
+                'placeholder:text-content-quinary rounded-8 h-14 w-full border px-4 pr-11 text-sm outline-none',
                 // 빈 값: 회색(포커스 시 검정) / 값 있음: 검정 / 에러: 빨강
                 hasPasswordError
-                  ? 'border-danger'
+                  ? 'border-border-error'
                   : passwordValue.length > 0
-                    ? 'border-foreground'
-                    : 'border-surface-line focus:border-foreground',
+                    ? 'border-border-primary'
+                    : 'border-border-subtle focus:border-border-primary',
               )}
               {...passwordField}
               onChange={(event) => {
@@ -213,7 +213,7 @@ export function LoginForm() {
         <button
           type="submit"
           disabled={isSubmitting}
-          className="bg-primary active:bg-primary-pressed mt-2 h-13 rounded-lg font-medium text-white disabled:opacity-50"
+          className="bg-surface-button-primary-default active:bg-surface-button-primary-pressed rounded-8 mt-2 h-13 font-medium text-white disabled:opacity-50"
         >
           {isSubmitting ? '로그인 중' : '로그인'}
         </button>

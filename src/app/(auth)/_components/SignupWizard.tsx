@@ -23,12 +23,11 @@ import { StepField, type FieldStatus } from './StepField';
 // 입력 상호작용(포커스 시 키보드 오버레이, 유효 시 CTA 활성)은 모바일 네이티브 키보드 동작이라
 // 웹에선 OS가 처리한다. 하단 버튼을 키보드 위로 항상 보이게 고정하는 처리는 후속(visualViewport).
 //
-// ⚠️ 팔레트는 로그인과 동일한 임시 클래스를 쓴다. 시맨틱 토큰(#15) 머지 후 팀에서 일괄 교체한다.
-//   버튼 토큰 매핑(MoongCheap_DS Button 컴포넌트로 확인): 검정 CTA(다음·중복확인·로그인하러가기의
-//   bg-primary #17181b)는 DS의 tertiary → bg-surface-button-tertiary(#303030), active는
-//   -pressed. 이전(아웃라인)은 quarternary → bg-surface-button-quarternary + border-border-
-//   button-quarternary. text-white → text-content-oncolor. 코랄(primary)은 브랜드 CTA용이라
-//   여기엔 쓰지 않는다.
+// 팔레트는 시맨틱 토큰(#15) 머지에 맞춰 교체 완료. 버튼 변형은 MoongCheap_DS Button 컴포넌트
+//   기준이다: 검정 CTA(다음·중복확인·로그인하러가기)=tertiary, 이전(아웃라인)=quarternary,
+//   비활성=disabled-primary. 코랄(primary)은 브랜드 CTA용이라 이 화면엔 쓰지 않는다.
+//   ※ 로그인 화면의 CTA는 #15에서 코랄(primary)로 바뀌었다. 두 화면의 CTA 색이 갈리는 것이
+//     시안대로인지 디자인팀 확인이 필요하다(확인되면 한쪽으로 맞춘다).
 
 function isSignupStep(value: string | null): value is SignupStep {
   return value === 'email' || value === 'id' || value === 'password' || value === 'complete';
@@ -220,7 +219,7 @@ export function SignupWizard() {
                 type="button"
                 onClick={handleCheckId}
                 disabled={idValue.length === 0 || idCheck.state === 'checking'}
-                className="bg-foreground focus-visible:ring-foreground rounded-md px-3 py-1.5 text-xs font-medium text-white outline-none focus-visible:ring-2 focus-visible:ring-offset-1 disabled:opacity-40"
+                className="bg-surface-button-tertiary-default hover:bg-surface-button-tertiary-hover active:bg-surface-button-tertiary-pressed text-content-oncolor focus-visible:ring-effect-focus-ring-primary rounded-md px-3 py-1.5 text-xs font-medium outline-none focus-visible:ring-2 focus-visible:ring-offset-1 disabled:opacity-40"
               >
                 {idCheck.state === 'checking' ? '확인 중' : '중복확인'}
               </button>
@@ -314,7 +313,7 @@ export function SignupWizard() {
         <div className="flex flex-col gap-8">
           <div className="flex flex-col gap-2">
             <h1 className="text-xl font-bold">계정 정보 입력</h1>
-            <p className="text-muted text-sm">{stepView.subtitle}</p>
+            <p className="text-content-quarternary text-sm">{stepView.subtitle}</p>
           </div>
 
           {stepView.field}
@@ -327,7 +326,7 @@ export function SignupWizard() {
           <button
             type="button"
             onClick={goPrev}
-            className="border-surface-line bg-surface text-foreground focus-visible:ring-foreground h-13 flex-1 rounded-lg border font-medium outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
+            className="border-border-button-quarternary bg-surface-button-quarternary-default hover:bg-surface-button-quarternary-hover active:bg-surface-button-quarternary-pressed text-content-primary focus-visible:ring-effect-focus-ring-primary rounded-8 h-13 flex-1 border font-medium outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
           >
             이전
           </button>
@@ -336,10 +335,10 @@ export function SignupWizard() {
             onClick={stepView.onNext}
             disabled={!stepView.canProceed}
             className={cn(
-              'focus-visible:ring-foreground h-13 flex-1 rounded-lg font-medium text-white outline-none focus-visible:ring-2 focus-visible:ring-offset-2',
+              'focus-visible:ring-effect-focus-ring-primary rounded-8 h-13 flex-1 font-medium outline-none focus-visible:ring-2 focus-visible:ring-offset-2',
               stepView.canProceed
-                ? 'bg-primary active:bg-primary-pressed'
-                : 'bg-surface-line text-muted cursor-not-allowed',
+                ? 'bg-surface-button-tertiary-default hover:bg-surface-button-tertiary-hover active:bg-surface-button-tertiary-pressed text-content-oncolor'
+                : 'bg-surface-disabled-primary text-content-disabled-primary cursor-not-allowed',
             )}
           >
             {isSubmitting ? '처리 중' : '다음'}
@@ -364,18 +363,18 @@ function CompleteScreen() {
       <div className="flex flex-col gap-8">
         <div className="flex flex-col gap-2">
           <h1 className="text-xl font-bold">가입이 완료되었습니다!</h1>
-          <p className="text-muted text-sm">뭉치와 함께 알뜰한 쇼핑하세요</p>
+          <p className="text-content-quarternary text-sm">뭉치와 함께 알뜰한 쇼핑하세요</p>
         </div>
 
         {/* Figma: "추후에 여기에 일러스트나 아이콘 추가" 자리. 확정 전 플레이스홀더. */}
-        <div className="border-surface-line text-muted flex h-56 items-center justify-center rounded-lg border border-dashed text-sm">
+        <div className="border-border-subtle text-content-quarternary rounded-8 flex h-56 items-center justify-center border border-dashed text-sm">
           일러스트 자리
         </div>
       </div>
 
       <Link
         href="/login"
-        className="bg-primary active:bg-primary-pressed focus-visible:ring-foreground mt-auto flex h-13 items-center justify-center rounded-lg font-medium text-white outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
+        className="bg-surface-button-tertiary-default hover:bg-surface-button-tertiary-hover active:bg-surface-button-tertiary-pressed text-content-oncolor focus-visible:ring-effect-focus-ring-primary rounded-8 mt-auto flex h-13 items-center justify-center font-medium outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
       >
         로그인하러가기
       </Link>
