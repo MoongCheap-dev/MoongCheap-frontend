@@ -22,12 +22,12 @@ export default async function OAuthFailedPage({
     <div className="flex flex-col items-center gap-8 text-center">
       <div className="flex flex-col gap-2">
         <h1 className="text-xl leading-snug font-bold">로그인에 실패했어요</h1>
-        <p className="text-muted text-sm">{message}</p>
+        <p className="text-content-quarternary text-sm">{message}</p>
       </div>
 
       <Link
         href="/login"
-        className="bg-primary active:bg-primary-pressed flex h-13 w-full items-center justify-center rounded-lg font-medium text-white"
+        className="bg-surface-button-primary-default hover:bg-surface-button-primary-hover active:bg-surface-button-primary-pressed text-content-oncolor rounded-8 flex h-13 w-full items-center justify-center font-medium"
       >
         다시 로그인하기
       </Link>

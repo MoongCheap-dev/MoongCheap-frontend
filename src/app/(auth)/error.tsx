@@ -26,12 +26,12 @@ export default function AuthError({
   return (
     <div className="flex flex-col items-center gap-8 text-center">
       <div className="flex flex-col items-center gap-6">
-        <span className="bg-danger-soft text-danger flex size-16 items-center justify-center rounded-full">
+        <span className="bg-surface-error text-content-error flex size-16 items-center justify-center rounded-full">
           <TriangleAlert className="size-8" aria-hidden="true" />
         </span>
         <div className="flex flex-col gap-2">
           <h1 className="text-xl leading-snug font-bold">문제가 발생했어요</h1>
-          <p className="text-muted text-sm leading-relaxed">
+          <p className="text-content-quarternary text-sm leading-relaxed">
             잠시 후 다시 시도해주세요.
             <br />
             계속되면 다시 로그인 해 주세요.
@@ -43,7 +43,7 @@ export default function AuthError({
         <button
           type="button"
           onClick={reset}
-          className="bg-primary active:bg-primary-pressed flex h-13 items-center justify-center gap-2 rounded-lg font-medium text-white"
+          className="bg-surface-button-primary-default hover:bg-surface-button-primary-hover active:bg-surface-button-primary-pressed text-content-oncolor rounded-8 flex h-13 items-center justify-center gap-2 font-medium"
         >
           <RotateCcw className="size-4" aria-hidden="true" />
           다시 시도
@@ -51,7 +51,7 @@ export default function AuthError({
         <button
           type="button"
           onClick={() => router.replace('/login')}
-          className="border-surface-line bg-surface text-foreground flex h-13 items-center justify-center rounded-lg border font-medium"
+          className="border-border-subtle bg-surface-primary text-content-primary rounded-8 flex h-13 items-center justify-center border font-medium"
         >
           로그인으로 돌아가기
         </button>

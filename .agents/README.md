@@ -16,4 +16,5 @@
 
 - Git 컨벤션은 `docs/convention/README.md`에 있고(팀 공용), 여기서는 링크로 참조합니다.
 - 코드/구조/디자인 컨벤션은 MoongCheap 프론트 그룹 합의 기준입니다.
-- 디자인 토큰 값의 **원본(source of truth)은 Figma (Dev Mode MCP)** 이며, `design-convention/SKILLS.md`의 표는 조회용 전사본입니다. 값이 다르면 Figma에 맞춥니다.
+- 디자인 토큰 값의 **원본(source of truth)은 [`design/tokens/raw/`](../design/tokens/raw/)의 Variables JSON**입니다. 2026-08-21부터 프론트는 Figma **View 권한**이고, 토큰은 디자인팀이 JSON으로 전달합니다. `src/app/globals.css`는 [`design/tokens/build-tokens.mjs`](../design/tokens/build-tokens.mjs)가 생성하므로 직접 고치지 마세요 (→ [`design/tokens/README.md`](../design/tokens/README.md)).
+- `design-convention/SKILLS.md`의 표는 조회용 전사본입니다. 값이 다르면 JSON에 맞춥니다.
