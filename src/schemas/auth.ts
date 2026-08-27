@@ -57,5 +57,13 @@ export const signupSchema = z.object({
 
 export type LoginValues = z.infer<typeof loginSchema>;
 export type SignupValues = z.infer<typeof signupSchema>;
-/** 회원가입 단계 식별자. URL 쿼리(`?step=`)와 위저드 상태에 함께 쓴다. */
-export type SignupStep = 'email' | 'id' | 'password' | 'complete';
+
+/** 사용 모드(구매자/판매자). Figma 08.27 "B-01 모드 선택" 시안. 온보딩 첫 스텝에서 고른다. */
+export type SignupMode = 'buyer' | 'seller';
+
+/**
+ * 회원가입 단계 식별자. URL 쿼리(`?step=`)와 위저드 상태에 함께 쓴다.
+ * Figma 08.27 재설계로 앞단에 모드 선택·개인정보 동의가 추가됐다:
+ *   mode → terms → (휴대폰 인증: 미구현) → email → id → password → complete.
+ */
+export type SignupStep = 'mode' | 'terms' | 'email' | 'id' | 'password' | 'complete';

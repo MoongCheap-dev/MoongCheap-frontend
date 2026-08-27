@@ -11,14 +11,30 @@ import { AUTH_ERROR_MESSAGES, AUTH_SUCCESS_MESSAGES } from '@/constants/authMess
 import { useKeyboardHeight } from '@/hooks/useKeyboardHeight';
 import { cn } from '@/lib/cn';
 import { mockCheckIdDuplicate, mockSignup } from '@/mocks/auth';
-import { signupEmailSchema, signupPasswordSchema, type SignupStep } from '@/schemas/auth';
+import {
+  signupEmailSchema,
+  signupPasswordSchema,
+  type SignupMode,
+  type SignupStep,
+} from '@/schemas/auth';
 
+import { ModeSelectStep } from './ModeSelectStep';
 import { StepField, type FieldStatus } from './StepField';
+import {
+  EMPTY_AGREEMENTS,
+  TermsAgreementStep,
+  isAllAgreed,
+  type TermsAgreements,
+} from './TermsAgreementStep';
 
-// 회원가입 위저드. Figma 08.22(수정후) "A. 로그인 및 회원가입" 시안대로 이메일→아이디→비밀번호→
-// 가입완료를 한 라우트(/signup)에서 진행한다. 스텝은 URL 쿼리(?step=)로 표현해 브라우저 뒤로가기가
-// 이전 스텝으로 가게 하고, 쿼리만 바뀌는 소프트 내비라 이 컴포넌트는 마운트를 유지해 입력값이 스텝
-// 간 보존된다. useSearchParams는 클라이언트 훅이라 page.tsx에서 <Suspense>로 감싼다.
+// 회원가입 위저드. Figma 08.27 "A. 로그인 및 회원가입" 재설계 시안대로 모드선택→개인정보동의→
+// 이메일→아이디→비밀번호→가입완료를 한 라우트(/signup)에서 진행한다.
+// (휴대폰 인증(1-1)은 개인정보 동의 다음에 들어갈 예정이나 아직 미구현이라 건너뛴다.)
+// 스텝은 URL 쿼리(?step=)로 표현해 브라우저 뒤로가기가 이전 스텝으로 가게 하고, 쿼리만 바뀌는
+// 소프트 내비라 이 컴포넌트는 마운트를 유지해 입력값·선택값이 스텝 간 보존된다.
+// useSearchParams는 클라이언트 훅이라 page.tsx에서 <Suspense>로 감싼다.
+// 모드선택·개인정보동의 화면은 입력칸 화면과 UI가 달라 각자 컴포넌트(ModeSelectStep·TermsAgreementStep)로
+// 분리하고 여기서 상태·내비게이션만 넘긴다.
 //
 // 입력 상호작용(포커스 시 키보드 오버레이, 유효 시 CTA 활성)은 모바일 네이티브 키보드 동작이라
 // 웹에선 OS가 처리한다. 하단 버튼을 키보드 위로 항상 보이게 고정하는 처리는 후속(visualViewport).
@@ -30,7 +46,14 @@ import { StepField, type FieldStatus } from './StepField';
 //     시안대로인지 디자인팀 확인이 필요하다(확인되면 한쪽으로 맞춘다).
 
 function isSignupStep(value: string | null): value is SignupStep {
-  return value === 'email' || value === 'id' || value === 'password' || value === 'complete';
+  return (
+    value === 'mode' ||
+    value === 'terms' ||
+    value === 'email' ||
+    value === 'id' ||
+    value === 'password' ||
+    value === 'complete'
+  );
 }
 
 // AuthLayout의 main(flex-1 세로 컬럼)을 채우는 화면 컬럼. 자식 중 하단 CTA에 mt-auto를 주면
@@ -66,7 +89,7 @@ export function SignupWizard() {
   const searchParams = useSearchParams();
 
   const stepParam = searchParams.get('step');
-  const step: SignupStep = isSignupStep(stepParam) ? stepParam : 'email';
+  const step: SignupStep = isSignupStep(stepParam) ? stepParam : 'mode';
 
   const {
     register,
@@ -85,6 +108,10 @@ export function SignupWizard() {
   const emailValue = useWatch({ control, name: 'email', defaultValue: '' });
   const idValue = useWatch({ control, name: 'id', defaultValue: '' });
   const passwordValue = useWatch({ control, name: 'password', defaultValue: '' });
+
+  // 온보딩 앞단(모드 선택·개인정보 동의) 상태. mode=null은 미선택(기본). 스텝 간 보존한다.
+  const [mode, setMode] = useState<SignupMode | null>(null);
+  const [agreements, setAgreements] = useState<TermsAgreements>(EMPTY_AGREEMENTS);
 
   // 아이디는 형식이 아니라 중복확인(서버/mock)으로 통과가 결정된다. 어떤 값에 대해 확인했는지
   // 함께 저장해, 확인 후 값을 고치면 통과를 무효화한다.
@@ -120,27 +147,33 @@ export function SignupWizard() {
   const passwordValid = signupPasswordSchema.safeParse(passwordValue).success;
   const idResolved = idCheck.forValue === idValue ? idCheck.state : 'idle';
   const idPassed = idResolved === 'available';
+  const modeSelected = mode !== null;
+  const allAgreed = isAllAgreed(agreements);
 
   // 스텝을 건너뛴 진입(딥링크·새로고침) 가드. 선행 조건이 없으면 가능한 앞 스텝으로 되돌린다.
   useEffect(() => {
-    if (step === 'id' && !emailValid) {
+    if (step === 'terms' && !modeSelected) {
+      router.replace(`${pathname}?step=mode`);
+    } else if (step === 'email' && (!modeSelected || !allAgreed)) {
+      router.replace(`${pathname}?step=${modeSelected ? 'terms' : 'mode'}`);
+    } else if (step === 'id' && !emailValid) {
       router.replace(`${pathname}?step=email`);
     } else if (step === 'password' && (!emailValid || !idPassed)) {
       router.replace(`${pathname}?step=${emailValid ? 'id' : 'email'}`);
     } else if (step === 'complete' && !submitted) {
-      router.replace(`${pathname}?step=email`);
+      router.replace(`${pathname}?step=mode`);
     }
-  }, [step, emailValid, idPassed, submitted, pathname, router]);
+  }, [step, modeSelected, allAgreed, emailValid, idPassed, submitted, pathname, router]);
 
   const goTo = (next: SignupStep) => {
     router.push(`${pathname}?step=${next}`);
   };
 
   const goPrev = () => {
-    // 이후 스텝(아이디·비밀번호)은 push로 쌓인 히스토리를 back()으로 팝해 브라우저 뒤로가기와 맞춘다.
-    // 다만 첫 스텝(이메일)에서 back()은 위저드가 브라우저 첫 진입(딥링크·새 탭)일 때 사이트 밖으로
+    // 이후 스텝은 push로 쌓인 히스토리를 back()으로 팝해 브라우저 뒤로가기와 맞춘다.
+    // 다만 첫 스텝(모드 선택)에서 back()은 위저드가 브라우저 첫 진입(딥링크·새 탭)일 때 사이트 밖으로
     // 나가버리므로, 앱 내 진입점인 홈으로 명시 이동한다.
-    if (step === 'email') {
+    if (step === 'mode') {
       router.push('/');
     } else {
       router.back();
@@ -175,6 +208,30 @@ export function SignupWizard() {
 
   if (step === 'complete') {
     return <CompleteScreen />;
+  }
+
+  // 모드 선택·개인정보 동의는 입력칸 화면과 UI가 달라 전용 컴포넌트로 그린다.
+  // 상태는 위저드가 보관하고, 다음/이전 내비게이션만 넘긴다.
+  if (step === 'mode') {
+    return (
+      <ModeSelectStep
+        value={mode}
+        onChange={setMode}
+        onPrev={goPrev}
+        onSubmit={() => goTo('terms')}
+      />
+    );
+  }
+
+  if (step === 'terms') {
+    return (
+      <TermsAgreementStep
+        value={agreements}
+        onChange={setAgreements}
+        onPrev={goPrev}
+        onNext={() => goTo('email')}
+      />
+    );
   }
 
   // 스텝별 화면 구성. 상태·헬퍼 문구는 여기서 결정하고 표현은 StepField가 맡는다.
