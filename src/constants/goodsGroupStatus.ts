@@ -27,7 +27,7 @@ export const GOODS_GROUP_STATUS = {
     isTerminal: false,
     next: ['GB_CLOSED', 'GB_CANCELED'],
   },
-  /** 종료 — 모든 참여자 조치 완료로 공구 성립 확정. ★ 이 시점에 주문 레코드(ORD_PAID) 생성 → B-21. */
+  /** 종료 — 모든 참여자 조치 완료로 공구 성립 확정. ★ 이 낙찰 시점에 주문 레코드(PAYMENT_PENDING) 생성 → B-21. */
   GB_CLOSED: {
     label: '종료',
     tone: 'success',
