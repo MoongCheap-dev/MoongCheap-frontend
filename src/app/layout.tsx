@@ -1,5 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 
+import { ToastProvider } from '@/components/ui/Toast';
+
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -24,7 +26,10 @@ export default function RootLayout({
   // 전역에 폭을 고정하면 다크모드에서 393px 바깥 배경이 비고 사이드바가 잘린다.
   return (
     <html lang="ko" className="h-full antialiased">
-      <body className="bg-background-default min-h-svh">{children}</body>
+      <body className="bg-background-default min-h-svh">
+        {/* 전역 토스트. children은 server 컴포넌트로 유지된다(client Provider의 자식 slot이라 경계를 넘지 않음). */}
+        <ToastProvider>{children}</ToastProvider>
+      </body>
     </html>
   );
 }

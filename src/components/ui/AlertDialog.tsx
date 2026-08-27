@@ -2,6 +2,8 @@
 
 import { useEffect, useRef } from 'react';
 
+import { Button } from '@/components/ui/Button';
+
 // 알림용 모달. Figma의 "[에러 메시지]" 팝업(본문 + 확인 버튼)에 대응한다.
 //
 // 의존성을 늘리지 않으려고 네이티브 <dialog>의 showModal()을 쓴다. 포커스 트랩·Esc 닫힘·
@@ -67,15 +69,11 @@ export function AlertDialog({
           </p>
         </div>
 
-        <button
-          type="button"
-          onClick={onClose}
-          // 모달이 열리면 브라우저가 이 버튼에 자동 포커스한다(Enter=확인, Esc=닫기 동작 유지).
-          // 키보드 포커스는 focus-visible 링으로 위치를 알려 준다(마우스 클릭 시엔 안 보여 시안을 해치지 않는다).
-          className="bg-surface-button-secondary-default text-content-primary active:bg-surface-button-secondary-pressed focus-visible:ring-effect-focus-ring-primary h-12 rounded-full font-medium outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
-        >
+        {/* 모달이 열리면 브라우저가 이 버튼에 자동 포커스한다(Enter=확인, Esc=닫기 동작 유지). */}
+        {/* 키보드 포커스는 focus-visible 링으로 위치를 알려 준다(마우스 클릭 시엔 안 보여 시안을 해치지 않는다). */}
+        <Button onClick={onClose} className="h-12">
           {confirmLabel}
-        </button>
+        </Button>
       </div>
     </dialog>
   );
