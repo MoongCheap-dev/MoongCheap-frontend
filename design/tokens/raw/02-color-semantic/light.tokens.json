@@ -1242,6 +1242,25 @@
     }
   },
   "effect": {
+    "overlay": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [0, 0, 0],
+        "alpha": 0.699999988079071,
+        "hex": "#000000"
+      },
+      "$extensions": {
+        "com.figma.variableId": "VariableID:494:593",
+        "com.figma.scopes": ["ALL_SCOPES"],
+        "com.figma.aliasData": {
+          "targetVariableId": "VariableID:5e4ea150498f770ecaab7b165a9ab3d7e7117b2c/-1:-1",
+          "targetVariableName": "opacity/normal/0-A70",
+          "targetVariableSetId": "VariableCollectionId:c24e12e716d6803d12d1081d00e9d3154ecae7d3/-1:-1",
+          "targetVariableSetName": "1. color-primitives"
+        }
+      }
+    },
     "shadow": {
       "primary": {
         "$type": "color",
