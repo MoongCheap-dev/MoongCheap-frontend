@@ -20,6 +20,7 @@ import {
 
 import { ModeSelectStep } from './ModeSelectStep';
 import { PhoneVerificationStep } from './PhoneVerificationStep';
+import { ScreenColumn } from './ScreenColumn';
 import { StepField, type FieldStatus } from './StepField';
 import {
   EMPTY_AGREEMENTS,
@@ -55,13 +56,6 @@ function isSignupStep(value: string | null): value is SignupStep {
     value === 'password' ||
     value === 'complete'
   );
-}
-
-// AuthLayout의 main(flex-1 세로 컬럼)을 채우는 화면 컬럼. 자식 중 하단 CTA에 mt-auto를 주면
-// 바닥에 고정된다(Figma 7-1·10). 뷰포트 높이를 직접 계산하지 않고 부모를 flex-1로 채우므로
-// AuthLayout의 패딩이 바뀌어도 안전하다. 회원가입 스텝 화면과 완료 화면이 공유한다.
-function ScreenColumn({ children }: { children: React.ReactNode }) {
-  return <div className="flex flex-1 flex-col">{children}</div>;
 }
 
 // 값이 있으면서 유효하면(포커스 여부와 무관하게) 즉시 success.
@@ -206,11 +200,19 @@ export function SignupWizard() {
   };
 
   const handleSubmitPassword = async () => {
-    if (!passwordValid || isSubmitting) {
+    // mode는 스텝 가드상 이 단계에선 항상 채워져 있지만, 타입 좁힘·방어를 위해 확인한다.
+    if (!passwordValid || isSubmitting || mode === null) {
       return;
     }
     setIsSubmitting(true);
-    const result = await mockSignup({ email: emailValue, id: idValue, password: passwordValue });
+    // 온보딩에서 고른 mode·인증한 phone도 함께 넘긴다(백엔드 규격 확정 시 payload 그대로 매핑).
+    const result = await mockSignup({
+      email: emailValue,
+      id: idValue,
+      password: passwordValue,
+      mode,
+      phone,
+    });
     setIsSubmitting(false);
 
     if (!result.ok) {
@@ -305,7 +307,7 @@ export function SignupWizard() {
                 type="button"
                 onClick={handleCheckId}
                 disabled={idValue.length === 0 || idCheck.state === 'checking'}
-                className="bg-surface-button-tertiary-default hover:bg-surface-button-tertiary-hover active:bg-surface-button-tertiary-pressed text-content-oncolor focus-visible:ring-effect-focus-ring-primary rounded-md px-3 py-1.5 text-xs font-medium outline-none focus-visible:ring-2 focus-visible:ring-offset-1 disabled:opacity-40"
+                className="bg-surface-button-tertiary-default hover:bg-surface-button-tertiary-hover active:bg-surface-button-tertiary-pressed text-content-inverse focus-visible:ring-effect-focus-ring-primary rounded-md px-3 py-1.5 text-xs font-medium outline-none focus-visible:ring-2 focus-visible:ring-offset-1 disabled:opacity-40"
               >
                 {idCheck.state === 'checking' ? '확인 중' : '중복확인'}
               </button>
@@ -423,7 +425,7 @@ export function SignupWizard() {
             className={cn(
               'focus-visible:ring-effect-focus-ring-primary rounded-8 h-13 flex-1 font-medium outline-none focus-visible:ring-2 focus-visible:ring-offset-2',
               stepView.canProceed
-                ? 'bg-surface-button-tertiary-default hover:bg-surface-button-tertiary-hover active:bg-surface-button-tertiary-pressed text-content-oncolor'
+                ? 'bg-surface-button-tertiary-default hover:bg-surface-button-tertiary-hover active:bg-surface-button-tertiary-pressed text-content-inverse'
                 : 'bg-surface-disabled-primary text-content-disabled-primary cursor-not-allowed',
             )}
           >
@@ -460,7 +462,7 @@ function CompleteScreen() {
 
       <Link
         href="/login"
-        className="bg-surface-button-tertiary-default hover:bg-surface-button-tertiary-hover active:bg-surface-button-tertiary-pressed text-content-oncolor focus-visible:ring-effect-focus-ring-primary rounded-8 mt-auto flex h-13 items-center justify-center font-medium outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
+        className="bg-surface-button-tertiary-default hover:bg-surface-button-tertiary-hover active:bg-surface-button-tertiary-pressed text-content-inverse focus-visible:ring-effect-focus-ring-primary rounded-8 mt-auto flex h-13 items-center justify-center font-medium outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
       >
         로그인하러가기
       </Link>

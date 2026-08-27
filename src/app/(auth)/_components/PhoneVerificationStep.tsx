@@ -5,6 +5,9 @@ import { useEffect, useState } from 'react';
 import { cn } from '@/lib/cn';
 import { mockSendPhoneCode, mockVerifyPhoneCode } from '@/mocks/auth';
 
+import { ScreenColumn } from './ScreenColumn';
+import { StepFooter } from './StepFooter';
+
 // 회원가입 온보딩 휴대폰 인증 스텝(개인정보 동의 다음). Figma "1-1 휴대폰 인증"에 대응.
 // ⚠️ 전용 시안을 특정하지 못했고(파일 실시간 편집 중) SMS 발송/검증은 백엔드 규격 미확정이라,
 //   표준 플로우의 **UI + 목업**으로 구현한다: 번호 입력 → 인증번호 전송 → 코드 입력(타이머) → 확인.
@@ -21,8 +24,9 @@ const PHONE_PATTERN = /^01\d{8,9}$/;
 const FLOATING_LABEL_CLASS =
   'text-content-quarternary bg-background-default absolute -top-2 left-3 px-1 text-xs font-medium';
 
+// 검정(tertiary) 사이드 버튼. 글씨는 content-inverse(라이트=흰색/다크=검정)라 다크모드에서도 대비 유지.
 const SIDE_BUTTON_CLASS =
-  'bg-surface-button-tertiary-default hover:bg-surface-button-tertiary-hover active:bg-surface-button-tertiary-pressed text-content-oncolor focus-visible:ring-effect-focus-ring-primary rounded-8 h-14 shrink-0 px-4 text-sm font-medium whitespace-nowrap outline-none focus-visible:ring-2 focus-visible:ring-offset-1 disabled:opacity-40';
+  'bg-surface-button-tertiary-default hover:bg-surface-button-tertiary-hover active:bg-surface-button-tertiary-pressed text-content-inverse focus-visible:ring-effect-focus-ring-primary rounded-8 h-14 shrink-0 px-4 text-sm font-medium whitespace-nowrap outline-none focus-visible:ring-2 focus-visible:ring-offset-1 disabled:opacity-40';
 
 function formatTimer(totalSeconds: number): string {
   const minutes = Math.floor(totalSeconds / 60);
@@ -57,16 +61,18 @@ export function PhoneVerificationStep({
 
   const phoneValid = PHONE_PATTERN.test(phone);
 
-  // 인증번호 전송 후 남은 시간 카운트다운. 전송 상태이고 아직 인증 전일 때만 1초씩 줄인다.
+  // 인증번호 전송 후 남은 시간 카운트다운. 전송 상태이고 아직 인증 전이며 남은 시간이 있을 때만 돈다.
+  // secondsLeft를 의존성에 둬, 0에 닿으면 조기 반환으로 인터벌을 만들지 않아 유휴 tick을 멈춘다
+  // (재전송이 secondsLeft를 되돌리면 effect가 다시 돌아 인터벌을 재개한다).
   useEffect(() => {
-    if (!sent || verified) {
+    if (!sent || verified || secondsLeft <= 0) {
       return;
     }
     const id = setInterval(() => {
       setSecondsLeft((prev) => Math.max(0, prev - 1));
     }, 1000);
     return () => clearInterval(id);
-  }, [sent, verified]);
+  }, [sent, verified, secondsLeft]);
 
   const expired = sent && !verified && secondsLeft === 0;
 
@@ -126,7 +132,7 @@ export function PhoneVerificationStep({
         : { text: `남은 시간 ${formatTimer(secondsLeft)}`, tone: 'muted' as const };
 
   return (
-    <div className="flex flex-1 flex-col">
+    <ScreenColumn>
       <div className="flex flex-col gap-8">
         <div className="flex flex-col gap-2">
           <h1 className="text-xl font-bold">휴대폰 인증</h1>
@@ -149,7 +155,8 @@ export function PhoneVerificationStep({
                 autoComplete="tel"
                 placeholder="휴대폰 번호를 입력해주세요."
                 value={phone}
-                readOnly={verified}
+                // 인증 후에도 잠그지 않는다 — 잘못 인증한 번호를 고칠 수 있어야 한다.
+                // 번호를 고치면 handlePhoneChange가 직전 인증/전송을 무효화한다.
                 onChange={(event) => handlePhoneChange(event.target.value)}
                 className={cn(
                   'placeholder:text-content-quinary rounded-8 h-14 w-full border px-4 text-sm outline-none',
@@ -233,29 +240,7 @@ export function PhoneVerificationStep({
         </div>
       </div>
 
-      {/* 하단 고정 버튼 행. 스타일은 SignupWizard의 이전/다음과 동일하게 맞춘다(프리미티브 미확정). */}
-      <div className="mt-auto flex gap-3 pt-8">
-        <button
-          type="button"
-          onClick={onPrev}
-          className="border-border-button-quarternary bg-surface-button-quarternary-default hover:bg-surface-button-quarternary-hover active:bg-surface-button-quarternary-pressed text-content-primary focus-visible:ring-effect-focus-ring-primary rounded-8 h-13 flex-1 border font-medium outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
-        >
-          이전
-        </button>
-        <button
-          type="button"
-          onClick={onNext}
-          disabled={!verified}
-          className={cn(
-            'focus-visible:ring-effect-focus-ring-primary rounded-8 h-13 flex-1 font-medium outline-none focus-visible:ring-2 focus-visible:ring-offset-2',
-            verified
-              ? 'bg-surface-button-tertiary-default hover:bg-surface-button-tertiary-hover active:bg-surface-button-tertiary-pressed text-content-oncolor'
-              : 'bg-surface-disabled-primary text-content-disabled-primary cursor-not-allowed',
-          )}
-        >
-          다음
-        </button>
-      </div>
-    </div>
+      <StepFooter onPrev={onPrev} nextLabel="다음" onNext={onNext} canProceed={verified} />
+    </ScreenColumn>
   );
 }

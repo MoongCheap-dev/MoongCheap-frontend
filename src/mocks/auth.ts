@@ -1,5 +1,5 @@
 import { AUTH_ERROR_MESSAGES } from '@/constants/authMessages';
-import type { LoginValues, SignupValues } from '@/schemas/auth';
+import type { LoginValues, SignupMode, SignupValues } from '@/schemas/auth';
 import type { AuthResult, SessionUser } from '@/types/auth';
 
 /**
@@ -102,11 +102,20 @@ export async function mockVerifyPhoneCode(
  * 백엔드 미연동이라 항상 성공을 돌려 가입완료 화면으로 진입할 수 있게 한다(happy-path).
  * 실제 연동 시 이 본문만 교체하면 서버 검증 실패(필드 오류)도 `AuthResult`로 흘러온다.
  */
-export async function mockSignup(values: SignupValues): Promise<AuthResult<SessionUser>> {
+export async function mockSignup(
+  // 계정 정보(email/id/password)에 더해 온보딩에서 고른 mode·인증한 phone까지 받는다.
+  // 백엔드 규격 확정 시 이 payload를 실제 가입 API에 그대로 매핑한다.
+  values: SignupValues & { mode: SignupMode; phone: string },
+): Promise<AuthResult<SessionUser>> {
   await delay(MOCK_LATENCY_MS);
 
   return {
     ok: true,
-    data: { ...mockUser, id: values.id, email: values.email },
+    data: {
+      ...mockUser,
+      id: values.id,
+      email: values.email,
+      role: values.mode === 'seller' ? 'SELLER' : 'CONSUMER',
+    },
   };
 }

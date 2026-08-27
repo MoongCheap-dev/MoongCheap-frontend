@@ -3,12 +3,16 @@
 import { cn } from '@/lib/cn';
 import type { SignupMode } from '@/schemas/auth';
 
+import { ScreenColumn } from './ScreenColumn';
+import { StepFooter } from './StepFooter';
+
 // 회원가입 온보딩 첫 스텝: 사용 모드(구매자/판매자) 선택. Figma 08.27 "B-01 모드 선택" 시안.
 // 문구는 시안 그대로 옮긴다. 부제는 선택된 모드에 따라 달라진다(구매자/판매자 각 변형의 문구, 디자인 확정).
 // 하단 CTA는 "다음"(디자인 확정 — 뒤에 개인정보 동의·휴대폰 인증 등 단계가 더 있음).
 //
-// 카드/라디오/배지는 공통 UI 프리미티브 규약이 확정되기 전이라 네이티브 요소로 자체 완결한다
-// (로그인·회원가입 화면과 같은 방침 — CLAUDE.md). 규약이 정해지면 프리미티브로 치환한다.
+// 단일 선택은 네이티브 라디오(<input type="radio">, 같은 name)로 구현한다 — 방향키 이동·roving
+// tabindex 등 라디오 그룹 키보드 동작을 브라우저가 공짜로 준다(CLAUDE.md: 입력은 네이티브 요소).
+// 라디오 표식·카드 테두리·배지는 시안대로 커스텀 렌더하고, 네이티브 input은 sr-only로 숨긴다.
 //
 // 기본은 "미선택"이며, 미선택이면 하단 다음 버튼을 비활성화해 방어한다(시안 default 상태).
 
@@ -39,6 +43,10 @@ const SUBTITLE_BY_MODE: Record<SignupMode, string> = {
   seller: '뭉치를 사용하시려면 개인정보 동의가 필요해요!',
 };
 
+// 라디오/체크박스 카드가 공유하는 키보드 포커스 링(내부 sr-only input이 :focus-visible일 때 카드에 링).
+const FOCUS_RING_CLASS =
+  'has-[:focus-visible]:ring-effect-focus-ring-primary has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-offset-2';
+
 interface ModeSelectStepProps {
   /** 선택된 모드. null이면 미선택(기본). */
   value: SignupMode | null;
@@ -52,31 +60,34 @@ export function ModeSelectStep({ value, onChange, onPrev, onNext }: ModeSelectSt
   const subtitle = value === null ? SUBTITLE_BY_MODE.buyer : SUBTITLE_BY_MODE[value];
 
   return (
-    // AuthLayout의 main(flex-1)을 채우는 화면 컬럼. 제목·카드는 상단, 버튼 행은 mt-auto로 바닥 고정
-    // (SignupWizard·CompleteScreen과 같은 패턴).
-    <div className="flex flex-1 flex-col">
+    <ScreenColumn>
       <div className="flex flex-col gap-8">
         <div className="flex flex-col gap-2">
           <h1 className="text-xl font-bold">원하는 사용 모드를 선택해 주세요</h1>
           <p className="text-content-quarternary text-sm">{subtitle}</p>
         </div>
 
-        <div role="radiogroup" aria-label="사용 모드" className="flex flex-col gap-3">
+        <div className="flex flex-col gap-3">
           {MODE_OPTIONS.map((option) => {
             const selected = value === option.value;
             return (
-              <button
+              <label
                 key={option.value}
-                type="button"
-                role="radio"
-                aria-checked={selected}
-                onClick={() => onChange(option.value)}
                 className={cn(
-                  'focus-visible:ring-effect-focus-ring-primary rounded-12 flex flex-col gap-2 border p-4 text-left outline-none focus-visible:ring-2 focus-visible:ring-offset-2',
+                  'rounded-12 flex cursor-pointer flex-col gap-2 border p-4',
+                  FOCUS_RING_CLASS,
                   // 선택: 코랄 테두리 / 미선택: 회색 테두리
                   selected ? 'border-border-brand' : 'border-border-subtle',
                 )}
               >
+                <input
+                  type="radio"
+                  name="signup-mode"
+                  value={option.value}
+                  checked={selected}
+                  onChange={() => onChange(option.value)}
+                  className="sr-only"
+                />
                 <span className="flex items-center gap-2">
                   {/* 라디오 표식. 선택 시 코랄 링 + 코랄 점. */}
                   <span
@@ -101,35 +112,13 @@ export function ModeSelectStep({ value, onChange, onPrev, onNext }: ModeSelectSt
                     {option.description}
                   </span>
                 )}
-              </button>
+              </label>
             );
           })}
         </div>
       </div>
 
-      {/* 하단 고정 버튼 행. 스타일은 SignupWizard의 이전/다음과 동일하게 맞춘다(프리미티브 미확정). */}
-      <div className="mt-auto flex gap-3 pt-8">
-        <button
-          type="button"
-          onClick={onPrev}
-          className="border-border-button-quarternary bg-surface-button-quarternary-default hover:bg-surface-button-quarternary-hover active:bg-surface-button-quarternary-pressed text-content-primary focus-visible:ring-effect-focus-ring-primary rounded-8 h-13 flex-1 border font-medium outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
-        >
-          이전
-        </button>
-        <button
-          type="button"
-          onClick={onNext}
-          disabled={!canProceed}
-          className={cn(
-            'focus-visible:ring-effect-focus-ring-primary rounded-8 h-13 flex-1 font-medium outline-none focus-visible:ring-2 focus-visible:ring-offset-2',
-            canProceed
-              ? 'bg-surface-button-tertiary-default hover:bg-surface-button-tertiary-hover active:bg-surface-button-tertiary-pressed text-content-oncolor'
-              : 'bg-surface-disabled-primary text-content-disabled-primary cursor-not-allowed',
-          )}
-        >
-          다음
-        </button>
-      </div>
-    </div>
+      <StepFooter onPrev={onPrev} nextLabel="다음" onNext={onNext} canProceed={canProceed} />
+    </ScreenColumn>
   );
 }
