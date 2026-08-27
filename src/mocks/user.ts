@@ -14,6 +14,7 @@ const mockOverview: MyPageOverview = {
   nickname: '김뭉치',
   email: 'moongcheap@gmail.com',
   orderProgress: {
+    PAYMENT_PENDING: 2,
     PAYMENT_COMPLETED: 0,
     DELIVERY_REQUESTED: 0,
     PREPARING: 1,
