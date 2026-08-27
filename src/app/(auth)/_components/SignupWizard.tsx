@@ -19,6 +19,7 @@ import {
 } from '@/schemas/auth';
 
 import { ModeSelectStep } from './ModeSelectStep';
+import { PhoneVerificationStep } from './PhoneVerificationStep';
 import { StepField, type FieldStatus } from './StepField';
 import {
   EMPTY_AGREEMENTS,
@@ -29,12 +30,12 @@ import {
 
 // 회원가입 위저드. Figma 08.27 "A. 로그인 및 회원가입" 재설계 시안대로 모드선택→개인정보동의→
 // 이메일→아이디→비밀번호→가입완료를 한 라우트(/signup)에서 진행한다.
-// (휴대폰 인증(1-1)은 개인정보 동의 다음에 들어갈 예정이나 아직 미구현이라 건너뛴다.)
+// (휴대폰 인증은 SMS 백엔드 규격 미확정이라 UI+목업으로 구현 — PhoneVerificationStep 참고.)
 // 스텝은 URL 쿼리(?step=)로 표현해 브라우저 뒤로가기가 이전 스텝으로 가게 하고, 쿼리만 바뀌는
 // 소프트 내비라 이 컴포넌트는 마운트를 유지해 입력값·선택값이 스텝 간 보존된다.
 // useSearchParams는 클라이언트 훅이라 page.tsx에서 <Suspense>로 감싼다.
-// 모드선택·개인정보동의 화면은 입력칸 화면과 UI가 달라 각자 컴포넌트(ModeSelectStep·TermsAgreementStep)로
-// 분리하고 여기서 상태·내비게이션만 넘긴다.
+// 모드선택·개인정보동의·휴대폰인증 화면은 입력칸 화면과 UI가 달라 각자 컴포넌트로 분리하고
+// 여기서 상태·내비게이션만 넘긴다.
 //
 // 입력 상호작용(포커스 시 키보드 오버레이, 유효 시 CTA 활성)은 모바일 네이티브 키보드 동작이라
 // 웹에선 OS가 처리한다. 하단 버튼을 키보드 위로 항상 보이게 고정하는 처리는 후속(visualViewport).
@@ -42,13 +43,13 @@ import {
 // 팔레트는 시맨틱 토큰(#15) 머지에 맞춰 교체 완료. 버튼 변형은 MoongCheap_DS Button 컴포넌트
 //   기준이다: 검정 CTA(다음·중복확인·로그인하러가기)=tertiary, 이전(아웃라인)=quarternary,
 //   비활성=disabled-primary. 코랄(primary)은 브랜드 CTA용이라 이 화면엔 쓰지 않는다.
-//   ※ 로그인 화면의 CTA는 #15에서 코랄(primary)로 바뀌었다. 두 화면의 CTA 색이 갈리는 것이
-//     시안대로인지 디자인팀 확인이 필요하다(확인되면 한쪽으로 맞춘다).
+//   로그인 화면 CTA도 검정(tertiary)으로 확정(Figma 08.27) — 두 화면 CTA 색 통일.
 
 function isSignupStep(value: string | null): value is SignupStep {
   return (
     value === 'mode' ||
     value === 'terms' ||
+    value === 'phone' ||
     value === 'email' ||
     value === 'id' ||
     value === 'password' ||
@@ -109,9 +110,11 @@ export function SignupWizard() {
   const idValue = useWatch({ control, name: 'id', defaultValue: '' });
   const passwordValue = useWatch({ control, name: 'password', defaultValue: '' });
 
-  // 온보딩 앞단(모드 선택·개인정보 동의) 상태. mode=null은 미선택(기본). 스텝 간 보존한다.
+  // 온보딩 앞단(모드 선택·개인정보 동의·휴대폰 인증) 상태. mode=null은 미선택(기본). 스텝 간 보존한다.
   const [mode, setMode] = useState<SignupMode | null>(null);
   const [agreements, setAgreements] = useState<TermsAgreements>(EMPTY_AGREEMENTS);
+  const [phone, setPhone] = useState('');
+  const [phoneVerified, setPhoneVerified] = useState(false);
 
   // 아이디는 형식이 아니라 중복확인(서버/mock)으로 통과가 결정된다. 어떤 값에 대해 확인했는지
   // 함께 저장해, 확인 후 값을 고치면 통과를 무효화한다.
@@ -154,8 +157,11 @@ export function SignupWizard() {
   useEffect(() => {
     if (step === 'terms' && !modeSelected) {
       router.replace(`${pathname}?step=mode`);
-    } else if (step === 'email' && (!modeSelected || !allAgreed)) {
+    } else if (step === 'phone' && (!modeSelected || !allAgreed)) {
       router.replace(`${pathname}?step=${modeSelected ? 'terms' : 'mode'}`);
+    } else if (step === 'email' && (!modeSelected || !allAgreed || !phoneVerified)) {
+      const target = !modeSelected ? 'mode' : !allAgreed ? 'terms' : 'phone';
+      router.replace(`${pathname}?step=${target}`);
     } else if (step === 'id' && !emailValid) {
       router.replace(`${pathname}?step=email`);
     } else if (step === 'password' && (!emailValid || !idPassed)) {
@@ -163,7 +169,17 @@ export function SignupWizard() {
     } else if (step === 'complete' && !submitted) {
       router.replace(`${pathname}?step=mode`);
     }
-  }, [step, modeSelected, allAgreed, emailValid, idPassed, submitted, pathname, router]);
+  }, [
+    step,
+    modeSelected,
+    allAgreed,
+    phoneVerified,
+    emailValid,
+    idPassed,
+    submitted,
+    pathname,
+    router,
+  ]);
 
   const goTo = (next: SignupStep) => {
     router.push(`${pathname}?step=${next}`);
@@ -218,7 +234,7 @@ export function SignupWizard() {
         value={mode}
         onChange={setMode}
         onPrev={goPrev}
-        onSubmit={() => goTo('terms')}
+        onNext={() => goTo('terms')}
       />
     );
   }
@@ -228,6 +244,19 @@ export function SignupWizard() {
       <TermsAgreementStep
         value={agreements}
         onChange={setAgreements}
+        onPrev={goPrev}
+        onNext={() => goTo('phone')}
+      />
+    );
+  }
+
+  if (step === 'phone') {
+    return (
+      <PhoneVerificationStep
+        phone={phone}
+        onPhoneChange={setPhone}
+        verified={phoneVerified}
+        onVerifiedChange={setPhoneVerified}
         onPrev={goPrev}
         onNext={() => goTo('email')}
       />

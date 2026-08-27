@@ -1,0 +1,261 @@
+'use client';
+
+import { useEffect, useState } from 'react';
+
+import { cn } from '@/lib/cn';
+import { mockSendPhoneCode, mockVerifyPhoneCode } from '@/mocks/auth';
+
+// 회원가입 온보딩 휴대폰 인증 스텝(개인정보 동의 다음). Figma "1-1 휴대폰 인증"에 대응.
+// ⚠️ 전용 시안을 특정하지 못했고(파일 실시간 편집 중) SMS 발송/검증은 백엔드 규격 미확정이라,
+//   표준 플로우의 **UI + 목업**으로 구현한다: 번호 입력 → 인증번호 전송 → 코드 입력(타이머) → 확인.
+//   문구·레이아웃은 잠정이며 Figma 확정 시 이 파일만 맞추면 된다(mock은 mocks/auth.ts).
+//
+// 인증 성공 여부(verified)만 위저드로 올려 "다음" 진행을 게이팅한다. 번호를 고치면 인증이 무효화된다.
+// 입력칸/버튼은 공통 UI 프리미티브 규약 확정 전이라 네이티브 요소로 자체 완결한다(CLAUDE.md).
+
+const CODE_LENGTH = 6;
+const RESEND_SECONDS = 180; // 3:00
+/** 국내 휴대폰 번호(하이픈 없이 숫자). 형식만 확인하고 실제 유효성은 서버(목업)가 판단한다. */
+const PHONE_PATTERN = /^01\d{8,9}$/;
+
+const FLOATING_LABEL_CLASS =
+  'text-content-quarternary bg-background-default absolute -top-2 left-3 px-1 text-xs font-medium';
+
+const SIDE_BUTTON_CLASS =
+  'bg-surface-button-tertiary-default hover:bg-surface-button-tertiary-hover active:bg-surface-button-tertiary-pressed text-content-oncolor focus-visible:ring-effect-focus-ring-primary rounded-8 h-14 shrink-0 px-4 text-sm font-medium whitespace-nowrap outline-none focus-visible:ring-2 focus-visible:ring-offset-1 disabled:opacity-40';
+
+function formatTimer(totalSeconds: number): string {
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+  return `${minutes}:${String(seconds).padStart(2, '0')}`;
+}
+
+interface PhoneVerificationStepProps {
+  phone: string;
+  onPhoneChange: (phone: string) => void;
+  verified: boolean;
+  onVerifiedChange: (verified: boolean) => void;
+  onPrev: () => void;
+  onNext: () => void;
+}
+
+export function PhoneVerificationStep({
+  phone,
+  onPhoneChange,
+  verified,
+  onVerifiedChange,
+  onPrev,
+  onNext,
+}: PhoneVerificationStepProps) {
+  // 전송/코드/타이머는 이 스텝에서만 쓰는 일시 상태다(스텝을 벗어나면 초기화). 인증 통과 여부만 위저드가 보관한다.
+  const [sent, setSent] = useState(false);
+  const [code, setCode] = useState('');
+  const [secondsLeft, setSecondsLeft] = useState(0);
+  const [error, setError] = useState<string | null>(null);
+  const [sending, setSending] = useState(false);
+  const [verifying, setVerifying] = useState(false);
+
+  const phoneValid = PHONE_PATTERN.test(phone);
+
+  // 인증번호 전송 후 남은 시간 카운트다운. 전송 상태이고 아직 인증 전일 때만 1초씩 줄인다.
+  useEffect(() => {
+    if (!sent || verified) {
+      return;
+    }
+    const id = setInterval(() => {
+      setSecondsLeft((prev) => Math.max(0, prev - 1));
+    }, 1000);
+    return () => clearInterval(id);
+  }, [sent, verified]);
+
+  const expired = sent && !verified && secondsLeft === 0;
+
+  const handlePhoneChange = (raw: string) => {
+    // 숫자만 허용. 번호를 고치면 직전 전송/인증을 무효화한다.
+    const digits = raw.replace(/\D/g, '');
+    onPhoneChange(digits);
+    setSent(false);
+    setCode('');
+    setError(null);
+    if (verified) {
+      onVerifiedChange(false);
+    }
+  };
+
+  const handleSend = async () => {
+    if (!phoneValid || verified || sending) {
+      return;
+    }
+    setSending(true);
+    const result = await mockSendPhoneCode(phone);
+    setSending(false);
+    if (!result.ok) {
+      setError(result.message);
+      return;
+    }
+    setSent(true);
+    setCode('');
+    setError(null);
+    setSecondsLeft(RESEND_SECONDS);
+  };
+
+  const canVerify = sent && !verified && !expired && code.length === CODE_LENGTH && !verifying;
+
+  const handleVerify = async () => {
+    if (!canVerify) {
+      return;
+    }
+    setVerifying(true);
+    const result = await mockVerifyPhoneCode(phone, code);
+    setVerifying(false);
+    if (result.ok) {
+      onVerifiedChange(true);
+      setError(null);
+    } else {
+      setError(result.message);
+    }
+  };
+
+  // 코드 입력칸 아래 헬퍼: 인증 성공(녹색) > 에러(빨강) > 만료(빨강) > 남은 시간(회색).
+  const codeHelper = verified
+    ? { text: '인증되었습니다.', tone: 'success' as const }
+    : error !== null
+      ? { text: error, tone: 'error' as const }
+      : expired
+        ? { text: '인증 시간이 만료되었습니다. 재전송해주세요.', tone: 'error' as const }
+        : { text: `남은 시간 ${formatTimer(secondsLeft)}`, tone: 'muted' as const };
+
+  return (
+    <div className="flex flex-1 flex-col">
+      <div className="flex flex-col gap-8">
+        <div className="flex flex-col gap-2">
+          <h1 className="text-xl font-bold">휴대폰 인증</h1>
+          <p className="text-content-quarternary text-sm">
+            본인 확인을 위해 휴대폰 번호를 인증해주세요.
+          </p>
+        </div>
+
+        <div className="flex flex-col gap-4">
+          {/* 휴대폰 번호 + 전송 */}
+          <div className="flex gap-2">
+            <div className="relative flex-1">
+              <label htmlFor="signup-phone" className={FLOATING_LABEL_CLASS}>
+                휴대폰 번호
+              </label>
+              <input
+                id="signup-phone"
+                type="tel"
+                inputMode="numeric"
+                autoComplete="tel"
+                placeholder="휴대폰 번호를 입력해주세요."
+                value={phone}
+                readOnly={verified}
+                onChange={(event) => handlePhoneChange(event.target.value)}
+                className={cn(
+                  'placeholder:text-content-quinary rounded-8 h-14 w-full border px-4 text-sm outline-none',
+                  verified
+                    ? 'border-border-success'
+                    : phone.length > 0
+                      ? 'border-border-primary'
+                      : 'border-border-subtle focus:border-border-primary',
+                )}
+              />
+            </div>
+            <button
+              type="button"
+              onClick={handleSend}
+              disabled={!phoneValid || verified || sending}
+              className={SIDE_BUTTON_CLASS}
+            >
+              {sending ? '전송 중' : sent ? '재전송' : '인증번호 전송'}
+            </button>
+          </div>
+
+          {/* 인증번호 입력(전송 후 노출) + 확인 */}
+          {sent && (
+            <div className="flex flex-col gap-2">
+              <div className="flex gap-2">
+                <div className="relative flex-1">
+                  <label htmlFor="signup-phone-code" className={FLOATING_LABEL_CLASS}>
+                    인증번호
+                  </label>
+                  <input
+                    id="signup-phone-code"
+                    type="text"
+                    inputMode="numeric"
+                    autoComplete="one-time-code"
+                    placeholder="인증번호 6자리"
+                    value={code}
+                    readOnly={verified}
+                    aria-invalid={codeHelper.tone === 'error'}
+                    aria-describedby="signup-phone-code-helper"
+                    onChange={(event) => {
+                      setCode(event.target.value.replace(/\D/g, '').slice(0, CODE_LENGTH));
+                      setError(null);
+                    }}
+                    className={cn(
+                      'placeholder:text-content-quinary rounded-8 h-14 w-full border px-4 text-sm outline-none',
+                      verified
+                        ? 'border-border-success'
+                        : codeHelper.tone === 'error'
+                          ? 'border-border-error'
+                          : code.length > 0
+                            ? 'border-border-primary'
+                            : 'border-border-subtle focus:border-border-primary',
+                    )}
+                  />
+                </div>
+                <button
+                  type="button"
+                  onClick={handleVerify}
+                  disabled={!canVerify}
+                  className={SIDE_BUTTON_CLASS}
+                >
+                  {verifying ? '확인 중' : '확인'}
+                </button>
+              </div>
+              <p
+                id="signup-phone-code-helper"
+                role={codeHelper.tone === 'error' ? 'alert' : undefined}
+                className={cn(
+                  'text-xs',
+                  codeHelper.tone === 'success'
+                    ? 'text-content-success'
+                    : codeHelper.tone === 'error'
+                      ? 'text-content-error'
+                      : 'text-content-quarternary',
+                )}
+              >
+                {codeHelper.text}
+              </p>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* 하단 고정 버튼 행. 스타일은 SignupWizard의 이전/다음과 동일하게 맞춘다(프리미티브 미확정). */}
+      <div className="mt-auto flex gap-3 pt-8">
+        <button
+          type="button"
+          onClick={onPrev}
+          className="border-border-button-quarternary bg-surface-button-quarternary-default hover:bg-surface-button-quarternary-hover active:bg-surface-button-quarternary-pressed text-content-primary focus-visible:ring-effect-focus-ring-primary rounded-8 h-13 flex-1 border font-medium outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
+        >
+          이전
+        </button>
+        <button
+          type="button"
+          onClick={onNext}
+          disabled={!verified}
+          className={cn(
+            'focus-visible:ring-effect-focus-ring-primary rounded-8 h-13 flex-1 font-medium outline-none focus-visible:ring-2 focus-visible:ring-offset-2',
+            verified
+              ? 'bg-surface-button-tertiary-default hover:bg-surface-button-tertiary-hover active:bg-surface-button-tertiary-pressed text-content-oncolor'
+              : 'bg-surface-disabled-primary text-content-disabled-primary cursor-not-allowed',
+          )}
+        >
+          다음
+        </button>
+      </div>
+    </div>
+  );
+}

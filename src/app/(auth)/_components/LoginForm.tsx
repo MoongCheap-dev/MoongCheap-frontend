@@ -210,10 +210,11 @@ export function LoginForm() {
           )}
         </div>
 
+        {/* 로그인 CTA는 검정(tertiary) — Figma 08.27 확정(회원가입 CTA와 통일). */}
         <button
           type="submit"
           disabled={isSubmitting}
-          className="bg-surface-button-primary-default active:bg-surface-button-primary-pressed rounded-8 mt-2 h-13 font-medium text-white disabled:opacity-50"
+          className="bg-surface-button-tertiary-default hover:bg-surface-button-tertiary-hover active:bg-surface-button-tertiary-pressed text-content-oncolor rounded-8 mt-2 h-13 font-medium disabled:opacity-50"
         >
           {isSubmitting ? '로그인 중' : '로그인'}
         </button>

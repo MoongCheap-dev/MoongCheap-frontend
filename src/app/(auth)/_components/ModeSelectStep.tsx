@@ -4,15 +4,13 @@ import { cn } from '@/lib/cn';
 import type { SignupMode } from '@/schemas/auth';
 
 // 회원가입 온보딩 첫 스텝: 사용 모드(구매자/판매자) 선택. Figma 08.27 "B-01 모드 선택" 시안.
-// 문구는 시안 그대로 옮긴다.
-//   ※판매자 변형의 부제가 "뭉치를 사용하시려면 개인정보 동의가 필요해요!"로 달라(구매자 변형과 불일치)
-//     디자인팀에 확인 중이다. 확인 전까지는 공통 부제로 아래 문구를 쓴다.
-//   ※하단 CTA 라벨 "가입하기"도 디자인 확인 중이라 바뀔 수 있다(다음 스텝이 더 있어 "다음"이 자연스러움).
+// 문구는 시안 그대로 옮긴다. 부제는 선택된 모드에 따라 달라진다(구매자/판매자 각 변형의 문구, 디자인 확정).
+// 하단 CTA는 "다음"(디자인 확정 — 뒤에 개인정보 동의·휴대폰 인증 등 단계가 더 있음).
 //
 // 카드/라디오/배지는 공통 UI 프리미티브 규약이 확정되기 전이라 네이티브 요소로 자체 완결한다
 // (로그인·회원가입 화면과 같은 방침 — CLAUDE.md). 규약이 정해지면 프리미티브로 치환한다.
 //
-// 기본은 "미선택"이며, 미선택이면 하단 가입하기 버튼을 비활성화해 방어한다(시안 default 상태).
+// 기본은 "미선택"이며, 미선택이면 하단 다음 버튼을 비활성화해 방어한다(시안 default 상태).
 
 interface ModeOption {
   value: SignupMode;
@@ -34,16 +32,24 @@ const MODE_OPTIONS: ModeOption[] = [
   },
 ];
 
+// 부제는 선택된 모드에 따라 달라진다(Figma 각 변형 문구 그대로).
+// 미선택(기본)은 구매자 변형과 같은 안내문으로 둔다(선택을 유도하는 공통 문구).
+const SUBTITLE_BY_MODE: Record<SignupMode, string> = {
+  buyer: '구매자, 판매자 중 나에게 맞는 모드를 선택해주세요.',
+  seller: '뭉치를 사용하시려면 개인정보 동의가 필요해요!',
+};
+
 interface ModeSelectStepProps {
   /** 선택된 모드. null이면 미선택(기본). */
   value: SignupMode | null;
   onChange: (mode: SignupMode) => void;
   onPrev: () => void;
-  onSubmit: () => void;
+  onNext: () => void;
 }
 
-export function ModeSelectStep({ value, onChange, onPrev, onSubmit }: ModeSelectStepProps) {
+export function ModeSelectStep({ value, onChange, onPrev, onNext }: ModeSelectStepProps) {
   const canProceed = value !== null;
+  const subtitle = value === null ? SUBTITLE_BY_MODE.buyer : SUBTITLE_BY_MODE[value];
 
   return (
     // AuthLayout의 main(flex-1)을 채우는 화면 컬럼. 제목·카드는 상단, 버튼 행은 mt-auto로 바닥 고정
@@ -52,9 +58,7 @@ export function ModeSelectStep({ value, onChange, onPrev, onSubmit }: ModeSelect
       <div className="flex flex-col gap-8">
         <div className="flex flex-col gap-2">
           <h1 className="text-xl font-bold">원하는 사용 모드를 선택해 주세요</h1>
-          <p className="text-content-quarternary text-sm">
-            구매자, 판매자 중 나에게 맞는 모드를 선택해주세요.
-          </p>
+          <p className="text-content-quarternary text-sm">{subtitle}</p>
         </div>
 
         <div role="radiogroup" aria-label="사용 모드" className="flex flex-col gap-3">
@@ -114,7 +118,7 @@ export function ModeSelectStep({ value, onChange, onPrev, onSubmit }: ModeSelect
         </button>
         <button
           type="button"
-          onClick={onSubmit}
+          onClick={onNext}
           disabled={!canProceed}
           className={cn(
             'focus-visible:ring-effect-focus-ring-primary rounded-8 h-13 flex-1 font-medium outline-none focus-visible:ring-2 focus-visible:ring-offset-2',
@@ -123,7 +127,7 @@ export function ModeSelectStep({ value, onChange, onPrev, onSubmit }: ModeSelect
               : 'bg-surface-disabled-primary text-content-disabled-primary cursor-not-allowed',
           )}
         >
-          가입하기
+          다음
         </button>
       </div>
     </div>
