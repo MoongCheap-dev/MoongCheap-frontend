@@ -1,7 +1,6 @@
-import { ChevronLeft } from 'lucide-react';
 import type { Metadata } from 'next';
-import Link from 'next/link';
 
+import { AppBar } from '@/components/layout/AppBar';
 import { LinkButton } from '@/features/user/components/LinkButton';
 import { ProfileCard } from '@/features/user/components/ProfileCard';
 import { SettingsList } from '@/features/user/components/SettingsList';
@@ -15,23 +14,13 @@ export const metadata: Metadata = {
 
 // B-24 프로필 설정. 마이페이지의 프로필 카드 편집 아이콘으로 진입한다. `User-02` `User-03`.
 //
-// 상단 앱바는 아직 이 화면에서만 쓰여 인라인으로 둔다. 두 번째 화면에 같은 앱바가 나오면
-// 그때 컴포넌트로 올린다.
+// 상단 앱바는 B-25 알림 설정이 같은 모양을 쓰게 되어 `components/layout/AppBar`로 올렸다.
 export default async function ProfileEditPage() {
   const overview = await mockGetMyPageOverview();
 
   return (
     <main className="flex w-full flex-col pb-6">
-      <header className="border-divider-default flex h-13 w-full items-center border-b">
-        <Link
-          aria-label="뒤로 가기"
-          className="text-content-primary flex h-13 w-10 shrink-0 items-center px-2"
-          href="/mypage"
-        >
-          <ChevronLeft aria-hidden className="size-6" />
-        </Link>
-        <h1 className="text-title-17 text-content-primary min-w-0 flex-1">프로필 설정</h1>
-      </header>
+      <AppBar backHref="/mypage" title="프로필 설정" />
 
       <div className="flex w-full flex-col gap-6 p-4">
         <div className="bg-background-default rounded-12 flex w-full flex-col">
