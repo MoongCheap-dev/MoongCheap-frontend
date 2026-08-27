@@ -45,6 +45,7 @@
   --divider-default: #e6e6e6;
   --effect-focus-ring-primary: #ff5f6633;
   --effect-focus-ring-secondary: #a5a5a533;
+  --effect-overlay: #000000b2;
   --effect-shadow-primary: #00000033;
   --surface-brand: #ff5f66;
   --surface-button-primary-default: #ff5f66;
@@ -83,7 +84,7 @@
     --border-button-secondary: #ff5f6633;
     --border-button-tertiary: #767676;
     --border-disabled-primary: #434343;
-    --border-disabled-secondary: #303030;
+    --border-disabled-secondary: #575757;
     --border-error: #ff6486;
     --border-inverse: #1a1a1a;
     --border-oncolor: #ffffff;
@@ -112,6 +113,7 @@
     --divider-default: #434343;
     --effect-focus-ring-primary: #ff5f6633;
     --effect-focus-ring-secondary: #a5a5a533;
+    --effect-overlay: #000000b2;
     --effect-shadow-primary: #00000033;
     --surface-brand: #ff7378;
     --surface-button-primary-default: #ff7378;
@@ -151,7 +153,7 @@
   --border-button-secondary: #ff5f6633;
   --border-button-tertiary: #767676;
   --border-disabled-primary: #434343;
-  --border-disabled-secondary: #303030;
+  --border-disabled-secondary: #575757;
   --border-error: #ff6486;
   --border-inverse: #1a1a1a;
   --border-oncolor: #ffffff;
@@ -180,6 +182,7 @@
   --divider-default: #434343;
   --effect-focus-ring-primary: #ff5f6633;
   --effect-focus-ring-secondary: #a5a5a533;
+  --effect-overlay: #000000b2;
   --effect-shadow-primary: #00000033;
   --surface-brand: #ff7378;
   --surface-button-primary-default: #ff7378;
@@ -246,6 +249,7 @@
   --color-divider-default: var(--divider-default);
   --color-effect-focus-ring-primary: var(--effect-focus-ring-primary);
   --color-effect-focus-ring-secondary: var(--effect-focus-ring-secondary);
+  --color-effect-overlay: var(--effect-overlay);
   --color-effect-shadow-primary: var(--effect-shadow-primary);
   --color-surface-brand: var(--surface-brand);
   --color-surface-button-primary-default: var(--surface-button-primary-default);
