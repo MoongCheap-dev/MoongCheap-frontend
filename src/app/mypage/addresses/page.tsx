@@ -28,22 +28,25 @@ function PlusIcon() {
 // 빈 목록에도 안내 문구가 없다(시안). 추가 버튼만 남으므로 EmptyState를 쓰지 않는다.
 export default async function AddressListPage() {
   const addresses = await mockGetAddresses();
+  const isEmpty = addresses.length === 0;
 
   return (
     <main className="bg-background-default flex w-full flex-1 flex-col pb-6">
       <AppBar backHref="/mypage" title="배송지 목록" />
 
       <div className="flex w-full flex-col gap-5 px-4 pt-5">
-        {/* 시안의 빈 목록 프레임은 '신규 배송지 추가', 카드가 있는 프레임은 '새 배송지 추가'로
-            문구가 다르다. 같은 버튼이므로 하나로 통일했다. 어느 쪽이 정본인지 확인 필요. */}
+        {/* 시안이 상태별로 문구가 다르다. 빈 목록(453:25757)은 '신규 배송지 추가',
+            카드가 있는 목록(453:25765)은 '새 배송지 추가'다. 같은 버튼이라 통일하고 싶지만
+            문구는 디자인 결정이라 시안 그대로 둔다. 의도인지 확인 후 한쪽으로 정리한다. */}
         <Link
           className="bg-surface-secondary text-label-14 text-content-tertiary rounded-8 active:bg-surface-button-quarternary-pressed flex w-full items-center justify-center gap-1 py-3"
           href="/mypage/addresses/new"
         >
-          <PlusIcon />새 배송지 추가
+          <PlusIcon />
+          {isEmpty ? '신규 배송지 추가' : '새 배송지 추가'}
         </Link>
 
-        {addresses.length > 0 && (
+        {!isEmpty && (
           <ul className="flex w-full flex-col gap-5">
             {addresses.map((address) => (
               <AddressCard
