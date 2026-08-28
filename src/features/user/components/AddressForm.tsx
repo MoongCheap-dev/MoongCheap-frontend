@@ -35,11 +35,16 @@ const EMPTY_VALUES: AddressFormValues = {
 };
 
 interface AddressFormProps {
+  /**
+   * 저장을 마친 뒤 이동할 경로. 배송지 입력은 마이페이지 외에 주문 플로우에서도 쓰이므로
+   * 폼이 목적지를 직접 들고 있으면 안 된다(`features`는 라우트 문자열을 갖지 않는다).
+   */
+  successHref: string;
   /** 수정 화면에서 기존 값을 채워 넣는다. 없으면 등록. */
   defaultValues?: AddressFormValues;
 }
 
-export function AddressForm({ defaultValues = EMPTY_VALUES }: AddressFormProps) {
+export function AddressForm({ successHref, defaultValues = EMPTY_VALUES }: AddressFormProps) {
   const router = useRouter();
   const { open } = useDaumPostcode();
 
@@ -71,8 +76,8 @@ export function AddressForm({ defaultValues = EMPTY_VALUES }: AddressFormProps) 
   }
 
   function onSubmit() {
-    // TODO: 배송지 등록·수정 API 연결. 규격 확정 전이라 목록으로만 되돌아간다.
-    router.push('/mypage/addresses');
+    // TODO: 배송지 등록·수정 API 연결. 규격 확정 전이라 이동만 한다.
+    router.push(successHref);
   }
 
   return (
@@ -123,6 +128,7 @@ export function AddressForm({ defaultValues = EMPTY_VALUES }: AddressFormProps) 
               <input
                 className={cn(ADDRESS_INPUT_CLASS, noEntranceCode && 'bg-surface-disabled-primary')}
                 disabled={noEntranceCode}
+                aria-label="공동현관 출입번호"
                 placeholder="공동현관번호를 입력해주세요. (예 : #1234)"
                 {...register('entranceCode')}
               />
@@ -137,6 +143,7 @@ export function AddressForm({ defaultValues = EMPTY_VALUES }: AddressFormProps) 
           <AddressField label="배송지명">
             <input
               className={ADDRESS_INPUT_CLASS}
+              aria-label="배송지명"
               placeholder="배송지명을 입력해주세요. (예 : 집, 회사)"
               {...register('name')}
             />
@@ -145,6 +152,7 @@ export function AddressForm({ defaultValues = EMPTY_VALUES }: AddressFormProps) 
           <AddressField label="받는 분">
             <input
               className={ADDRESS_INPUT_CLASS}
+              aria-label="받는 분"
               placeholder="받는 분을 입력해주세요."
               {...register('recipient')}
             />
@@ -154,6 +162,7 @@ export function AddressForm({ defaultValues = EMPTY_VALUES }: AddressFormProps) 
             <input
               className={ADDRESS_INPUT_CLASS}
               inputMode="numeric"
+              aria-label="휴대폰 번호"
               placeholder="-없이 휴대폰 번호를 입력해주세요."
               {...register('phone')}
             />

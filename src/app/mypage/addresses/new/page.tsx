@@ -15,7 +15,7 @@ export default function AddressCreatePage() {
   return (
     <main className="bg-background-default flex w-full flex-1 flex-col">
       <AppBar backHref="/mypage/addresses" title="배송지 등록" />
-      <AddressForm />
+      <AddressForm successHref="/mypage/addresses" />
     </main>
   );
 }

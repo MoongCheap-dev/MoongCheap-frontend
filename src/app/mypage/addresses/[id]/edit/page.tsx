@@ -28,6 +28,7 @@ export default async function AddressEditPage({ params }: { params: Promise<{ id
     <main className="bg-background-default flex w-full flex-1 flex-col">
       <AppBar backHref="/mypage/addresses" title="배송지 수정" />
       <AddressForm
+        successHref="/mypage/addresses"
         defaultValues={{
           postalCode: address.postalCode,
           address: address.address,

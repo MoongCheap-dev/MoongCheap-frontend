@@ -82,9 +82,18 @@ export function useDaumPostcode() {
       if (window.daum === undefined) {
         throw new Error('우편번호 서비스를 불러오지 못했습니다');
       }
-      new window.daum.Postcode({ oncomplete: onComplete }).open();
-    } finally {
+      // open()은 팝업이 닫히기 전에 반환한다. 여기서 바로 잠금을 풀면 연타로 팝업이 두 개
+      // 뜨고 나중 것의 결과만 남는다. 닫힘(onclose)까지 잠근다 - 검색 완료·강제 종료 모두 온다.
+      new window.daum.Postcode({
+        oncomplete: onComplete,
+        onclose: () => {
+          opening.current = false;
+        },
+      }).open();
+    } catch (error) {
+      // 스크립트 로드 실패 등 팝업이 뜨지 못한 경우. onclose가 오지 않으므로 여기서 푼다.
       opening.current = false;
+      throw error;
     }
   }, []);
 
