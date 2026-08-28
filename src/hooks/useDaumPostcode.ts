@@ -15,7 +15,7 @@ import type { DaumPostcodeResult } from '@/types/daum-postcode';
 // ⚠️ CSP를 적용할 때 이 도메인을 script-src에 넣어야 한다. 토스 SDK와 같은 부류다.
 //    먼저 조이면 우편번호 검색이 조용히 막힌다.
 
-const SCRIPT_SRC = '//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js';
+const SCRIPT_SRC = 'https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js';
 const SCRIPT_ID = 'daum-postcode-script';
 
 function loadScript(): Promise<void> {

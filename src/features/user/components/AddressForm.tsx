@@ -84,12 +84,15 @@ export function AddressForm({ defaultValues = EMPTY_VALUES }: AddressFormProps) 
               {/* 검색 결과만 채우는 칸이라 readOnly. disabled로 두면 제출값에서 빠진다. */}
               <input
                 aria-label="우편번호"
-                className={cn(ADDRESS_READONLY_CLASS, 'w-[90px]')}
+                className={cn(ADDRESS_READONLY_CLASS, 'w-22.5')}
                 readOnly
                 {...register('postalCode')}
               />
+              {/* 시안은 86x40(w-21.5) 안에 '우편번호 찾기'가 한 줄로 꽉 찬다. Figma가 붙여 둔
+                  좌우 여백 12px은 컴포넌트 기본값이고 텍스트가 그걸 밀고 나간 상태라, 그대로
+                  옮기면 글자 자리가 62px밖에 안 남아 두 줄로 깨진다. */}
               <button
-                className="bg-surface-button-tertiary-default text-content-inverse text-label-13 rounded-8 active:bg-surface-button-tertiary-pressed focus-visible:ring-effect-focus-ring-primary flex h-10 w-[86px] shrink-0 items-center justify-center px-3 outline-none focus-visible:ring-2"
+                className="bg-surface-button-tertiary-default text-content-inverse text-label-13 rounded-8 active:bg-surface-button-tertiary-pressed focus-visible:ring-effect-focus-ring-primary flex h-10 w-21.5 shrink-0 items-center justify-center px-1 whitespace-nowrap outline-none focus-visible:ring-2"
                 onClick={handleFindPostalCode}
                 type="button"
               >
