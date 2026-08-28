@@ -3,8 +3,9 @@ name: Security
 on:
   push:
     branches: [develop, main]
+  # base 브랜치를 가리지 않는다. `pull_request.branches`는 base 필터라
+  # 스택 PR(base가 다른 작업 브랜치)에서 워크플로가 아예 트리거되지 않았다.
   pull_request:
-    branches: [develop, main]
   schedule:
     - cron: '0 0 * * 1'
   workflow_dispatch:
