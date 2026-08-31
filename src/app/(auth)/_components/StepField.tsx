@@ -124,7 +124,7 @@ export function StepField({
           // useWatch가 초기 렌더에 undefined를 줄 수 있어 ''로 보정한다(안 하면 uncontrolled→controlled 경고).
           value={value ?? ''}
           className={cn(
-            'placeholder:text-content-quinary rounded-8 h-14 w-full border px-4 text-sm outline-none',
+            'placeholder:text-content-quinary rounded-8 text-body-14 h-14 w-full border px-4 outline-none',
             // 오른쪽 컨트롤 폭만큼 패딩을 벌려 텍스트가 겹치지 않게 한다.
             rightSlot !== undefined ? 'pr-28' : 'pr-11',
             // 빈 값: 회색(포커스 시 검정) / 값 있음: 검정 / success: 녹색 / error: 빨강

@@ -168,14 +168,14 @@ export function PhoneVerificationStep({
                 maxLength={PHONE_MAX_LENGTH}
                 placeholder="휴대폰 번호를 입력해주세요."
                 value={phone}
-                // 발송 요청이 진행 중일 때만 잠근다: 전송 중 번호를 A→B로 바꾸면 A로 보낸 응답이
-                // 도착해 sent가 켜지고, mock이 아무 번호나 통과시켜 소유하지 않은 B가 인증될 수 있다.
-                // 전송이 끝나면(sent) 다시 풀어, 잘못 인증한 번호를 고칠 수 있게 한다
+                // 발송·확인 요청이 진행 중일 때 잠근다: 요청 중 번호를 A→B로 바꾸면 A로 보낸 응답이
+                // 뒤늦게 도착해 sent/verified가 켜지고, mock이 아무 번호나 통과시켜 소유하지 않은
+                // B가 인증될 수 있다. 요청이 끝나면 다시 풀어, 잘못 인증한 번호를 고칠 수 있게 한다
                 // (번호를 고치면 handlePhoneChange가 직전 인증/전송을 무효화한다).
-                disabled={sending}
+                disabled={sending || verifying}
                 onChange={(event) => handlePhoneChange(event.target.value)}
                 className={cn(
-                  'placeholder:text-content-quinary rounded-8 h-14 w-full border px-4 text-sm outline-none disabled:opacity-60',
+                  'placeholder:text-content-quinary rounded-8 text-body-14 h-14 w-full border px-4 outline-none disabled:opacity-60',
                   verified
                     ? 'border-border-success'
                     : phone.length > 0
@@ -186,7 +186,7 @@ export function PhoneVerificationStep({
             </div>
             <button
               type="submit"
-              disabled={!phoneValid || verified || sending}
+              disabled={!phoneValid || verified || sending || verifying}
               className={SIDE_BUTTON_CLASS}
             >
               {sending ? '전송 중' : sent ? '재전송' : '인증번호 전송'}
@@ -224,7 +224,7 @@ export function PhoneVerificationStep({
                       setError(null);
                     }}
                     className={cn(
-                      'placeholder:text-content-quinary rounded-8 h-14 w-full border px-4 text-sm outline-none',
+                      'placeholder:text-content-quinary rounded-8 text-body-14 h-14 w-full border px-4 outline-none',
                       verified
                         ? 'border-border-success'
                         : codeHelper.tone === 'error'
