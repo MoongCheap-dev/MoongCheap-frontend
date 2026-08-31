@@ -71,7 +71,10 @@ export function AlertDialog({
 
         {/* 모달이 열리면 브라우저가 이 버튼에 자동 포커스한다(Enter=확인, Esc=닫기 동작 유지). */}
         {/* 키보드 포커스는 focus-visible 링으로 위치를 알려 준다(마우스 클릭 시엔 안 보여 시안을 해치지 않는다). */}
-        <Button onClick={onClose} className="h-12">
+        {/* 굵기를 여기서 지정한다. Button base는 글자 굵기를 깔지 않는다(타이포 토큰의 weight를
+            덮어버리기 때문). 500은 이 버튼의 기존 렌더값을 그대로 유지한 것이고, 시안이 확정되면
+            `text-button-16`(16px/600) 같은 타이포 토큰으로 교체한다. */}
+        <Button onClick={onClose} className="h-12 font-medium">
           {confirmLabel}
         </Button>
       </div>
