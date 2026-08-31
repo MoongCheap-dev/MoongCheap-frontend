@@ -150,18 +150,22 @@ const emitModed = (table, indent = '  ') =>
 
 write('/* ── 1층: 모드가 갈리는 값. 이름을 2층과 분리해야 다크모드가 동작합니다 ── */');
 write(':root {');
+write('  /* 네이티브 요소(폼 컨트롤·스크롤바·자동완성 등)도 테마를 따르게 한다 */');
+write('  color-scheme: light;');
 write(emitModed(modedLight));
 write('}');
 write();
 write('/* 기기 설정이 다크일 때. data-theme으로 라이트를 명시한 경우는 제외합니다. */');
 write('@media (prefers-color-scheme: dark) {');
 write("  :root:not([data-theme='light']) {");
+write('    color-scheme: dark;');
 write(emitModed(modedDark, '    '));
 write('  }');
 write('}');
 write();
 write('/* 사용자가 직접 다크를 고른 경우. 기기 설정보다 우선합니다. */');
 write(".dark,\n[data-theme='dark'] {");
+write('  color-scheme: dark;');
 write(emitModed(modedDark));
 write('}');
 write();

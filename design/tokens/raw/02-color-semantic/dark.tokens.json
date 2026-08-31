@@ -1129,9 +1129,9 @@
         "$type": "color",
         "$value": {
           "colorSpace": "srgb",
-          "components": [0.1882352977991104, 0.1882352977991104, 0.1882352977991104],
+          "components": [0.34117648005485535, 0.34117648005485535, 0.34117648005485535],
           "alpha": 1,
-          "hex": "#303030"
+          "hex": "#575757"
         },
         "$extensions": {
           "com.figma.variableId": "VariableID:203:538",
@@ -1140,8 +1140,8 @@
             "WEB": "var(--border-disabled)"
           },
           "com.figma.aliasData": {
-            "targetVariableId": "VariableID:e5e6fdc50e26e196a8456b81df1185171308c5b1/-1:-1",
-            "targetVariableName": "coolgray/800",
+            "targetVariableId": "VariableID:80bd5b887d68bfb33eabf064c1c84a581a534f45/-1:-1",
+            "targetVariableName": "coolgray/600",
             "targetVariableSetId": "VariableCollectionId:c24e12e716d6803d12d1081d00e9d3154ecae7d3/-1:-1",
             "targetVariableSetName": "1. color-primitives"
           }
@@ -1242,6 +1242,25 @@
     }
   },
   "effect": {
+    "overlay": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [0, 0, 0],
+        "alpha": 0.699999988079071,
+        "hex": "#000000"
+      },
+      "$extensions": {
+        "com.figma.variableId": "VariableID:494:593",
+        "com.figma.scopes": ["ALL_SCOPES"],
+        "com.figma.aliasData": {
+          "targetVariableId": "VariableID:5e4ea150498f770ecaab7b165a9ab3d7e7117b2c/-1:-1",
+          "targetVariableName": "opacity/normal/0-A70",
+          "targetVariableSetId": "VariableCollectionId:c24e12e716d6803d12d1081d00e9d3154ecae7d3/-1:-1",
+          "targetVariableSetName": "1. color-primitives"
+        }
+      }
+    },
     "shadow": {
       "primary": {
         "$type": "color",

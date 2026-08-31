@@ -1,0 +1,84 @@
+# CodeRabbit 설정. 스키마: https://coderabbit.ai/integrations/schema.v2.json
+#
+# 목적은 리뷰를 더 많이 받는 게 아니라 **우리 컨벤션에 없는 지적을 줄이는 것**이다.
+# 기본값 그대로 두면 생성 파일·컨벤션과 어긋나는 제안이 섞여 사람 리뷰가 묻힌다.
+
+language: ko-KR
+early_access: false
+
+reviews:
+  profile: chill # assertive는 스타일 지적이 많다. 팀 규모상 신호 대비 잡음이 크다.
+  request_changes_workflow: false # 승인 게이트는 사람이 쥔다(팀원 1명 승인 + CI).
+  high_level_summary: true
+  poem: false
+  review_status: true
+  auto_review:
+    enabled: true
+    drafts: false
+    base_branches:
+      - develop
+      - main
+      # 스택 PR. base가 develop이 아니면 리뷰가 스킵돼(PR #28에서 확인) 패턴으로 열어 둔다.
+      - 'feat/.*'
+      - 'fix/.*'
+      - 'refactor/.*'
+
+  # 리뷰에서 제외. 생성물·락파일은 지적해 봐야 고칠 수 없다.
+  path_filters:
+    - '!package-lock.json'
+    - '!src/app/globals.css' # design/tokens/build-tokens.mjs가 생성한다
+    - '!design/tokens/raw/**' # 디자인팀이 준 Figma Variables 원본
+    - '!**/*.lock'
+
+  path_instructions:
+    - path: 'src/**/*.{ts,tsx}'
+      instructions: |
+        - `export function`을 쓴다. default export는 App Router 예약 파일(page/layout/route 등)과 설정 파일에서만 허용된다.
+        - `any` 금지. 인라인 style 속성 금지(Tailwind 유틸리티만 쓴다).
+        - 색·간격·타이포는 반드시 시맨틱 토큰 유틸리티를 쓴다(`text-content-primary`, `bg-surface-secondary`, `text-body-15`, `rounded-8` 등).
+          `text-white`, `bg-gray-100`, `text-sm`, `rounded-md` 같은 기본 Tailwind 값이 보이면 지적한다.
+        - 조건부 클래스는 `@/lib/cn`(clsx + tailwind-merge)을 쓴다.
+        - 주석은 "무엇"이 아니라 **왜 이렇게 했는지**를 적는다. 코드를 그대로 옮겨 적은 주석은 지적한다.
+
+    - path: 'src/components/ui/**'
+      instructions: |
+        - 도메인 지식이 없어야 한다. 특정 화면·기능 이름이 등장하면 지적한다.
+        - 상태를 갖지 않는 제어 컴포넌트를 기본으로 한다(값과 onChange는 호출부가 갖는다).
+        - 기본 클래스에 `font-medium` 같은 font-weight를 박으면, 호출부가 넘기는 타이포 토큰(`text-button-14` 등)의
+          weight가 무시된다. Tailwind v4의 `--tw-font-weight` 때문이다. 기본 클래스에 weight를 박는 코드는 지적한다.
+
+    - path: 'src/features/**'
+      instructions: |
+        - 도메인 컴포넌트다. `src/components/ui`를 가져다 쓸 수 있지만 반대 방향 import는 금지다.
+        - 라우트 문자열을 컴포넌트가 직접 들고 있으면 지적한다. 경로는 props로 받는다.
+
+    - path: 'src/app/**'
+      instructions: |
+        - 페이지는 조립만 한다. 도메인 로직·복잡한 마크업이 페이지에 있으면 지적한다.
+        - 상태가 필요한 조각만 클라이언트 컴포넌트로 자른다. 페이지 전체에 'use client'를 다는 코드는 지적한다.
+        - `PageProps`·`LayoutProps` 같은 생성 타입은 쓰지 않는다. `next build` 전에는 존재하지 않아 typecheck에서 깨진다.
+          params·children을 직접 타이핑해야 한다.
+
+    - path: 'src/types/**'
+      instructions: |
+        백엔드 응답을 그대로 옮긴 타입이 아니라 **화면이 필요로 하는 모양**이어야 한다.
+        API 규격이 아직 미확정이므로, 추측으로 만든 응답 래퍼·에러 코드 타입이 보이면 지적한다.
+
+    - path: '.github/workflows/**'
+      instructions: |
+        서드파티 액션은 태그가 아니라 커밋 SHA로 고정한다(공급망 공격 대비).
+        `pull_request_target`과 시크릿을 함께 쓰는 코드는 반드시 지적한다.
+
+  tools:
+    # ESLint·Prettier·tsc는 CI(ci.yml)와 husky pre-commit이 이미 돌린다. 중복 지적을 막는다.
+    eslint:
+      enabled: false
+    biome:
+      enabled: false
+    gitleaks:
+      enabled: true # 시크릿 유출은 CI가 안 잡는다. 켜 둔다.
+    actionlint:
+      enabled: true
+
+chat:
+  auto_reply: true
