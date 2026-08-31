@@ -63,6 +63,26 @@ export async function mockCheckIdDuplicate(id: string): Promise<AuthResult<{ ava
   return { ok: true, data: { available: true } };
 }
 
+/** 이미 사용 중인 것으로 취급할 닉네임. 중복확인 실패(에러) 화면을 확인하기 위한 값이다. */
+const TAKEN_NICKNAME = '뭉치';
+
+/**
+ * 닉네임 중복확인 목. 회원가입 닉네임 단계의 `중복확인` 버튼이 호출한다(아이디와 동일 구조).
+ * `TAKEN_NICKNAME`만 사용 불가로 돌려 error 화면을 확인하고, 나머지는 사용 가능으로 처리한다.
+ * 실제 연동 시 이 본문만 실제 조회 API로 교체한다(반환 타입 유지).
+ */
+export async function mockCheckNicknameDuplicate(
+  nickname: string,
+): Promise<AuthResult<{ available: true }>> {
+  await delay(MOCK_LATENCY_MS);
+
+  if (nickname === TAKEN_NICKNAME) {
+    return { ok: false, message: AUTH_ERROR_MESSAGES.nickname.taken };
+  }
+
+  return { ok: true, data: { available: true } };
+}
+
 /** 인증 성공으로 처리할 목 인증번호. 나머지 코드는 실패로 돌려 에러 화면을 확인한다. */
 const VALID_PHONE_CODE = '123456';
 
@@ -114,6 +134,7 @@ export async function mockSignup(
     data: {
       ...mockUser,
       id: values.id,
+      nickname: values.nickname,
       email: values.email,
       role: values.mode === 'seller' ? 'SELLER' : 'CONSUMER',
     },

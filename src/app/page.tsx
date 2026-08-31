@@ -9,13 +9,15 @@ export default function HomePage() {
       </div>
 
       {/* 임시 진입점. 홈 화면 시안 확정 전, 회원가입/로그인 플로우로 들어갈 수 있게 둔다. */}
+      {/* 일반 회원가입은 PM 결정으로 잠정 보관 — 버튼은 그대로 두되 /signup 진입만 막는다(라우트·
+          위저드는 그대로 유지). 재개 시 아래 button을 다시 `<Link href="/signup">`으로 되돌리면 된다. */}
       <div className="flex w-full flex-col gap-3">
-        <Link
-          href="/signup"
+        <button
+          type="button"
           className="bg-surface-button-primary-default hover:bg-surface-button-primary-hover active:bg-surface-button-primary-pressed text-content-oncolor rounded-8 flex h-13 items-center justify-center font-medium"
         >
           회원가입
-        </Link>
+        </button>
         <Link
           href="/login"
           className="border-border-subtle bg-surface-primary text-content-primary rounded-8 flex h-13 items-center justify-center border font-medium"

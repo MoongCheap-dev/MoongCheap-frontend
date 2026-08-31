@@ -10,10 +10,11 @@ import { AlertDialog } from '@/components/ui/AlertDialog';
 import { AUTH_ERROR_MESSAGES, AUTH_SUCCESS_MESSAGES } from '@/constants/authMessages';
 import { useKeyboardHeight } from '@/hooks/useKeyboardHeight';
 import { cn } from '@/lib/cn';
-import { mockCheckIdDuplicate, mockSignup } from '@/mocks/auth';
+import { mockCheckIdDuplicate, mockCheckNicknameDuplicate, mockSignup } from '@/mocks/auth';
 import {
   signupEmailSchema,
   signupIdSchema,
+  signupNicknameSchema,
   signupPasswordSchema,
   type SignupMode,
   type SignupStep,
@@ -31,7 +32,8 @@ import {
 } from './TermsAgreementStep';
 
 // 회원가입 위저드. Figma 08.27 "A. 로그인 및 회원가입" 재설계 시안대로 모드선택→개인정보동의→
-// 이메일→아이디→비밀번호→가입완료를 한 라우트(/signup)에서 진행한다.
+// 이메일→아이디→닉네임→비밀번호→가입완료를 한 라우트(/signup)에서 진행한다.
+// (닉네임은 Figma 미반영 잠정 스텝. 아이디와 동일하게 중복확인으로 통과가 결정된다.)
 // (휴대폰 인증은 SMS 백엔드 규격 미확정이라 UI+목업으로 구현 — PhoneVerificationStep 참고.)
 // 스텝은 URL 쿼리(?step=)로 표현해 브라우저 뒤로가기가 이전 스텝으로 가게 하고, 쿼리만 바뀌는
 // 소프트 내비라 이 컴포넌트는 마운트를 유지해 입력값·선택값이 스텝 간 보존된다.
@@ -54,6 +56,7 @@ function isSignupStep(value: string | null): value is SignupStep {
     value === 'phone' ||
     value === 'email' ||
     value === 'id' ||
+    value === 'nickname' ||
     value === 'password' ||
     value === 'complete'
   );
@@ -93,9 +96,9 @@ export function SignupWizard() {
     setValue,
     setFocus,
     formState: { touchedFields },
-  } = useForm<{ email: string; id: string; password: string }>({
+  } = useForm<{ email: string; id: string; nickname: string; password: string }>({
     mode: 'onChange',
-    defaultValues: { email: '', id: '', password: '' },
+    defaultValues: { email: '', id: '', nickname: '', password: '' },
   });
 
   // useWatch는 watch()와 달리 메모이제이션 안전(React Compiler 호환)이라 이걸 쓴다.
@@ -103,6 +106,7 @@ export function SignupWizard() {
   // uncontrolled→controlled로 바뀌었다는 React 경고가 난다).
   const emailValue = useWatch({ control, name: 'email', defaultValue: '' });
   const idValue = useWatch({ control, name: 'id', defaultValue: '' });
+  const nicknameValue = useWatch({ control, name: 'nickname', defaultValue: '' });
   const passwordValue = useWatch({ control, name: 'password', defaultValue: '' });
 
   // 온보딩 앞단(모드 선택·개인정보 동의·휴대폰 인증) 상태. mode=null은 미선택(기본). 스텝 간 보존한다.
@@ -114,6 +118,15 @@ export function SignupWizard() {
   // 아이디는 형식이 아니라 중복확인(서버/mock)으로 통과가 결정된다. 어떤 값에 대해 확인했는지
   // 함께 저장해, 확인 후 값을 고치면 통과를 무효화한다.
   const [idCheck, setIdCheck] = useState<{
+    state: 'idle' | 'checking' | 'available' | 'taken';
+    forValue: string;
+  }>({
+    state: 'idle',
+    forValue: '',
+  });
+  // 닉네임도 아이디와 동일하게 중복확인 결과로 통과가 결정된다(확인한 값과 함께 저장해, 확인 후
+  // 값을 고치면 통과를 무효화한다).
+  const [nicknameCheck, setNicknameCheck] = useState<{
     state: 'idle' | 'checking' | 'available' | 'taken';
     forValue: string;
   }>({
@@ -148,6 +161,10 @@ export function SignupWizard() {
   const idHasInvalidChars = idValue.trim().length > 0 && !idFormatValid;
   const idResolved = idCheck.forValue === idValue ? idCheck.state : 'idle';
   const idPassed = idResolved === 'available';
+  // 닉네임은 형식 규칙 없이 "빈값 아님"이면 중복확인 가능. 통과는 아이디와 같은 규칙으로 판정한다.
+  const nicknameFormatValid = signupNicknameSchema.safeParse(nicknameValue).success;
+  const nicknameResolved = nicknameCheck.forValue === nicknameValue ? nicknameCheck.state : 'idle';
+  const nicknamePassed = nicknameResolved === 'available';
   const modeSelected = mode !== null;
   const allAgreed = isAllAgreed(agreements);
   // 온보딩 앞단(모드·동의·휴대폰) 중 아직 못 채운 가장 앞 스텝. 없으면(전부 완료) null.
@@ -172,12 +189,29 @@ export function SignupWizard() {
       router.replace(`${pathname}?step=${onboardingTarget}`);
     } else if (step === 'id' && (onboardingTarget !== null || !emailValid)) {
       router.replace(`${pathname}?step=${onboardingTarget ?? 'email'}`);
-    } else if (step === 'password' && (onboardingTarget !== null || !emailValid || !idPassed)) {
+    } else if (step === 'nickname' && (onboardingTarget !== null || !emailValid || !idPassed)) {
       router.replace(`${pathname}?step=${onboardingTarget ?? (!emailValid ? 'email' : 'id')}`);
+    } else if (
+      step === 'password' &&
+      (onboardingTarget !== null || !emailValid || !idPassed || !nicknamePassed)
+    ) {
+      router.replace(
+        `${pathname}?step=${onboardingTarget ?? (!emailValid ? 'email' : !idPassed ? 'id' : 'nickname')}`,
+      );
     } else if (step === 'complete' && !submitted) {
       router.replace(`${pathname}?step=mode`);
     }
-  }, [step, modeSelected, onboardingTarget, emailValid, idPassed, submitted, pathname, router]);
+  }, [
+    step,
+    modeSelected,
+    onboardingTarget,
+    emailValid,
+    idPassed,
+    nicknamePassed,
+    submitted,
+    pathname,
+    router,
+  ]);
 
   const goTo = (next: SignupStep) => {
     router.push(`${pathname}?step=${next}`);
@@ -215,10 +249,35 @@ export function SignupWizard() {
     setIdCheck({ state: result.ok ? 'available' : 'taken', forValue: trimmedId });
   };
 
+  const handleCheckNickname = async () => {
+    // 아이디와 동일하게 앞뒤 공백을 제거한 값으로 확인·저장한다. 형식 규칙이 없어 "빈값 아님"만 막는다.
+    const trimmedNickname = nicknameValue.trim();
+    if (
+      trimmedNickname.length === 0 ||
+      nicknameCheck.state === 'checking' ||
+      !signupNicknameSchema.safeParse(trimmedNickname).success
+    ) {
+      return;
+    }
+    if (trimmedNickname !== nicknameValue) {
+      setValue('nickname', trimmedNickname);
+    }
+    setNicknameCheck({ state: 'checking', forValue: trimmedNickname });
+    const result = await mockCheckNicknameDuplicate(trimmedNickname);
+    setNicknameCheck({ state: result.ok ? 'available' : 'taken', forValue: trimmedNickname });
+  };
+
   const handleSubmitPassword = async () => {
     // mode·동의·휴대폰 인증은 스텝 가드상 이 단계에선 충족돼 있어야 하지만, 뒤로 돌아가 번호를 고쳐
     // 인증이 풀린 상태로 제출되는 경로를 막기 위해 방어적으로 다시 확인한다(타입 좁힘도 겸한다).
-    if (!passwordValid || isSubmitting || mode === null || !allAgreed || !phoneVerified) {
+    if (
+      !passwordValid ||
+      isSubmitting ||
+      mode === null ||
+      !allAgreed ||
+      !phoneVerified ||
+      !nicknamePassed
+    ) {
       return;
     }
     setIsSubmitting(true);
@@ -226,6 +285,7 @@ export function SignupWizard() {
     const result = await mockSignup({
       email: emailValue,
       id: idValue,
+      nickname: nicknameValue,
       password: passwordValue,
       mode,
       phone,
@@ -316,9 +376,9 @@ export function SignupWizard() {
             value={idValue}
             onFocusChange={setIsFieldFocused}
             onEnter={() => {
-              // 확인 통과면 다음 스텝, 아니면 형식이 맞을 때만 중복확인 실행.
+              // 확인 통과면 다음 스텝(닉네임), 아니면 형식이 맞을 때만 중복확인 실행.
               if (idPassed) {
-                goTo('password');
+                goTo('nickname');
               } else if (idFormatValid) {
                 handleCheckId();
               }
@@ -349,6 +409,72 @@ export function SignupWizard() {
           />
         ),
         canProceed: idPassed,
+        onNext: () => goTo('nickname'),
+      };
+    }
+
+    if (step === 'nickname') {
+      // 아이디 스텝과 동일한 상태 우선순위: 중복확인 통과(success) > 중복(error) > 기본.
+      // 닉네임은 형식 규칙이 없어 format 오류 분기는 두지 않는다.
+      const status: FieldStatus =
+        nicknameResolved === 'available'
+          ? 'success'
+          : nicknameResolved === 'taken'
+            ? 'error'
+            : 'default';
+      const nicknameField = register('nickname');
+      return {
+        subtitle: '사용할 닉네임을 입력한 뒤 중복확인을 해주세요.',
+        field: (
+          <StepField
+            id="signup-nickname"
+            label="닉네임"
+            autoComplete="nickname"
+            placeholder="닉네임을 입력해주세요."
+            status={status}
+            helper={
+              status === 'success'
+                ? AUTH_SUCCESS_MESSAGES.confirmed
+                : nicknameResolved === 'taken'
+                  ? AUTH_ERROR_MESSAGES.nickname.taken
+                  : undefined
+            }
+            value={nicknameValue}
+            onFocusChange={setIsFieldFocused}
+            onEnter={() => {
+              // 확인 통과면 다음 스텝(비밀번호), 아니면 빈값만 아니면 중복확인 실행.
+              if (nicknamePassed) {
+                goTo('password');
+              } else if (nicknameFormatValid) {
+                handleCheckNickname();
+              }
+            }}
+            field={{
+              ...nicknameField,
+              onChange: (event) => {
+                // 값을 고치면 직전 중복확인 결과를 무효화한다(다시 확인해야 다음으로).
+                setNicknameCheck({ state: 'idle', forValue: '' });
+                return nicknameField.onChange(event);
+              },
+            }}
+            onClear={() => {
+              setValue('nickname', '');
+              setNicknameCheck({ state: 'idle', forValue: '' });
+              setFocus('nickname');
+            }}
+            rightSlot={
+              <button
+                type="button"
+                onClick={handleCheckNickname}
+                disabled={!nicknameFormatValid || nicknameCheck.state === 'checking'}
+                className="bg-surface-button-tertiary-default hover:bg-surface-button-tertiary-hover active:bg-surface-button-tertiary-pressed text-content-inverse focus-visible:ring-effect-focus-ring-primary rounded-8 text-button-14 px-3 py-1.5 outline-none focus-visible:ring-2 focus-visible:ring-offset-1 disabled:opacity-40"
+              >
+                {nicknameCheck.state === 'checking' ? '확인 중' : '중복확인'}
+              </button>
+            }
+          />
+        ),
+        canProceed: nicknamePassed,
         onNext: () => goTo('password'),
       };
     }

@@ -58,6 +58,14 @@ export const signupIdSchema = z
   .min(1, AUTH_ERROR_MESSAGES.id.required)
   .regex(ID_PATTERN, AUTH_ERROR_MESSAGES.id.format);
 
+/**
+ * 회원가입 닉네임 규칙. 앞뒤 공백 제거 후 필수(빈값 금지)만 검증한다.
+ * 닉네임은 아이디와 달리 한글·이모지 등 허용 문자 범위가 서버 미확정이라 형식 규칙을 두지 않고,
+ * 통과 여부는 아이디와 동일하게 중복확인(현재 mock)으로 결정한다. 서버 규칙이 나오면 여기만 교체한다.
+ * (Figma에 닉네임 화면이 아직 없어, 아이디 스텝을 미러링한 잠정 화면이다 — SignupWizard 참고.)
+ */
+export const signupNicknameSchema = z.string().trim().min(1, AUTH_ERROR_MESSAGES.nickname.required);
+
 export const signupPasswordSchema = z
   .string()
   .min(PASSWORD_MIN_LENGTH, AUTH_ERROR_MESSAGES.password.rule)
@@ -67,6 +75,7 @@ export const signupPasswordSchema = z
 export const signupSchema = z.object({
   email: signupEmailSchema,
   id: signupIdSchema,
+  nickname: signupNicknameSchema,
   password: signupPasswordSchema,
 });
 
@@ -78,7 +87,9 @@ export type SignupMode = 'buyer' | 'seller';
 
 /**
  * 회원가입 단계 식별자. URL 쿼리(`?step=`)와 위저드 상태에 함께 쓴다.
- * Figma 08.27 재설계로 앞단에 모드 선택·개인정보 동의·휴대폰 인증이 추가됐다:
- *   mode → terms → phone → email → id → password → complete.
+ * Figma 08.27 재설계로 앞단에 모드 선택·개인정보 동의·휴대폰 인증이 추가됐다.
+ * 닉네임은 아이디와 비밀번호 사이에 넣는다(Figma 미반영 잠정 스텝):
+ *   mode → terms → phone → email → id → nickname → password → complete.
  */
-export type SignupStep = 'mode' | 'terms' | 'phone' | 'email' | 'id' | 'password' | 'complete';
+export type SignupStep =
+  'mode' | 'terms' | 'phone' | 'email' | 'id' | 'nickname' | 'password' | 'complete';
