@@ -24,13 +24,13 @@ const RESEND_SECONDS = 180; // 3:00
 const PHONE_PATTERN = /^01\d{8,9}$/;
 
 const FLOATING_LABEL_CLASS =
-  'text-content-quarternary bg-background-default absolute -top-2 left-3 px-1 text-xs font-medium';
+  'text-content-quarternary bg-background-default text-caption-12 absolute -top-2 left-3 px-1';
 
 // 검정(tertiary) 사이드 버튼. 글씨는 content-inverse(라이트=흰색/다크=검정)라 다크모드에서도 대비 유지.
 // 너비를 고정(w-28)한다: 라벨에 따라 폭이 달라지면(인증번호 전송/재전송/확인) 두 행의 flex-1 입력칸
 // 너비가 어긋나므로, 가장 긴 "인증번호 전송"이 한 줄에 들어가는 선까지 줄인 고정 너비로 통일한다.
 const SIDE_BUTTON_CLASS =
-  'bg-surface-button-tertiary-default hover:bg-surface-button-tertiary-hover active:bg-surface-button-tertiary-pressed text-content-inverse focus-visible:ring-effect-focus-ring-primary rounded-8 h-14 w-28 shrink-0 text-sm font-medium whitespace-nowrap outline-none focus-visible:ring-2 focus-visible:ring-offset-1 disabled:opacity-40';
+  'bg-surface-button-tertiary-default hover:bg-surface-button-tertiary-hover active:bg-surface-button-tertiary-pressed text-content-inverse focus-visible:ring-effect-focus-ring-primary rounded-8 text-button-14 h-14 w-28 shrink-0 whitespace-nowrap outline-none focus-visible:ring-2 focus-visible:ring-offset-1 disabled:opacity-40';
 
 function formatTimer(totalSeconds: number): string {
   const minutes = Math.floor(totalSeconds / 60);
@@ -139,8 +139,8 @@ export function PhoneVerificationStep({
     <ScreenColumn>
       <div className="flex flex-col gap-8">
         <div className="flex flex-col gap-2">
-          <h1 className="text-xl font-bold">휴대폰 인증</h1>
-          <p className="text-content-quarternary text-sm">
+          <h1 className="text-heading-20">휴대폰 인증</h1>
+          <p className="text-content-quarternary text-body-14">
             본인 확인을 위해 휴대폰 번호를 인증해주세요.
           </p>
         </div>
@@ -168,11 +168,14 @@ export function PhoneVerificationStep({
                 maxLength={PHONE_MAX_LENGTH}
                 placeholder="휴대폰 번호를 입력해주세요."
                 value={phone}
-                // 인증 후에도 잠그지 않는다 — 잘못 인증한 번호를 고칠 수 있어야 한다.
-                // 번호를 고치면 handlePhoneChange가 직전 인증/전송을 무효화한다.
+                // 발송 요청이 진행 중일 때만 잠근다: 전송 중 번호를 A→B로 바꾸면 A로 보낸 응답이
+                // 도착해 sent가 켜지고, mock이 아무 번호나 통과시켜 소유하지 않은 B가 인증될 수 있다.
+                // 전송이 끝나면(sent) 다시 풀어, 잘못 인증한 번호를 고칠 수 있게 한다
+                // (번호를 고치면 handlePhoneChange가 직전 인증/전송을 무효화한다).
+                disabled={sending}
                 onChange={(event) => handlePhoneChange(event.target.value)}
                 className={cn(
-                  'placeholder:text-content-quinary rounded-8 h-14 w-full border px-4 text-sm outline-none',
+                  'placeholder:text-content-quinary rounded-8 h-14 w-full border px-4 text-sm outline-none disabled:opacity-60',
                   verified
                     ? 'border-border-success'
                     : phone.length > 0
@@ -240,7 +243,7 @@ export function PhoneVerificationStep({
                 id="signup-phone-code-helper"
                 role={codeHelper.tone === 'error' ? 'alert' : undefined}
                 className={cn(
-                  'text-xs',
+                  'text-caption-12',
                   codeHelper.tone === 'success'
                     ? 'text-content-success'
                     : codeHelper.tone === 'error'

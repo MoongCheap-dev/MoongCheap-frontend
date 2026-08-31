@@ -215,7 +215,7 @@ export function LoginForm() {
         <button
           type="submit"
           disabled={isSubmitting}
-          className="bg-surface-button-tertiary-default hover:bg-surface-button-tertiary-hover active:bg-surface-button-tertiary-pressed text-content-inverse rounded-8 mt-2 h-13 font-medium disabled:opacity-50"
+          className="bg-surface-button-tertiary-default hover:bg-surface-button-tertiary-hover active:bg-surface-button-tertiary-pressed text-content-inverse rounded-8 text-button-15 mt-2 h-13 disabled:opacity-50"
         >
           {isSubmitting ? '로그인 중' : '로그인'}
         </button>

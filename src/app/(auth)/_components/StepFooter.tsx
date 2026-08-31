@@ -23,7 +23,7 @@ export function StepFooter({ onPrev, nextLabel, onNext, canProceed }: StepFooter
       <button
         type="button"
         onClick={onPrev}
-        className="border-border-button-quarternary bg-surface-button-quarternary-default hover:bg-surface-button-quarternary-hover active:bg-surface-button-quarternary-pressed text-content-primary focus-visible:ring-effect-focus-ring-primary rounded-8 h-13 flex-1 border font-medium outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
+        className="border-border-button-quarternary bg-surface-button-quarternary-default hover:bg-surface-button-quarternary-hover active:bg-surface-button-quarternary-pressed text-content-primary focus-visible:ring-effect-focus-ring-primary rounded-8 text-button-15 h-13 flex-1 border outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
       >
         이전
       </button>
@@ -32,7 +32,7 @@ export function StepFooter({ onPrev, nextLabel, onNext, canProceed }: StepFooter
         onClick={onNext}
         disabled={!canProceed}
         className={cn(
-          'focus-visible:ring-effect-focus-ring-primary rounded-8 h-13 flex-1 font-medium outline-none focus-visible:ring-2 focus-visible:ring-offset-2',
+          'focus-visible:ring-effect-focus-ring-primary rounded-8 text-button-15 h-13 flex-1 outline-none focus-visible:ring-2 focus-visible:ring-offset-2',
           canProceed
             ? 'bg-surface-button-tertiary-default hover:bg-surface-button-tertiary-hover active:bg-surface-button-tertiary-pressed text-content-inverse'
             : 'bg-surface-disabled-primary text-content-disabled-primary cursor-not-allowed',

@@ -63,8 +63,8 @@ export function ModeSelectStep({ value, onChange, onPrev, onNext }: ModeSelectSt
     <ScreenColumn>
       <div className="flex flex-col gap-8">
         <div className="flex flex-col gap-2">
-          <h1 className="text-xl font-bold">원하는 사용 모드를 선택해 주세요</h1>
-          <p className="text-content-quarternary text-sm">{subtitle}</p>
+          <h1 className="text-heading-20">원하는 사용 모드를 선택해 주세요</h1>
+          <p className="text-content-quarternary text-body-14">{subtitle}</p>
         </div>
 
         <div className="flex flex-col gap-3">
@@ -101,14 +101,14 @@ export function ModeSelectStep({ value, onChange, onPrev, onNext }: ModeSelectSt
                   </span>
                   <span className="font-medium">{option.label}</span>
                   {selected && (
-                    <span className="bg-surface-brand text-content-oncolor rounded-4 px-1.5 py-0.5 text-xs font-medium">
+                    <span className="bg-surface-brand text-content-oncolor rounded-4 text-caption-12 px-1.5 py-0.5">
                       현재 모드
                     </span>
                   )}
                 </span>
                 {/* 설명은 선택된 카드에만 노출(시안). 라디오 폭(size-5 + gap-2 = 28px)만큼 들여쓴다. */}
                 {selected && (
-                  <span className="text-content-quarternary pl-7 text-sm">
+                  <span className="text-content-quarternary text-body-14 pl-7">
                     {option.description}
                   </span>
                 )}

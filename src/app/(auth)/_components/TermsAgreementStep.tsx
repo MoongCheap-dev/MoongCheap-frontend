@@ -113,8 +113,8 @@ export function TermsAgreementStep({ value, onChange, onPrev, onNext }: TermsAgr
     <ScreenColumn>
       <div className="flex flex-col gap-8">
         <div className="flex flex-col gap-2">
-          <h1 className="text-xl font-bold">개인정보 동의</h1>
-          <p className="text-content-quarternary text-sm">
+          <h1 className="text-heading-20">개인정보 동의</h1>
+          <p className="text-content-quarternary text-body-14">
             뭉치를 사용하시려면 개인정보 동의가 필요해요!
           </p>
         </div>
@@ -149,7 +149,7 @@ export function TermsAgreementStep({ value, onChange, onPrev, onNext }: TermsAgr
                     className="sr-only"
                   />
                   <CheckIcon checked={value[item.key]} />
-                  <span className="text-sm">
+                  <span className="text-body-14">
                     {item.required && <span className="text-content-error">[필수] </span>}
                     {item.label}
                   </span>

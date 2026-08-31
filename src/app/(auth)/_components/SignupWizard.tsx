@@ -150,34 +150,34 @@ export function SignupWizard() {
   const idPassed = idResolved === 'available';
   const modeSelected = mode !== null;
   const allAgreed = isAllAgreed(agreements);
+  // 온보딩 앞단(모드·동의·휴대폰) 중 아직 못 채운 가장 앞 스텝. 없으면(전부 완료) null.
+  // 뒤 스텝(email~password)에서도 이걸 재확인해, 나중에 phone으로 돌아가 번호를 고쳐 인증이
+  // 풀린 채로 ?step=password 딥링크로 건너뛰어 제출되는 경로를 막는다.
+  const onboardingTarget: SignupStep | null = !modeSelected
+    ? 'mode'
+    : !allAgreed
+      ? 'terms'
+      : !phoneVerified
+        ? 'phone'
+        : null;
 
   // 스텝을 건너뛴 진입(딥링크·새로고침) 가드. 선행 조건이 없으면 가능한 앞 스텝으로 되돌린다.
   useEffect(() => {
     if (step === 'terms' && !modeSelected) {
       router.replace(`${pathname}?step=mode`);
-    } else if (step === 'phone' && (!modeSelected || !allAgreed)) {
-      router.replace(`${pathname}?step=${modeSelected ? 'terms' : 'mode'}`);
-    } else if (step === 'email' && (!modeSelected || !allAgreed || !phoneVerified)) {
-      const target = !modeSelected ? 'mode' : !allAgreed ? 'terms' : 'phone';
-      router.replace(`${pathname}?step=${target}`);
-    } else if (step === 'id' && !emailValid) {
-      router.replace(`${pathname}?step=email`);
-    } else if (step === 'password' && (!emailValid || !idPassed)) {
-      router.replace(`${pathname}?step=${emailValid ? 'id' : 'email'}`);
+    } else if (step === 'phone' && onboardingTarget !== null && onboardingTarget !== 'phone') {
+      // phone 스텝 자체는 phoneVerified 미충족이 정상이므로, 그 앞 단계(mode·terms)만 되돌린다.
+      router.replace(`${pathname}?step=${onboardingTarget}`);
+    } else if (step === 'email' && onboardingTarget !== null) {
+      router.replace(`${pathname}?step=${onboardingTarget}`);
+    } else if (step === 'id' && (onboardingTarget !== null || !emailValid)) {
+      router.replace(`${pathname}?step=${onboardingTarget ?? 'email'}`);
+    } else if (step === 'password' && (onboardingTarget !== null || !emailValid || !idPassed)) {
+      router.replace(`${pathname}?step=${onboardingTarget ?? (!emailValid ? 'email' : 'id')}`);
     } else if (step === 'complete' && !submitted) {
       router.replace(`${pathname}?step=mode`);
     }
-  }, [
-    step,
-    modeSelected,
-    allAgreed,
-    phoneVerified,
-    emailValid,
-    idPassed,
-    submitted,
-    pathname,
-    router,
-  ]);
+  }, [step, modeSelected, onboardingTarget, emailValid, idPassed, submitted, pathname, router]);
 
   const goTo = (next: SignupStep) => {
     router.push(`${pathname}?step=${next}`);
@@ -216,8 +216,9 @@ export function SignupWizard() {
   };
 
   const handleSubmitPassword = async () => {
-    // mode는 스텝 가드상 이 단계에선 항상 채워져 있지만, 타입 좁힘·방어를 위해 확인한다.
-    if (!passwordValid || isSubmitting || mode === null) {
+    // mode·동의·휴대폰 인증은 스텝 가드상 이 단계에선 충족돼 있어야 하지만, 뒤로 돌아가 번호를 고쳐
+    // 인증이 풀린 상태로 제출되는 경로를 막기 위해 방어적으로 다시 확인한다(타입 좁힘도 겸한다).
+    if (!passwordValid || isSubmitting || mode === null || !allAgreed || !phoneVerified) {
       return;
     }
     setIsSubmitting(true);
@@ -340,7 +341,7 @@ export function SignupWizard() {
                 type="button"
                 onClick={handleCheckId}
                 disabled={!idFormatValid || idCheck.state === 'checking'}
-                className="bg-surface-button-tertiary-default hover:bg-surface-button-tertiary-hover active:bg-surface-button-tertiary-pressed text-content-inverse focus-visible:ring-effect-focus-ring-primary rounded-8 px-3 py-1.5 text-xs font-medium outline-none focus-visible:ring-2 focus-visible:ring-offset-1 disabled:opacity-40"
+                className="bg-surface-button-tertiary-default hover:bg-surface-button-tertiary-hover active:bg-surface-button-tertiary-pressed text-content-inverse focus-visible:ring-effect-focus-ring-primary rounded-8 text-button-14 px-3 py-1.5 outline-none focus-visible:ring-2 focus-visible:ring-offset-1 disabled:opacity-40"
               >
                 {idCheck.state === 'checking' ? '확인 중' : '중복확인'}
               </button>
@@ -456,8 +457,8 @@ export function SignupWizard() {
         >
           <div className="flex flex-col gap-8">
             <div className="flex flex-col gap-2">
-              <h1 className="text-xl font-bold">계정 정보 입력</h1>
-              <p className="text-content-quarternary text-sm">{stepView.subtitle}</p>
+              <h1 className="text-heading-20">계정 정보 입력</h1>
+              <p className="text-content-quarternary text-body-14">{stepView.subtitle}</p>
             </div>
 
             {stepView.field}
@@ -470,7 +471,7 @@ export function SignupWizard() {
             <button
               type="button"
               onClick={goPrev}
-              className="border-border-button-quarternary bg-surface-button-quarternary-default hover:bg-surface-button-quarternary-hover active:bg-surface-button-quarternary-pressed text-content-primary focus-visible:ring-effect-focus-ring-primary rounded-8 h-13 flex-1 border font-medium outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
+              className="border-border-button-quarternary bg-surface-button-quarternary-default hover:bg-surface-button-quarternary-hover active:bg-surface-button-quarternary-pressed text-content-primary focus-visible:ring-effect-focus-ring-primary rounded-8 text-button-15 h-13 flex-1 border outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
             >
               이전
             </button>
@@ -478,7 +479,7 @@ export function SignupWizard() {
               type="submit"
               disabled={!stepView.canProceed}
               className={cn(
-                'focus-visible:ring-effect-focus-ring-primary rounded-8 h-13 flex-1 font-medium outline-none focus-visible:ring-2 focus-visible:ring-offset-2',
+                'focus-visible:ring-effect-focus-ring-primary rounded-8 text-button-15 h-13 flex-1 outline-none focus-visible:ring-2 focus-visible:ring-offset-2',
                 stepView.canProceed
                   ? 'bg-surface-button-tertiary-default hover:bg-surface-button-tertiary-hover active:bg-surface-button-tertiary-pressed text-content-inverse'
                   : 'bg-surface-disabled-primary text-content-disabled-primary cursor-not-allowed',
@@ -506,19 +507,19 @@ function CompleteScreen() {
     <ScreenColumn>
       <div className="flex flex-col gap-8">
         <div className="flex flex-col gap-2">
-          <h1 className="text-xl font-bold">가입이 완료되었습니다!</h1>
-          <p className="text-content-quarternary text-sm">뭉치와 함께 알뜰한 쇼핑하세요</p>
+          <h1 className="text-heading-20">가입이 완료되었습니다!</h1>
+          <p className="text-content-quarternary text-body-14">뭉치와 함께 알뜰한 쇼핑하세요</p>
         </div>
 
         {/* Figma: "추후에 여기에 일러스트나 아이콘 추가" 자리. 확정 전 플레이스홀더. */}
-        <div className="border-border-subtle text-content-quarternary rounded-8 flex h-56 items-center justify-center border border-dashed text-sm">
+        <div className="border-border-subtle text-content-quarternary rounded-8 text-body-14 flex h-56 items-center justify-center border border-dashed">
           일러스트 자리
         </div>
       </div>
 
       <Link
         href="/login"
-        className="bg-surface-button-tertiary-default hover:bg-surface-button-tertiary-hover active:bg-surface-button-tertiary-pressed text-content-inverse focus-visible:ring-effect-focus-ring-primary rounded-8 mt-auto flex h-13 items-center justify-center font-medium outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
+        className="bg-surface-button-tertiary-default hover:bg-surface-button-tertiary-hover active:bg-surface-button-tertiary-pressed text-content-inverse focus-visible:ring-effect-focus-ring-primary rounded-8 text-button-15 mt-auto flex h-13 items-center justify-center outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
       >
         로그인하러가기
       </Link>

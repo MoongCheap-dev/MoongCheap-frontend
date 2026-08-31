@@ -17,7 +17,7 @@ export type FieldStatus = 'default' | 'success' | 'error';
 
 // 라벨은 상태와 무관하게 항상 기본 회색(로그인 시안과 동일 규칙).
 const FLOATING_LABEL_CLASS =
-  'text-content-quarternary bg-background-default absolute -top-2 left-3 px-1 text-xs font-medium';
+  'text-content-quarternary bg-background-default text-caption-12 absolute -top-2 left-3 px-1';
 
 function CheckIcon() {
   return (
@@ -168,7 +168,7 @@ export function StepField({
           id={helperId}
           role={status === 'error' ? 'alert' : undefined}
           className={cn(
-            'text-xs',
+            'text-caption-12',
             status === 'success'
               ? 'text-content-success'
               : status === 'error'
