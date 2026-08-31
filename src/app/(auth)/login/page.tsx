@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 
+import { ComingSoonButton } from '@/components/ui/ComingSoonButton';
+
 import { LoginForm } from '../_components/LoginForm';
 import { SocialLoginButtons } from '../_components/SocialLoginButtons';
 
@@ -31,12 +33,11 @@ export default function LoginPage() {
         일단 둘러보기
       </Link>
 
-      {/* 일반 회원가입은 PM 결정으로 잠정 보관 — 링크는 그대로 두되 /signup 진입만 막는다(라우트·
-          위저드는 그대로 유지). 재개 시 아래 button을 다시 `<Link href="/signup">`으로 되돌리면 된다. */}
+      {/* 일반 회원가입은 PM 결정으로 잠정 보관 — 링크는 그대로 두되 /signup으로 이동하는 대신
+          '준비 중' 토스트를 띄운다(미구현 진입점 규칙). 재개 시 ComingSoonButton을 다시
+          `<Link href="/signup">`으로 되돌리면 된다. */}
       <nav className="text-content-quarternary mt-5 flex items-center justify-center gap-3 text-xs">
-        <button type="button" className="hover:text-content-primary">
-          회원가입
-        </button>
+        <ComingSoonButton className="hover:text-content-primary">회원가입</ComingSoonButton>
         {RECOVERY_LINKS.map((label) => (
           <span key={label} className="contents">
             <span aria-hidden="true" className="bg-divider-default h-3 w-px" />
