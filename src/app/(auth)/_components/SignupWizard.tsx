@@ -268,14 +268,17 @@ export function SignupWizard() {
   };
 
   const handleSubmitPassword = async () => {
-    // mode·동의·휴대폰 인증은 스텝 가드상 이 단계에선 충족돼 있어야 하지만, 뒤로 돌아가 번호를 고쳐
-    // 인증이 풀린 상태로 제출되는 경로를 막기 위해 방어적으로 다시 확인한다(타입 좁힘도 겸한다).
+    // mode·동의·휴대폰 인증·이메일·아이디·닉네임은 스텝 가드상 이 단계에선 충족돼 있어야 하지만,
+    // 뒤로 돌아가 값을 고쳐(예: 번호 재입력으로 인증 해제, 아이디 수정으로 중복확인 무효화) 선행
+    // 조건이 풀린 상태로 스텝 가드 리다이렉트 전에 제출되는 경로를 막기 위해 방어적으로 다시 확인한다.
     if (
       !passwordValid ||
       isSubmitting ||
       mode === null ||
       !allAgreed ||
       !phoneVerified ||
+      !emailValid ||
+      !idPassed ||
       !nicknamePassed
     ) {
       return;
