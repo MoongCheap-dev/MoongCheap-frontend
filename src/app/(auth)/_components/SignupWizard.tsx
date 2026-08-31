@@ -13,6 +13,7 @@ import { cn } from '@/lib/cn';
 import { mockCheckIdDuplicate, mockSignup } from '@/mocks/auth';
 import {
   signupEmailSchema,
+  signupIdSchema,
   signupPasswordSchema,
   type SignupMode,
   type SignupStep,
@@ -142,6 +143,9 @@ export function SignupWizard() {
 
   const emailValid = signupEmailSchema.safeParse(emailValue).success;
   const passwordValid = signupPasswordSchema.safeParse(passwordValue).success;
+  // 아이디 형식(영문·숫자만) 검증. 형식이 틀리면(특수문자·공백 등) 중복확인 자체를 막는다.
+  const idFormatValid = signupIdSchema.safeParse(idValue).success;
+  const idHasInvalidChars = idValue.trim().length > 0 && !idFormatValid;
   const idResolved = idCheck.forValue === idValue ? idCheck.state : 'idle';
   const idPassed = idResolved === 'available';
   const modeSelected = mode !== null;
@@ -191,12 +195,24 @@ export function SignupWizard() {
   };
 
   const handleCheckId = async () => {
-    if (idValue.length === 0 || idCheck.state === 'checking') {
+    // 아이디는 앞뒤 공백을 제거한 값으로 확인·저장한다(공백만/공백 딸린 입력 방지).
+    // 스텝 게이팅은 스키마가 아니라 이 중복확인 결과로 결정되므로 여기서 직접 정리한다.
+    // 입력칸에도 정리된 값을 반영해, 이후 제출(mockSignup)과 idResolved 매칭이 정리된 값으로 맞는다.
+    const trimmedId = idValue.trim();
+    // 형식 위반(특수문자·공백 등)이면 확인하지 않는다(버튼도 비활성이지만 방어적으로 한 번 더).
+    if (
+      trimmedId.length === 0 ||
+      idCheck.state === 'checking' ||
+      !signupIdSchema.safeParse(trimmedId).success
+    ) {
       return;
     }
-    setIdCheck({ state: 'checking', forValue: idValue });
-    const result = await mockCheckIdDuplicate(idValue);
-    setIdCheck({ state: result.ok ? 'available' : 'taken', forValue: idValue });
+    if (trimmedId !== idValue) {
+      setValue('id', trimmedId);
+    }
+    setIdCheck({ state: 'checking', forValue: trimmedId });
+    const result = await mockCheckIdDuplicate(trimmedId);
+    setIdCheck({ state: result.ok ? 'available' : 'taken', forValue: trimmedId });
   };
 
   const handleSubmitPassword = async () => {
@@ -268,8 +284,15 @@ export function SignupWizard() {
   // 스텝별 화면 구성. 상태·헬퍼 문구는 여기서 결정하고 표현은 StepField가 맡는다.
   const stepView = (() => {
     if (step === 'id') {
+      // 형식 오류는 이메일·비번과 같은 규칙으로 blur 후(포커스 없을 때)에만 노출한다(타이핑 중 깜빡임 방지).
+      const idFormatError = idHasInvalidChars && touchedFields.id === true && !isFieldFocused;
+      // 상태 우선순위: 중복확인 통과(success) > 중복/형식 오류(error) > 기본.
       const status: FieldStatus =
-        idResolved === 'available' ? 'success' : idResolved === 'taken' ? 'error' : 'default';
+        idResolved === 'available'
+          ? 'success'
+          : idResolved === 'taken' || idFormatError
+            ? 'error'
+            : 'default';
       const idField = register('id');
       return {
         subtitle: '아이디를 입력한 뒤 중복확인을 해주세요.',
@@ -283,12 +306,22 @@ export function SignupWizard() {
             helper={
               status === 'success'
                 ? AUTH_SUCCESS_MESSAGES.confirmed
-                : status === 'error'
+                : idResolved === 'taken'
                   ? AUTH_ERROR_MESSAGES.id.taken
-                  : undefined
+                  : idFormatError
+                    ? AUTH_ERROR_MESSAGES.id.format
+                    : undefined
             }
             value={idValue}
             onFocusChange={setIsFieldFocused}
+            onEnter={() => {
+              // 확인 통과면 다음 스텝, 아니면 형식이 맞을 때만 중복확인 실행.
+              if (idPassed) {
+                goTo('password');
+              } else if (idFormatValid) {
+                handleCheckId();
+              }
+            }}
             field={{
               ...idField,
               onChange: (event) => {
@@ -306,8 +339,8 @@ export function SignupWizard() {
               <button
                 type="button"
                 onClick={handleCheckId}
-                disabled={idValue.length === 0 || idCheck.state === 'checking'}
-                className="bg-surface-button-tertiary-default hover:bg-surface-button-tertiary-hover active:bg-surface-button-tertiary-pressed text-content-inverse focus-visible:ring-effect-focus-ring-primary rounded-md px-3 py-1.5 text-xs font-medium outline-none focus-visible:ring-2 focus-visible:ring-offset-1 disabled:opacity-40"
+                disabled={!idFormatValid || idCheck.state === 'checking'}
+                className="bg-surface-button-tertiary-default hover:bg-surface-button-tertiary-hover active:bg-surface-button-tertiary-pressed text-content-inverse focus-visible:ring-effect-focus-ring-primary rounded-8 px-3 py-1.5 text-xs font-medium outline-none focus-visible:ring-2 focus-visible:ring-offset-1 disabled:opacity-40"
               >
                 {idCheck.state === 'checking' ? '확인 중' : '중복확인'}
               </button>
@@ -343,6 +376,11 @@ export function SignupWizard() {
             }
             value={passwordValue}
             onFocusChange={setIsFieldFocused}
+            onEnter={() => {
+              if (passwordValid && !isSubmitting) {
+                handleSubmitPassword();
+              }
+            }}
             field={register('password')}
             onClear={() => {
               setValue('password', '');
@@ -381,6 +419,11 @@ export function SignupWizard() {
           }
           value={emailValue}
           onFocusChange={setIsFieldFocused}
+          onEnter={() => {
+            if (emailValid) {
+              goTo('id');
+            }
+          }}
           field={register('email')}
           onClear={() => {
             setValue('email', '');
@@ -398,40 +441,53 @@ export function SignupWizard() {
       {/* Figma 7-1(이메일-empty) 시안: 제목·입력칸은 상단, 이전/다음 버튼은 화면 하단 고정.
           ScreenColumn이 main(flex-1)을 채우고, 버튼 행을 mt-auto로 바닥에 붙인다. */}
       <ScreenColumn>
-        <div className="flex flex-col gap-8">
-          <div className="flex flex-col gap-2">
-            <h1 className="text-xl font-bold">계정 정보 입력</h1>
-            <p className="text-content-quarternary text-sm">{stepView.subtitle}</p>
+        {/* 폼으로 감싸 입력칸에서 Enter를 치면 '다음'으로 진행되게 한다(로그인 화면과 동일한 동작).
+            '다음'은 type="submit"이고, 비활성(canProceed=false)일 땐 브라우저가 암묵 제출을 하지 않아
+            유효할 때만 넘어간다. '이전'·'중복확인'은 type="button"이라 Enter 제출과 무관하다. */}
+        <form
+          noValidate
+          onSubmit={(event) => {
+            event.preventDefault();
+            if (stepView.canProceed) {
+              stepView.onNext();
+            }
+          }}
+          className="flex flex-1 flex-col"
+        >
+          <div className="flex flex-col gap-8">
+            <div className="flex flex-col gap-2">
+              <h1 className="text-xl font-bold">계정 정보 입력</h1>
+              <p className="text-content-quarternary text-sm">{stepView.subtitle}</p>
+            </div>
+
+            {stepView.field}
           </div>
 
-          {stepView.field}
-        </div>
-
-        <div
-          ref={footerRef}
-          className="mt-auto flex gap-3 pt-8 transition-transform duration-200 ease-out"
-        >
-          <button
-            type="button"
-            onClick={goPrev}
-            className="border-border-button-quarternary bg-surface-button-quarternary-default hover:bg-surface-button-quarternary-hover active:bg-surface-button-quarternary-pressed text-content-primary focus-visible:ring-effect-focus-ring-primary rounded-8 h-13 flex-1 border font-medium outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
+          <div
+            ref={footerRef}
+            className="mt-auto flex gap-3 pt-8 transition-transform duration-200 ease-out"
           >
-            이전
-          </button>
-          <button
-            type="button"
-            onClick={stepView.onNext}
-            disabled={!stepView.canProceed}
-            className={cn(
-              'focus-visible:ring-effect-focus-ring-primary rounded-8 h-13 flex-1 font-medium outline-none focus-visible:ring-2 focus-visible:ring-offset-2',
-              stepView.canProceed
-                ? 'bg-surface-button-tertiary-default hover:bg-surface-button-tertiary-hover active:bg-surface-button-tertiary-pressed text-content-inverse'
-                : 'bg-surface-disabled-primary text-content-disabled-primary cursor-not-allowed',
-            )}
-          >
-            {isSubmitting ? '처리 중' : '다음'}
-          </button>
-        </div>
+            <button
+              type="button"
+              onClick={goPrev}
+              className="border-border-button-quarternary bg-surface-button-quarternary-default hover:bg-surface-button-quarternary-hover active:bg-surface-button-quarternary-pressed text-content-primary focus-visible:ring-effect-focus-ring-primary rounded-8 h-13 flex-1 border font-medium outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
+            >
+              이전
+            </button>
+            <button
+              type="submit"
+              disabled={!stepView.canProceed}
+              className={cn(
+                'focus-visible:ring-effect-focus-ring-primary rounded-8 h-13 flex-1 font-medium outline-none focus-visible:ring-2 focus-visible:ring-offset-2',
+                stepView.canProceed
+                  ? 'bg-surface-button-tertiary-default hover:bg-surface-button-tertiary-hover active:bg-surface-button-tertiary-pressed text-content-inverse'
+                  : 'bg-surface-disabled-primary text-content-disabled-primary cursor-not-allowed',
+              )}
+            >
+              {isSubmitting ? '처리 중' : '다음'}
+            </button>
+          </div>
+        </form>
       </ScreenColumn>
 
       <AlertDialog

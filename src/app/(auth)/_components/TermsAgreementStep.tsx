@@ -7,7 +7,7 @@ import { StepFooter } from './StepFooter';
 
 // 회원가입 온보딩 개인정보 동의 스텝. Figma 08.27 "1-0 개인정보 동의" 시안.
 // 문구는 시안 그대로 옮긴다. 시안엔 필수 3항목만 있고 선택 항목은 없다.
-// "모두동의"를 켜면 필수 전체가 켜지고, 필수 전체가 켜져야 하단 "다음"이 활성화된다(기본 미체크 → 다음 비활성).
+// "전체동의"를 켜면 필수 전체가 켜지고, 필수 전체가 켜져야 하단 "다음"이 활성화된다(기본 미체크 → 다음 비활성).
 //
 // 동의는 네이티브 체크박스(<input type="checkbox">)로 구현한다 — 스페이스 토글 등 키보드 동작을
 // 브라우저가 준다(CLAUDE.md: 입력은 네이티브 요소). 체크 표식은 시안대로 커스텀 아이콘으로 그리고
@@ -38,14 +38,17 @@ export function isAllAgreed(value: TermsAgreements): boolean {
 interface TermItem {
   key: keyof TermsAgreements;
   label: string;
+  /** 필수 동의 항목인지. true면 라벨 앞에 빨강 [필수] 표식을 붙인다. */
+  required: boolean;
   /** 약관 상세(›)가 있는 항목인지. */
   hasDetail: boolean;
 }
 
+// [필수] 접두어는 라벨 문자열에서 분리해 렌더 시 빨강(content-error)으로 강조한다(필수 항목 시각 표시).
 const TERM_ITEMS: TermItem[] = [
-  { key: 'age14', label: '[필수] 만 14세 이상입니다.', hasDetail: false },
-  { key: 'tos', label: '[필수] 이용약관', hasDetail: true },
-  { key: 'privacy', label: '[필수] 개인정보 수집 및 이용', hasDetail: true },
+  { key: 'age14', label: '만 14세 이상입니다.', required: true, hasDetail: false },
+  { key: 'tos', label: '이용약관', required: true, hasDetail: true },
+  { key: 'privacy', label: '개인정보 수집 및 이용', required: true, hasDetail: true },
 ];
 
 // 내부 sr-only input이 :focus-visible일 때 카드/행에 포커스 링을 준다.
@@ -96,7 +99,7 @@ interface TermsAgreementStepProps {
 export function TermsAgreementStep({ value, onChange, onPrev, onNext }: TermsAgreementStepProps) {
   const allAgreed = isAllAgreed(value);
 
-  // 모두동의: 현재 전체 동의면 전부 해제, 아니면 전부 동의.
+  // 전체동의: 현재 전체 동의면 전부 해제, 아니면 전부 동의.
   const toggleAll = () => {
     const next = !allAgreed;
     onChange({ age14: next, tos: next, privacy: next });
@@ -117,7 +120,7 @@ export function TermsAgreementStep({ value, onChange, onPrev, onNext }: TermsAgr
         </div>
 
         <div className="flex flex-col gap-4">
-          {/* 모두동의: 시안에서 별도 박스로 강조된다. */}
+          {/* 전체동의: 시안에서 별도 박스로 강조된다. */}
           <label
             className={cn(
               'border-border-subtle rounded-12 flex cursor-pointer items-center gap-3 border p-4',
@@ -126,7 +129,7 @@ export function TermsAgreementStep({ value, onChange, onPrev, onNext }: TermsAgr
           >
             <input type="checkbox" checked={allAgreed} onChange={toggleAll} className="sr-only" />
             <CheckIcon checked={allAgreed} />
-            <span className="font-medium">모두동의</span>
+            <span className="font-medium">전체동의</span>
           </label>
 
           {/* 필수 항목. 상세(›)가 있는 항목은 오른쪽에 (비인터랙티브) 셰브런을 둔다. */}
@@ -135,7 +138,7 @@ export function TermsAgreementStep({ value, onChange, onPrev, onNext }: TermsAgr
               <div key={item.key} className="flex items-center gap-2">
                 <label
                   className={cn(
-                    'flex flex-1 cursor-pointer items-center gap-3 rounded-md',
+                    'rounded-8 flex flex-1 cursor-pointer items-center gap-3',
                     FOCUS_RING_CLASS,
                   )}
                 >
@@ -146,7 +149,10 @@ export function TermsAgreementStep({ value, onChange, onPrev, onNext }: TermsAgr
                     className="sr-only"
                   />
                   <CheckIcon checked={value[item.key]} />
-                  <span className="text-sm">{item.label}</span>
+                  <span className="text-sm">
+                    {item.required && <span className="text-content-error">[필수] </span>}
+                    {item.label}
+                  </span>
                 </label>
                 {/* TODO: 약관 상세 경로 확정 후 <Link>로 교체(그전까지 비인터랙티브 표식). */}
                 {item.hasDetail && (

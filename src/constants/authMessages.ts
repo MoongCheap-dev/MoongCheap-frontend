@@ -9,6 +9,8 @@ export const AUTH_ERROR_MESSAGES = {
     required: '아이디를 입력해 주세요',
     /** mock 중복 아이디. Figma 8-error 시안 문구. */
     taken: '이미 존재하는 아이디입니다',
+    /** 형식 위반(특수문자·공백 등). 서버 규칙 확정 전 잠정: 영문·숫자만 허용. */
+    format: '영문과 숫자만 사용할 수 있어요',
   },
   email: {
     invalid: '올바른 이메일 형식이 아닙니다',

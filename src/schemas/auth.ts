@@ -25,9 +25,13 @@ const PASSWORD_MAX_LENGTH = 16;
  */
 const PASSWORD_PATTERN = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9\s])\S+$/;
 
-/** 로그인 식별자 = 아이디. 형식 규칙 미확정이라 필수만 검증. */
+/**
+ * 로그인 식별자 = 아이디. 형식 규칙 미확정이라 필수만 검증한다.
+ * 아이디는 앞뒤 공백을 제거해 검증·제출한다(공백만 입력을 무효로 만들고, 붙여넣기 시 딸려온
+ * 공백을 자동 정리). 비밀번호는 공백도 유효한 문자일 수 있어 trim하지 않는다.
+ */
 export const loginSchema = z.object({
-  id: z.string().min(1, AUTH_ERROR_MESSAGES.id.required),
+  id: z.string().trim().min(1, AUTH_ERROR_MESSAGES.id.required),
   password: z.string().min(1, AUTH_ERROR_MESSAGES.password.required),
 });
 
@@ -41,7 +45,18 @@ export const loginSchema = z.object({
  */
 export const signupEmailSchema = z.email(AUTH_ERROR_MESSAGES.email.invalid);
 
-export const signupIdSchema = z.string().min(1, AUTH_ERROR_MESSAGES.id.required);
+/**
+ * 회원가입 아이디 규칙. 앞뒤 공백 제거 후 필수 + 형식(영문·숫자만) 검증.
+ * 허용 문자·자릿수 규칙은 서버 미확정이라 잠정이다. "특수문자 불가"만 확정 요구사항이라
+ * 영문 대소문자·숫자만 허용하는 최소 규칙을 둔다. 서버 규칙이 나오면 이 정규식만 교체한다(화면 그대로).
+ */
+const ID_PATTERN = /^[A-Za-z0-9]+$/;
+
+export const signupIdSchema = z
+  .string()
+  .trim()
+  .min(1, AUTH_ERROR_MESSAGES.id.required)
+  .regex(ID_PATTERN, AUTH_ERROR_MESSAGES.id.format);
 
 export const signupPasswordSchema = z
   .string()

@@ -101,7 +101,7 @@ export function ModeSelectStep({ value, onChange, onPrev, onNext }: ModeSelectSt
                   </span>
                   <span className="font-medium">{option.label}</span>
                   {selected && (
-                    <span className="bg-surface-brand text-content-oncolor rounded-md px-1.5 py-0.5 text-xs font-medium">
+                    <span className="bg-surface-brand text-content-oncolor rounded-4 px-1.5 py-0.5 text-xs font-medium">
                       현재 모드
                     </span>
                   )}

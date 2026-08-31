@@ -17,6 +17,8 @@ import { StepFooter } from './StepFooter';
 // 입력칸/버튼은 공통 UI 프리미티브 규약 확정 전이라 네이티브 요소로 자체 완결한다(CLAUDE.md).
 
 const CODE_LENGTH = 6;
+/** 국내 휴대폰 번호 최대 자릿수. 10~11자리를 허용하고 그 이상 입력은 잘라낸다. */
+const PHONE_MAX_LENGTH = 11;
 const RESEND_SECONDS = 180; // 3:00
 /** 국내 휴대폰 번호(하이픈 없이 숫자). 형식만 확인하고 실제 유효성은 서버(목업)가 판단한다. */
 const PHONE_PATTERN = /^01\d{8,9}$/;
@@ -25,8 +27,10 @@ const FLOATING_LABEL_CLASS =
   'text-content-quarternary bg-background-default absolute -top-2 left-3 px-1 text-xs font-medium';
 
 // 검정(tertiary) 사이드 버튼. 글씨는 content-inverse(라이트=흰색/다크=검정)라 다크모드에서도 대비 유지.
+// 너비를 고정(w-28)한다: 라벨에 따라 폭이 달라지면(인증번호 전송/재전송/확인) 두 행의 flex-1 입력칸
+// 너비가 어긋나므로, 가장 긴 "인증번호 전송"이 한 줄에 들어가는 선까지 줄인 고정 너비로 통일한다.
 const SIDE_BUTTON_CLASS =
-  'bg-surface-button-tertiary-default hover:bg-surface-button-tertiary-hover active:bg-surface-button-tertiary-pressed text-content-inverse focus-visible:ring-effect-focus-ring-primary rounded-8 h-14 shrink-0 px-4 text-sm font-medium whitespace-nowrap outline-none focus-visible:ring-2 focus-visible:ring-offset-1 disabled:opacity-40';
+  'bg-surface-button-tertiary-default hover:bg-surface-button-tertiary-hover active:bg-surface-button-tertiary-pressed text-content-inverse focus-visible:ring-effect-focus-ring-primary rounded-8 h-14 w-28 shrink-0 text-sm font-medium whitespace-nowrap outline-none focus-visible:ring-2 focus-visible:ring-offset-1 disabled:opacity-40';
 
 function formatTimer(totalSeconds: number): string {
   const minutes = Math.floor(totalSeconds / 60);
@@ -77,8 +81,8 @@ export function PhoneVerificationStep({
   const expired = sent && !verified && secondsLeft === 0;
 
   const handlePhoneChange = (raw: string) => {
-    // 숫자만 허용. 번호를 고치면 직전 전송/인증을 무효화한다.
-    const digits = raw.replace(/\D/g, '');
+    // 숫자만 허용하고 최대 11자리로 자른다(국내 번호 10~11자리). 번호를 고치면 직전 전송/인증을 무효화한다.
+    const digits = raw.replace(/\D/g, '').slice(0, PHONE_MAX_LENGTH);
     onPhoneChange(digits);
     setSent(false);
     setCode('');
@@ -122,7 +126,7 @@ export function PhoneVerificationStep({
     }
   };
 
-  // 코드 입력칸 아래 헬퍼: 인증 성공(녹색) > 에러(빨강) > 만료(빨강) > 남은 시간(회색).
+  // 코드 입력칸 아래 헬퍼: 인증 성공(녹색) > 에러(빨강) > 만료(빨강) > 남은 시간(코랄).
   const codeHelper = verified
     ? { text: '인증되었습니다.', tone: 'success' as const }
     : error !== null
@@ -142,8 +146,16 @@ export function PhoneVerificationStep({
         </div>
 
         <div className="flex flex-col gap-4">
-          {/* 휴대폰 번호 + 전송 */}
-          <div className="flex gap-2">
+          {/* 휴대폰 번호 + 전송. 폼으로 감싸 번호칸에서 Enter 시 전송/재전송이 되게 한다.
+              전송 버튼은 type="submit"이고 비활성일 땐 브라우저가 암묵 제출을 안 해 유효할 때만 발송된다. */}
+          <form
+            noValidate
+            onSubmit={(event) => {
+              event.preventDefault();
+              handleSend();
+            }}
+            className="flex gap-2"
+          >
             <div className="relative flex-1">
               <label htmlFor="signup-phone" className={FLOATING_LABEL_CLASS}>
                 휴대폰 번호
@@ -153,6 +165,7 @@ export function PhoneVerificationStep({
                 type="tel"
                 inputMode="numeric"
                 autoComplete="tel"
+                maxLength={PHONE_MAX_LENGTH}
                 placeholder="휴대폰 번호를 입력해주세요."
                 value={phone}
                 // 인증 후에도 잠그지 않는다 — 잘못 인증한 번호를 고칠 수 있어야 한다.
@@ -169,19 +182,26 @@ export function PhoneVerificationStep({
               />
             </div>
             <button
-              type="button"
-              onClick={handleSend}
+              type="submit"
               disabled={!phoneValid || verified || sending}
               className={SIDE_BUTTON_CLASS}
             >
               {sending ? '전송 중' : sent ? '재전송' : '인증번호 전송'}
             </button>
-          </div>
+          </form>
 
           {/* 인증번호 입력(전송 후 노출) + 확인 */}
           {sent && (
             <div className="flex flex-col gap-2">
-              <div className="flex gap-2">
+              {/* 인증번호칸에서 Enter 시 확인. 확인 버튼 type="submit"이며 비활성일 땐 제출되지 않는다. */}
+              <form
+                noValidate
+                onSubmit={(event) => {
+                  event.preventDefault();
+                  handleVerify();
+                }}
+                className="flex gap-2"
+              >
                 <div className="relative flex-1">
                   <label htmlFor="signup-phone-code" className={FLOATING_LABEL_CLASS}>
                     인증번호
@@ -212,15 +232,10 @@ export function PhoneVerificationStep({
                     )}
                   />
                 </div>
-                <button
-                  type="button"
-                  onClick={handleVerify}
-                  disabled={!canVerify}
-                  className={SIDE_BUTTON_CLASS}
-                >
+                <button type="submit" disabled={!canVerify} className={SIDE_BUTTON_CLASS}>
                   {verifying ? '확인 중' : '확인'}
                 </button>
-              </div>
+              </form>
               <p
                 id="signup-phone-code-helper"
                 role={codeHelper.tone === 'error' ? 'alert' : undefined}
@@ -230,7 +245,7 @@ export function PhoneVerificationStep({
                     ? 'text-content-success'
                     : codeHelper.tone === 'error'
                       ? 'text-content-error'
-                      : 'text-content-quarternary',
+                      : 'text-content-brand',
                 )}
               >
                 {codeHelper.text}
