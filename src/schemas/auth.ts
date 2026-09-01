@@ -25,9 +25,13 @@ const PASSWORD_MAX_LENGTH = 16;
  */
 const PASSWORD_PATTERN = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9\s])\S+$/;
 
-/** 로그인 식별자 = 아이디. 형식 규칙 미확정이라 필수만 검증. */
+/**
+ * 로그인 식별자 = 아이디. 형식 규칙 미확정이라 필수만 검증한다.
+ * 아이디는 앞뒤 공백을 제거해 검증·제출한다(공백만 입력을 무효로 만들고, 붙여넣기 시 딸려온
+ * 공백을 자동 정리). 비밀번호는 공백도 유효한 문자일 수 있어 trim하지 않는다.
+ */
 export const loginSchema = z.object({
-  id: z.string().min(1, AUTH_ERROR_MESSAGES.id.required),
+  id: z.string().trim().min(1, AUTH_ERROR_MESSAGES.id.required),
   password: z.string().min(1, AUTH_ERROR_MESSAGES.password.required),
 });
 
@@ -41,7 +45,26 @@ export const loginSchema = z.object({
  */
 export const signupEmailSchema = z.email(AUTH_ERROR_MESSAGES.email.invalid);
 
-export const signupIdSchema = z.string().min(1, AUTH_ERROR_MESSAGES.id.required);
+/**
+ * 회원가입 아이디 규칙. 앞뒤 공백 제거 후 필수 + 형식(영문·숫자만) 검증.
+ * 허용 문자·자릿수 규칙은 서버 미확정이라 잠정이다. "특수문자 불가"만 확정 요구사항이라
+ * 영문 대소문자·숫자만 허용하는 최소 규칙을 둔다. 서버 규칙이 나오면 이 정규식만 교체한다(화면 그대로).
+ */
+const ID_PATTERN = /^[A-Za-z0-9]+$/;
+
+export const signupIdSchema = z
+  .string()
+  .trim()
+  .min(1, AUTH_ERROR_MESSAGES.id.required)
+  .regex(ID_PATTERN, AUTH_ERROR_MESSAGES.id.format);
+
+/**
+ * 회원가입 닉네임 규칙. 앞뒤 공백 제거 후 필수(빈값 금지)만 검증한다.
+ * 닉네임은 아이디와 달리 한글·이모지 등 허용 문자 범위가 서버 미확정이라 형식 규칙을 두지 않고,
+ * 통과 여부는 아이디와 동일하게 중복확인(현재 mock)으로 결정한다. 서버 규칙이 나오면 여기만 교체한다.
+ * (Figma에 닉네임 화면이 아직 없어, 아이디 스텝을 미러링한 잠정 화면이다 — SignupWizard 참고.)
+ */
+export const signupNicknameSchema = z.string().trim().min(1, AUTH_ERROR_MESSAGES.nickname.required);
 
 export const signupPasswordSchema = z
   .string()
@@ -52,10 +75,21 @@ export const signupPasswordSchema = z
 export const signupSchema = z.object({
   email: signupEmailSchema,
   id: signupIdSchema,
+  nickname: signupNicknameSchema,
   password: signupPasswordSchema,
 });
 
 export type LoginValues = z.infer<typeof loginSchema>;
 export type SignupValues = z.infer<typeof signupSchema>;
-/** 회원가입 단계 식별자. URL 쿼리(`?step=`)와 위저드 상태에 함께 쓴다. */
-export type SignupStep = 'email' | 'id' | 'password' | 'complete';
+
+/** 사용 모드(구매자/판매자). Figma 08.27 "B-01 모드 선택" 시안. 온보딩 첫 스텝에서 고른다. */
+export type SignupMode = 'buyer' | 'seller';
+
+/**
+ * 회원가입 단계 식별자. URL 쿼리(`?step=`)와 위저드 상태에 함께 쓴다.
+ * Figma 08.27 재설계로 앞단에 모드 선택·개인정보 동의·휴대폰 인증이 추가됐다.
+ * 닉네임은 아이디와 비밀번호 사이에 넣는다(Figma 미반영 잠정 스텝):
+ *   mode → terms → phone → email → id → nickname → password → complete.
+ */
+export type SignupStep =
+  'mode' | 'terms' | 'phone' | 'email' | 'id' | 'nickname' | 'password' | 'complete';

@@ -17,7 +17,7 @@ export type FieldStatus = 'default' | 'success' | 'error';
 
 // 라벨은 상태와 무관하게 항상 기본 회색(로그인 시안과 동일 규칙).
 const FLOATING_LABEL_CLASS =
-  'text-content-quarternary bg-background-default absolute -top-2 left-3 px-1 text-xs font-medium';
+  'text-content-quarternary bg-background-default text-caption-12 absolute -top-2 left-3 px-1';
 
 function CheckIcon() {
   return (
@@ -80,6 +80,9 @@ interface StepFieldProps {
   onClear: () => void;
   /** 포커스 진입/이탈 알림. 위저드가 "타이핑 중엔 에러 숨김"을 결정하는 데 쓴다. */
   onFocusChange?: (focused: boolean) => void;
+  /** Enter 키로 현재 스텝을 진행한다(이메일/비번=다음, 아이디=중복확인 또는 다음).
+   *  '다음' 버튼이 비활성일 땐 폼 암묵 제출이 막히므로, 폼 대신 입력칸 keydown으로 직접 처리한다. */
+  onEnter?: () => void;
   /** 오른쪽 인라인 컨트롤(예: 아이디 중복확인 버튼). 있으면 Clear(X) 대신 노출한다. */
   rightSlot?: React.ReactNode;
 }
@@ -96,6 +99,7 @@ export function StepField({
   field,
   onClear,
   onFocusChange,
+  onEnter,
   rightSlot,
 }: StepFieldProps) {
   const hasValue = value.length > 0;
@@ -120,7 +124,7 @@ export function StepField({
           // useWatch가 초기 렌더에 undefined를 줄 수 있어 ''로 보정한다(안 하면 uncontrolled→controlled 경고).
           value={value ?? ''}
           className={cn(
-            'placeholder:text-content-quinary rounded-8 h-14 w-full border px-4 text-sm outline-none',
+            'placeholder:text-content-quinary rounded-8 text-body-14 h-14 w-full border px-4 outline-none',
             // 오른쪽 컨트롤 폭만큼 패딩을 벌려 텍스트가 겹치지 않게 한다.
             rightSlot !== undefined ? 'pr-28' : 'pr-11',
             // 빈 값: 회색(포커스 시 검정) / 값 있음: 검정 / success: 녹색 / error: 빨강
@@ -140,6 +144,14 @@ export function StepField({
             field.onBlur(event);
             onFocusChange?.(false);
           }}
+          onKeyDown={(event) => {
+            // onEnter가 있을 때만 Enter를 가로챈다. 핸들러가 없으면 preventDefault로 폼 기본 제출을
+            // 삼키지 않도록 그냥 흘려보낸다. IME 조합 확정(한글 입력 등)의 Enter는 무시한다.
+            if (onEnter && event.key === 'Enter' && !event.nativeEvent.isComposing) {
+              event.preventDefault();
+              onEnter();
+            }
+          }}
         />
         <div className="absolute top-1/2 right-3 flex -translate-y-1/2 items-center gap-2">
           {status === 'success' && <CheckIcon />}
@@ -156,7 +168,7 @@ export function StepField({
           id={helperId}
           role={status === 'error' ? 'alert' : undefined}
           className={cn(
-            'text-xs',
+            'text-caption-12',
             status === 'success'
               ? 'text-content-success'
               : status === 'error'
