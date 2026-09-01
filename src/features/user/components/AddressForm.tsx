@@ -12,7 +12,13 @@ import {
 } from '@/features/user/components/AddressField';
 import { toFullAddress, useDaumPostcode } from '@/hooks/useDaumPostcode';
 import { cn } from '@/lib/cn';
-import { addressSchema, type AddressFormValues } from '@/schemas/address';
+import {
+  ADDRESS_DETAIL_MAX_LENGTH,
+  ADDRESS_NAME_MAX_LENGTH,
+  ENTRANCE_CODE_MAX_LENGTH,
+  addressSchema,
+  type AddressFormValues,
+} from '@/schemas/address';
 
 // B-30 배송지 등록·수정 폼. `FN-B30-02`.
 //
@@ -42,15 +48,27 @@ interface AddressFormProps {
   successHref: string;
   /** 수정 화면에서 기존 값을 채워 넣는다. 없으면 등록. */
   defaultValues?: AddressFormValues;
+  /**
+   * '기본 배송지로 설정'을 체크한 채 잠근다. 두 경우에 해제할 수 없다.
+   * - 최초 등록(목록 0건): 첫 배송지는 무조건 기본이 된다(구성 요소 `BR-04`)
+   * - 현재 기본배송지 수정: 해제하면 기본배송지가 0건이 된다(`BR-B30-02-06`)
+   */
+  lockDefault?: boolean;
 }
 
-export function AddressForm({ successHref, defaultValues = EMPTY_VALUES }: AddressFormProps) {
+export function AddressForm({
+  successHref,
+  defaultValues = EMPTY_VALUES,
+  lockDefault = false,
+}: AddressFormProps) {
   const router = useRouter();
   const { open } = useDaumPostcode();
 
   const { register, handleSubmit, setValue, control, formState } = useForm<AddressFormValues>({
     resolver: zodResolver(addressSchema),
-    defaultValues,
+    // 잠긴 경우 값도 체크된 상태로 시작해야 한다. 체크박스를 disabled로만 두면 표시는 꺼진 채
+    // 잠겨 버린다.
+    defaultValues: lockDefault ? { ...defaultValues, isDefault: true } : defaultValues,
     // 시안의 버튼이 입력 도중에 활성으로 바뀌므로 매 변경마다 판정한다.
     mode: 'onChange',
   });
@@ -62,16 +80,16 @@ export function AddressForm({ successHref, defaultValues = EMPTY_VALUES }: Addre
   async function handleFindPostalCode() {
     await open((data) => {
       // 검색으로만 채워지는 값이라 dirty·validation을 함께 갱신해야 버튼이 열린다.
-      setValue('postalCode', data.zonecode, { shouldValidate: true });
-      setValue('address', toFullAddress(data), { shouldValidate: true });
+      setValue('postalCode', data.zonecode, { shouldValidate: true, shouldDirty: true });
+      setValue('address', toFullAddress(data), { shouldValidate: true, shouldDirty: true });
     });
   }
 
   function handleNoEntranceCodeChange(checked: boolean) {
-    setValue('noEntranceCode', checked, { shouldValidate: true });
+    setValue('noEntranceCode', checked, { shouldValidate: true, shouldDirty: true });
     if (checked) {
       // 체크하면 입력칸을 비운다. 값이 남아 있으면 잠긴 칸의 내용이 그대로 저장된다.
-      setValue('entranceCode', '', { shouldValidate: true });
+      setValue('entranceCode', '', { shouldValidate: true, shouldDirty: true });
     }
   }
 
@@ -79,6 +97,8 @@ export function AddressForm({ successHref, defaultValues = EMPTY_VALUES }: Addre
     // TODO: 배송지 등록·수정 API 연결. 규격 확정 전이라 이동만 한다.
     router.push(successHref);
   }
+
+  const canSubmit = formState.isValid && formState.isDirty;
 
   return (
     <form className="flex w-full flex-1 flex-col" onSubmit={handleSubmit(onSubmit)}>
@@ -117,6 +137,7 @@ export function AddressForm({ successHref, defaultValues = EMPTY_VALUES }: Addre
               // 시안대로 주소를 고르기 전에는 상세주소를 막는다(FN-B30-02 BR-02).
               // 시안에 플레이스홀더가 없어 넣지 않았다. 어느 칸인지는 aria-label로만 구분된다.
               disabled={address === ''}
+              maxLength={ADDRESS_DETAIL_MAX_LENGTH}
               {...register('addressDetail')}
             />
           </div>
@@ -129,6 +150,7 @@ export function AddressForm({ successHref, defaultValues = EMPTY_VALUES }: Addre
                 className={cn(ADDRESS_INPUT_CLASS, noEntranceCode && 'bg-surface-disabled-primary')}
                 disabled={noEntranceCode}
                 aria-label="공동현관 출입번호"
+                maxLength={ENTRANCE_CODE_MAX_LENGTH}
                 placeholder="공동현관번호를 입력해주세요. (예 : #1234)"
                 {...register('entranceCode')}
               />
@@ -144,6 +166,7 @@ export function AddressForm({ successHref, defaultValues = EMPTY_VALUES }: Addre
             <input
               className={ADDRESS_INPUT_CLASS}
               aria-label="배송지명"
+              maxLength={ADDRESS_NAME_MAX_LENGTH}
               placeholder="배송지명을 입력해주세요. (예 : 집, 회사)"
               {...register('name')}
             />
@@ -159,6 +182,10 @@ export function AddressForm({ successHref, defaultValues = EMPTY_VALUES }: Addre
           </AddressField>
 
           <AddressField label="휴대폰 번호">
+            {/* 입력칸은 하이픈 없이 받는다(시안 453:25833의 입력값이 `01012341234`, 플레이스홀더도
+                '-없이'). 하이픈은 목록 카드에서만 붙인다(formatPhone).
+                기능명세 FN-B30-02는 "하이픈 자동 삽입 표시"라고 적고 있어 시안과 어긋난다.
+                시안 두 곳(입력값·플레이스홀더)이 서로 일관되므로 시안을 따르고 PM에 확인 요청했다. */}
             <input
               className={ADDRESS_INPUT_CLASS}
               inputMode="numeric"
@@ -169,18 +196,21 @@ export function AddressForm({ successHref, defaultValues = EMPTY_VALUES }: Addre
           </AddressField>
         </div>
 
-        <Checkbox label="기본 배송지로 설정" {...register('isDefault')} />
+        {/* 최초 등록과 현재 기본배송지 수정에서는 해제할 수 없다(BR-04 · BR-B30-02-06). */}
+        <Checkbox disabled={lockDefault} label="기본 배송지로 설정" {...register('isDefault')} />
       </div>
 
       <div className="w-full p-4">
+        {/* 명세는 수정 모드 CTA를 "변경 발생 시 활성"으로 정한다. 등록 모드는 빈 폼에서 시작해
+            값을 채우는 순간 dirty가 되므로, 두 모드에 같은 조건을 써도 동작이 갈리지 않는다. */}
         <button
           className={cn(
             'text-button-15 rounded-8 focus-visible:ring-effect-focus-ring-primary flex h-12 w-full items-center justify-center px-3 outline-none focus-visible:ring-2',
-            formState.isValid
+            canSubmit
               ? 'bg-surface-button-tertiary-default text-content-inverse active:bg-surface-button-tertiary-pressed'
               : 'bg-surface-disabled-secondary text-content-disabled-secondary',
           )}
-          disabled={!formState.isValid}
+          disabled={!canSubmit}
           type="submit"
         >
           확인
