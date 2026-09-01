@@ -35,8 +35,8 @@ export const ORDER_QUANTITY_MIN = 1;
 export const ORDER_QUANTITY_MAX = 99;
 export const ORDER_QUANTITY_DEFAULT = 1;
 
-/** 검색어 길이 제약. 출처: FN-B05-01 (최대 글자수는 운영 조정 가능). */
-export const SEARCH_QUERY_MIN_LENGTH = 1;
+/** 검색어 길이 제약. 출처: BR-B05-01-01 (2자 이상, 공백만으로는 실행 불가). 최대는 운영 조정 가능. */
+export const SEARCH_QUERY_MIN_LENGTH = 2;
 export const SEARCH_QUERY_MAX_LENGTH = 50;
 
 /** 최근 검색어 로컬 저장 최대 건수. 초과 시 오래된 것부터 제거. 출처: FN-B05-02. */
@@ -62,16 +62,24 @@ export const HOME_GATHERING_PREVIEW_COUNT = 3; // 모이는 중 수요 마감 �
 
 /**
  * 수요 접수 희망 가격대 구간(7종, 택1). 카드·수요 상세의 가격 범위 표기도 이 구간을 따른다.
- * 출처: FN-B09-01 (B안에서 6→7구간으로 정정). key는 UI·저장용 식별자, label은 노출 문구.
+ *
+ * 화면 표기는 '이하/초과'로 통일하고 저장값은 1원 단위로 분리해, 택1 구조에서 경계값이 두 구간에
+ * 동시 귀속되지 않게 한다(BR-B09-01-10). 서버로 보내는 값은 `min`·`max`이며 `key`는 화면 상태용
+ * 식별자다.
+ *
+ * 최상위 구간의 `max: 999_999`는 내부 상한이라 어떤 화면에도 노출하지 않는다. B-06 희망가 범위는
+ * 보드 집계값을 만원 단위로 절삭해 표기하는 별도 규칙을 따른다(예: 집계 20,001~100,000 → 2만~10만원).
+ *
+ * 출처: FN-B09-01 구성 요소 · BR-B09-01-10 · '가격 데이터 실제 매핑값' 표(8/31).
  */
 export const PRICE_BANDS = [
-  { key: 'under_5k', label: '5천원 미만' },
-  { key: '5k_10k', label: '5천원~1만원' },
-  { key: '10k_20k', label: '1~2만원' },
-  { key: '20k_30k', label: '2~3만원' },
-  { key: '30k_50k', label: '3~5만원' },
-  { key: '50k_100k', label: '5~10만원' },
-  { key: 'over_100k', label: '10만원 이상' },
+  { key: 'upto_5k', label: '5천원 이하', min: 0, max: 5_000 },
+  { key: 'upto_10k', label: '1만원 이하', min: 5_001, max: 10_000 },
+  { key: 'upto_20k', label: '2만원 이하', min: 10_001, max: 20_000 },
+  { key: 'upto_30k', label: '3만원 이하', min: 20_001, max: 30_000 },
+  { key: 'upto_50k', label: '5만원 이하', min: 30_001, max: 50_000 },
+  { key: 'upto_100k', label: '10만원 이하', min: 50_001, max: 100_000 },
+  { key: 'over_100k', label: '10만원 초과', min: 100_001, max: 999_999 },
 ] as const;
 
 export type PriceBandKey = (typeof PRICE_BANDS)[number]['key'];
