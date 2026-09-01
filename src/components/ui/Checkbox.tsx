@@ -14,6 +14,10 @@ import { cn } from '@/lib/cn';
 //
 // 체크 표시는 형제 선택자로 켠다. peer-checked:는 peer의 **형제**에만 걸리므로, 체크 아이콘
 // 자체가 아니라 형제인 박스에 걸고 그 안의 svg를 [&_svg]로 짚는다.
+//
+// 잠긴 상태는 라벨 전체를 흐리게 한다. 라벨 텍스트는 input의 형제가 아니라 peer-로 못 짚어서
+// has-[:disabled]:로 바깥 <label>에 건다. 시안에 비활성 상태가 없어 색을 새로 정하는 대신
+// 투명도만 낮췄다. 정의가 나오면 여기만 고친다.
 
 type CheckboxProps = Omit<ComponentPropsWithRef<'input'>, 'type' | 'className'> & {
   label: string;
@@ -22,7 +26,7 @@ type CheckboxProps = Omit<ComponentPropsWithRef<'input'>, 'type' | 'className'> 
 
 export function Checkbox({ label, className, ...props }: CheckboxProps) {
   return (
-    <label className={cn('flex items-center gap-2', className)}>
+    <label className={cn('flex items-center gap-2 has-[:disabled]:opacity-50', className)}>
       <span className="relative flex size-5 shrink-0">
         <input className="peer sr-only" type="checkbox" {...props} />
         <span
