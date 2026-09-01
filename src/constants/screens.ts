@@ -52,12 +52,22 @@ export const BUYER_SCREENS = [
   { id: 'B-19', name: '낙찰 성공 정보', role: 'buyer', scope: 'MVP', group: '결과' },
   { id: 'B-20', name: '낙찰·구매실패 안내', role: 'buyer', scope: 'Full', group: '결과' },
   { id: 'B-21', name: '주문 내역', role: 'buyer', scope: 'MVP', group: '주문·배송' },
-  { id: 'B-22', name: '배송상태 확인', role: 'buyer', scope: 'MVP', group: '주문·배송' },
+  // MVP 제외(8.28). 진입점은 남는다 — B-21이 ORD_SHIPPING·ORD_DELIVERED에서 '배송상태 확인'
+  // 버튼을 그대로 노출하고 탭 시 '준비 중'으로 처리한다(FN-B21-01 구성 요소).
+  { id: 'B-22', name: '배송상태 확인', role: 'buyer', scope: 'Full', group: '주문·배송' },
   { id: 'B-23', name: '청약철회·환불', role: 'buyer', scope: 'DISCONTINUED', group: '주문·배송' },
   { id: 'B-24', name: '프로필·설정', role: 'buyer', scope: 'MVP', group: '마이페이지' },
   { id: 'B-25', name: '알림 설정', role: 'buyer', scope: 'Full', group: '마이페이지' },
   { id: 'B-26', name: '마이페이지 홈', role: 'buyer', scope: 'MVP', group: '마이페이지' },
-  { id: 'B-27', name: '참여 가능한 수요 전체보기', role: 'buyer', scope: 'MVP', group: '홈' },
+  // 결번(8.28). FN-B27-01이 '도감 검색과 중복'으로 삭제됐다.
+  // ⚠️ B-03의 '참여 가능한 수요 더보기' 진입점 행선지가 미정이다(PM 확인 중).
+  {
+    id: 'B-27',
+    name: '참여 가능한 수요 전체보기',
+    role: 'buyer',
+    scope: 'DISCONTINUED',
+    group: '홈',
+  },
   { id: 'B-28', name: '주문상세', role: 'buyer', scope: 'MVP', group: '주문·배송' },
   { id: 'B-29', name: '도감 전체보기', role: 'buyer', scope: 'Full', group: '상품·수요' },
   { id: 'B-30', name: '배송지 등록', role: 'buyer', scope: 'MVP', group: '마이페이지' },
