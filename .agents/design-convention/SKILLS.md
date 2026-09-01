@@ -353,20 +353,26 @@ shadcn 컴포넌트를 스캐폴드로 가져올 때, shadcn 기본 변수를 �
 | `--text-label-12`         | 12  | `text-label-12`         |
 | `--text-label-13`         | 13  | `text-label-13`         |
 | `--text-body-14`          | 14  | `text-body-14`          |
+| `--text-button-14`        | 14  | `text-button-14`        |
 | `--text-body-15`          | 15  | `text-body-15`          |
+| `--text-button-15`        | 15  | `text-button-15`        |
 | `--text-section-title-16` | 16  | `text-section-title-16` |
+| `--text-button-16`        | 16  | `text-button-16`        |
 | `--text-title-17`         | 17  | `text-title-17`         |
 | `--text-title-18`         | 18  | `text-title-18`         |
 | `--text-heading-20`       | 20  | `text-heading-20`       |
 | `--text-heading-22`       | 22  | `text-heading-22`       |
 | `--text-heading-24`       | 24  | `text-heading-24`       |
 
-> 행간(`--text-*--line-height`)은 ⛔ 미확정.
+> 타이포 토큰은 **크기·행간(`--text-*--line-height`)·굵기(`--text-*--font-weight`)를 한 유틸리티로 묶는다.** `text-heading-20` 하나면 셋 다 적용된다(생성기가 `globals.css`에 함께 출력 — 예: `--text-body-14: 14px; --text-body-14--line-height: 22px; --text-body-14--font-weight: 500;`).
 
 ### Font Weight / Family
 
-- Weight: Tailwind 기본, 선언 없이 사용 — `medium`→`font-medium` / `semibold`→`font-semibold` / `bold`→`font-bold` / `extrabold`→`font-extrabold`
+- **타이포 토큰을 쓰는 텍스트엔 `font-*`를 얹지 않는다.** 토큰이 이미 weight를 싣고 있고, Tailwind v4의 `--tw-font-weight` 때문에 `font-medium` 등을 함께 주면 토큰 weight가 무시된다. `font-*`는 타이포 토큰을 **안 쓰는** 텍스트에만: `medium`→`font-medium` / `semibold`→`font-semibold` / `bold`→`font-bold` / `extrabold`→`font-extrabold`.
+- **버튼 텍스트는 `text-button-*`(weight 600 내장)를 쓴다** — 전체폭 CTA=`text-button-15`, 사이드·인라인 버튼=`text-button-14`(2026-08-31 `MoongCheap_DS` Button 컴포넌트 + UI 실사용 대조: small=14 / medium=15 / large=16, CTA는 medium). 여기에 `font-medium`을 더하지 말 것.
 - Family: `--font-sans` = Pretendard (본문 기본, 이미 적용됨) → `font-sans`
+
+> **`cn()`과 타이포 토큰.** `cn()`(`lib/cn`)은 tailwind-merge를 확장해 DS 타이포 토큰(`text-body-*`·`text-button-*`·`text-heading-*` 등)을 **font-size 그룹**으로 인식시킨다. 확장 없이는 `cn('… text-button-15', 조건부 'text-content-inverse')`에서 크기 토큰과 색이 같은 `text-` 그룹으로 병합돼 **크기 토큰이 지워진다**(CTA가 기본 16px/400으로 렌더된 원인). 상태별 색과 타이포 토큰을 함께 쓸 땐 반드시 `cn()`을 거친다.
 
 ### Number — 기본 스케일로 흡수 (4배수 = Tailwind spacing)
 
