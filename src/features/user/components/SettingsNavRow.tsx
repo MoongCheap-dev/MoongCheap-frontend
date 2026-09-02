@@ -1,9 +1,7 @@
-'use client';
-
 import { ChevronRight } from 'lucide-react';
 import Link from 'next/link';
 
-import { useToast } from '@/components/ui/Toast';
+import { ComingSoonButton } from '@/components/ui/ComingSoonButton';
 
 // 전체 폭 목록 행(라벨 + 우측 chevron). B-25 "활동 알림" 목록이 쓴다.
 //
@@ -27,8 +25,6 @@ const ROW_CLASS =
   'text-body-15 text-content-secondary border-divider-default active:bg-surface-secondary flex w-full items-center justify-between border-b p-4 text-left';
 
 export function SettingsNavRow({ label, href }: SettingsNavRowProps) {
-  const { showComingSoon } = useToast();
-
   const content = (
     <>
       {label}
@@ -41,9 +37,7 @@ export function SettingsNavRow({ label, href }: SettingsNavRowProps) {
   return (
     <li className="w-full">
       {href === undefined ? (
-        <button className={ROW_CLASS} onClick={showComingSoon} type="button">
-          {content}
-        </button>
+        <ComingSoonButton className={ROW_CLASS}>{content}</ComingSoonButton>
       ) : (
         <Link className={ROW_CLASS} href={href}>
           {content}

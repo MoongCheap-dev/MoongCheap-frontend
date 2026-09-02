@@ -26,18 +26,20 @@ export default async function ProfileEditPage() {
         <div className="bg-background-default rounded-12 flex w-full flex-col">
           <ProfileCard email={overview.email} nickname={overview.nickname} />
           <div className="flex w-full items-start gap-2.5 px-4 pb-4">
-            {/* 두 화면 모두 아직 없다. 상세 화면이 생기면 경로를 바꾼다. */}
-            <LinkButton href="/mypage/profile/edit/photo" label="프로필 사진 변경" />
-            <LinkButton href="/mypage/profile/edit/nickname" label="닉네임 변경" />
+            {/* 프로필 사진 변경(FN-B24-04)·닉네임 변경(FN-B24-03) 모두 Full 범위라 화면이 없다. */}
+            <LinkButton label="프로필 사진 변경" />
+            <LinkButton label="닉네임 변경" />
           </div>
         </div>
 
         <SettingsSection title="계정 설정">
           <SettingsList>
-            <SettingsRow href="/mypage/profile/edit/info" label="회원정보 변경" />
-            <SettingsRow href="/mypage/security" label="비밀번호 변경" />
+            {/* 두 화면 모두 기능명세에 행이 없고 아직 만들지 않았다. API는 명세에 있으니
+                범위가 확정되면 경로를 넣는다. */}
+            <SettingsRow comingSoon label="회원정보 변경" />
+            <SettingsRow comingSoon label="비밀번호 변경" />
             {/* 환불계좌는 기능 명세서에 근거가 없다. `User-09`는 판매자 정산 계좌다. PM 확인 필요. */}
-            <SettingsRow label="환불계좌 관리" />
+            <SettingsRow comingSoon label="환불계좌 관리" />
             {/* 로그아웃·회원탈퇴는 확인 모달이 필요해(`Auth-06` `Auth-11`) 이번 범위에서 제외한다. */}
             <SettingsRow label="로그아웃" />
             <SettingsRow label="회원탈퇴" />

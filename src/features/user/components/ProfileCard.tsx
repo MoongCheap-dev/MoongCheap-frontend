@@ -1,6 +1,8 @@
 import { ArrowLeftRight, Pencil, User } from 'lucide-react';
 import Link from 'next/link';
 
+import { ComingSoonButton } from '@/components/ui/ComingSoonButton';
+
 // 프로필 카드. Figma `Frame 117` 컴포넌트에 대응하며 마이페이지(B-26)와 프로필 설정(B-24)이
 // 함께 쓴다. 두 화면이 같은 인스턴스를 참조하고 있어 처음부터 컴포넌트로 뺐다.
 //
@@ -14,16 +16,29 @@ interface ProfileCardProps {
   editHref?: string;
   /** 역할 전환 진입 경로. 넘기지 않으면 전환 버튼을 감춘다. */
   roleSwitchHref?: string;
+  /** 경로 없이 버튼만 노출하고 '준비 중' 토스트를 띄운다. S-01 착수 전까지 쓴다. */
+  roleSwitchComingSoon?: boolean;
   roleSwitchLabel?: string;
 }
+
+const ROLE_SWITCH_CLASS =
+  'bg-surface-quinary text-content-inverse text-label-13 rounded-round flex shrink-0 items-center gap-1 px-2 py-0.5';
 
 export function ProfileCard({
   nickname,
   email,
   editHref,
   roleSwitchHref,
+  roleSwitchComingSoon = false,
   roleSwitchLabel = '판매자 전환',
 }: ProfileCardProps) {
+  const roleSwitch = (
+    <>
+      <ArrowLeftRight aria-hidden className="size-4" />
+      {roleSwitchLabel}
+    </>
+  );
+
   return (
     <section className="bg-background-default rounded-12 flex w-full items-center gap-3 p-4">
       {/* 프로필 이미지 업로드는 아직 없다. 시안의 기본 아바타를 그대로 쓴다. */}
@@ -47,13 +62,12 @@ export function ProfileCard({
           </div>
 
           {roleSwitchHref !== undefined && (
-            <Link
-              className="bg-surface-quinary text-content-inverse text-label-13 rounded-round flex shrink-0 items-center gap-1 px-2 py-0.5"
-              href={roleSwitchHref}
-            >
-              <ArrowLeftRight aria-hidden className="size-4" />
-              {roleSwitchLabel}
+            <Link className={ROLE_SWITCH_CLASS} href={roleSwitchHref}>
+              {roleSwitch}
             </Link>
+          )}
+          {roleSwitchHref === undefined && roleSwitchComingSoon && (
+            <ComingSoonButton className={ROLE_SWITCH_CLASS}>{roleSwitch}</ComingSoonButton>
           )}
         </div>
 
