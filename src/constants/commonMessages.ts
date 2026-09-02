@@ -17,6 +17,20 @@ export const ERROR_STATE_MESSAGE = '잠시 후 다시 시도해 주세요';
 /** 오류 상태의 재시도 버튼 라벨. 출처: FN-B03-01 "[새로고침] 버튼". */
 export const RETRY_LABEL = '새로고침';
 
+/* ── 전체화면 오류(모든 error 페이지) ── */
+
+/** 전체화면 오류의 제목. 출처: 시안 '모든화면 error 페이지'(453:26351). */
+export const ERROR_SCREEN_TITLE = '서비스 이용이 원활하지 않아요';
+
+/** 전체화면 오류의 본문. 시안이 두 줄로 끊어 놓았으므로 줄 단위로 둔다. */
+export const ERROR_SCREEN_DESCRIPTION = [
+  '불편을 드려 죄송합니다.',
+  '잠시 후에 다시 시도해 주세요.',
+] as const;
+
+/** 전체화면 오류의 재시도 버튼 라벨. 출처: 시안. */
+export const ERROR_SCREEN_RETRY_LABEL = '다시 시도';
+
 /* ── B-24 계정 설정 확인 다이얼로그. 문구는 시안 그대로다. ── */
 
 /** 로그아웃 확인. 출처: 시안 453:25474 · FN-B24-02. */

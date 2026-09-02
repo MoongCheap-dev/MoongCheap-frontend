@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 
 import { AppBar } from '@/components/layout/AppBar';
+import { ADDRESS_MAX } from '@/constants/businessRules';
 import { AddressCard } from '@/features/user/components/AddressCard';
 import { mockGetAddresses } from '@/mocks/address';
 
@@ -32,6 +33,7 @@ function PlusIcon() {
 export default async function AddressListPage() {
   const addresses = await mockGetAddresses();
   const isEmpty = addresses.length === 0;
+  const isFull = addresses.length >= ADDRESS_MAX;
 
   return (
     <main className="bg-background-default flex w-full flex-1 flex-col pb-6">
@@ -40,14 +42,24 @@ export default async function AddressListPage() {
       <div className="flex w-full flex-col gap-5 px-4 pt-5">
         {/* 시안이 상태별로 문구가 다르다. 빈 목록(453:25757)은 '신규 배송지 추가',
             카드가 있는 목록(453:25765)은 '새 배송지 추가'다. 같은 버튼이라 통일하고 싶지만
-            문구는 디자인 결정이라 시안 그대로 둔다. 의도인지 확인 후 한쪽으로 정리한다. */}
-        <Link
-          className="bg-surface-secondary text-label-14 text-content-tertiary rounded-8 active:bg-surface-button-quarternary-pressed flex w-full items-center justify-center gap-1 py-3"
-          href="/mypage/addresses/new"
-        >
-          <PlusIcon />
-          {isEmpty ? '신규 배송지 추가' : '새 배송지 추가'}
-        </Link>
+            문구는 디자인 결정이라 시안 그대로 둔다. 의도인지 확인 후 한쪽으로 정리한다.
+
+            상한 도달 상태는 시안이 없다(FN-B30-01에 '디자인 필요'로 남아 있다). 링크를 죽이면
+            눌러도 반응이 없어 고장으로 보이므로, 이동만 막고 문구로 이유를 알린다. 문구는
+            같은 규칙을 쓰는 B-14의 '카드는 최대 5개까지 등록할 수 있어요'를 따랐다. */}
+        {isFull ? (
+          <p className="bg-surface-disabled-secondary text-label-14 text-content-disabled-secondary rounded-8 flex w-full items-center justify-center gap-1 py-3">
+            배송지는 최대 {ADDRESS_MAX}개까지 등록할 수 있어요
+          </p>
+        ) : (
+          <Link
+            className="bg-surface-secondary text-label-14 text-content-tertiary rounded-8 active:bg-surface-button-quarternary-pressed flex w-full items-center justify-center gap-1 py-3"
+            href="/mypage/addresses/new"
+          >
+            <PlusIcon />
+            {isEmpty ? '신규 배송지 추가' : '새 배송지 추가'}
+          </Link>
+        )}
 
         {!isEmpty && (
           <ul className="flex w-full flex-col gap-5">
