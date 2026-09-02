@@ -2,13 +2,18 @@
 
 import { useEffect } from 'react';
 
-import { RotateCcw, TriangleAlert } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { ERROR_ACTION_CLASS, ErrorScreen } from '@/components/ui/ErrorScreen';
+import { ERROR_SCREEN_RETRY_LABEL } from '@/constants/commonMessages';
 
-// 인증 화면(로그인·회원가입·소셜 로그인 콜백 등)의 에러 바운더리(#18).
-// 처리 중·상태 변경 중 서버가 종료되거나 연결이 끊겨 렌더/조회가 실패하면, Next 기본 크래시 대신
-// 이 화면을 띄운다. reset()으로 해당 세그먼트를 다시 렌더해 재시도한다.
-// error.tsx는 App Router 예약 파일이라 default export를 사용한다(프로젝트 규칙의 예외).
+// 인증 화면(로그인·회원가입·소셜 로그인 콜백)의 에러 바운더리(#18 → #44에서 시안 적용).
+//
+// 시안이 "모든 error 페이지는 이 페이지로 연결합니다"라고 못박아 뒤 루트와 같은 화면을 쓴다.
+// 초안에 있던 '로그인으로 돌아가기' 보조 버튼은 시안에 없어 뺐다. 인증 화면에서 reset()이
+// 실패해도 상단 진입점으로 돌아갈 수 있어 동선이 막히지는 않는다.
+//
+// 셸(모바일 폭·패딩)은 (auth)/layout.tsx가 이미 씌우므로 여기서는 다시 주지 않는다.
+//
+// error.tsx는 App Router 예약 파일이라 default export를 쓴다(프로젝트 규칙의 예외).
 export default function AuthError({
   error,
   reset,
@@ -16,46 +21,16 @@ export default function AuthError({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
-  const router = useRouter();
-
   useEffect(() => {
     // 원인 파악용 로깅. 에러 리포팅 도구가 도입되면 이 지점에서 전송한다.
     console.error('[auth] 화면 처리 실패:', error);
   }, [error]);
 
   return (
-    <div className="flex flex-col items-center gap-8 text-center">
-      <div className="flex flex-col items-center gap-6">
-        <span className="bg-surface-error text-content-error flex size-16 items-center justify-center rounded-full">
-          <TriangleAlert className="size-8" aria-hidden="true" />
-        </span>
-        <div className="flex flex-col gap-2">
-          <h1 className="text-xl leading-snug font-bold">문제가 발생했어요</h1>
-          <p className="text-content-quarternary text-sm leading-relaxed">
-            잠시 후 다시 시도해주세요.
-            <br />
-            계속되면 다시 로그인 해 주세요.
-          </p>
-        </div>
-      </div>
-
-      <div className="flex w-full flex-col gap-3">
-        <button
-          type="button"
-          onClick={reset}
-          className="bg-surface-button-primary-default hover:bg-surface-button-primary-hover active:bg-surface-button-primary-pressed text-content-oncolor rounded-8 flex h-13 items-center justify-center gap-2 font-medium"
-        >
-          <RotateCcw className="size-4" aria-hidden="true" />
-          다시 시도
-        </button>
-        <button
-          type="button"
-          onClick={() => router.replace('/login')}
-          className="border-border-subtle bg-surface-primary text-content-primary rounded-8 flex h-13 items-center justify-center border font-medium"
-        >
-          로그인으로 돌아가기
-        </button>
-      </div>
-    </div>
+    <ErrorScreen>
+      <button className={ERROR_ACTION_CLASS} onClick={reset} type="button">
+        {ERROR_SCREEN_RETRY_LABEL}
+      </button>
+    </ErrorScreen>
   );
 }
