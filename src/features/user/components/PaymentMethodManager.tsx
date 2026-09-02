@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 
-import { Wallet } from 'lucide-react';
+import Image from 'next/image';
 
 import { EmptyState } from '@/components/ui/EmptyState';
 import { useToast } from '@/components/ui/Toast';
@@ -70,7 +70,10 @@ export function PaymentMethodManager({ initialMethods }: PaymentMethodManagerPro
         }
         className="flex-1"
         description="결제에 사용할 카드를 등록해 주세요."
-        icon={<Wallet aria-hidden className="size-12" strokeWidth={1.5} />}
+        icon={
+          // B-14 empty 시안의 지갑 일러스트(Figma node 755:16137, 160×146). 장식용이라 alt는 빈 값.
+          <Image alt="" height={146} priority src="/images/payment-empty-wallet.png" width={160} />
+        }
         title="등록된 카드가 없어요"
       />
     );
