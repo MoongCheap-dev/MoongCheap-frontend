@@ -20,10 +20,19 @@ const RECIPIENT_PATTERN = /^[가-힣a-zA-Z]{2,20}$/;
 /** 우편번호는 검색 결과가 채우는 5자리 숫자다. */
 const POSTAL_CODE_PATTERN = /^\d{5}$/;
 
-/** 입력칸 `maxLength`와 스키마가 같은 값을 보게 상수로 뺀다. */
+/**
+ * 입력칸 `maxLength`와 스키마가 같은 값을 보게 상수로 뺀다.
+ *
+ * 받는 분·휴대폰은 길이가 정규식 안에 들어 있어 상수와 두 곳에 적히게 된다. 값이 갈리면
+ * 입력은 되는데 제출만 막히는 상태가 되므로, 고칠 때 정규식도 같이 본다.
+ */
 export const ADDRESS_DETAIL_MAX_LENGTH = 100;
 export const ENTRANCE_CODE_MAX_LENGTH = 20;
 export const ADDRESS_NAME_MAX_LENGTH = 20;
+/** RECIPIENT_PATTERN의 상한과 같다. */
+export const RECIPIENT_MAX_LENGTH = 20;
+/** PHONE_PATTERN이 요구하는 `01` + 9자리. */
+export const PHONE_MAX_LENGTH = 11;
 
 export const addressSchema = z
   .object({

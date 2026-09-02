@@ -16,6 +16,8 @@ import {
   ADDRESS_DETAIL_MAX_LENGTH,
   ADDRESS_NAME_MAX_LENGTH,
   ENTRANCE_CODE_MAX_LENGTH,
+  PHONE_MAX_LENGTH,
+  RECIPIENT_MAX_LENGTH,
   addressSchema,
   type AddressFormValues,
 } from '@/schemas/address';
@@ -176,6 +178,7 @@ export function AddressForm({
             <input
               className={ADDRESS_INPUT_CLASS}
               aria-label="받는 분"
+              maxLength={RECIPIENT_MAX_LENGTH}
               placeholder="받는 분을 입력해주세요."
               {...register('recipient')}
             />
@@ -190,6 +193,7 @@ export function AddressForm({
               className={ADDRESS_INPUT_CLASS}
               inputMode="numeric"
               aria-label="휴대폰 번호"
+              maxLength={PHONE_MAX_LENGTH}
               placeholder="-없이 휴대폰 번호를 입력해주세요."
               {...register('phone')}
             />
