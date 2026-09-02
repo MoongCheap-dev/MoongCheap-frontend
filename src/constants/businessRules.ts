@@ -48,6 +48,9 @@ export const SUBSTITUTE_NOTE_MAX_LENGTH = 100;
 /** 계정당 결제수단 등록 최대 건수. 도달 시 추가 차단. 출처: BR-B14-02-05 · BR-B14-01-07. */
 export const PAYMENT_METHOD_MAX = 5;
 
+/** 계정당 배송지 등록 최대 건수. 도달 시 추가 차단. 출처: BR-B30-01-09 · FN-B30-02. */
+export const ADDRESS_MAX = 5;
+
 /* ── 목록·카드 공통 동작 ── */
 
 /** 무한 스크롤 페이지당 건수. 출처: BR-B17-01-11 · BR-B21-01-11. */

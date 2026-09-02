@@ -27,7 +27,10 @@ export default async function AddressEditPage({ params }: { params: Promise<{ id
   return (
     <main className="bg-background-default flex w-full flex-1 flex-col">
       <AppBar backHref="/mypage/addresses" title="배송지 수정" />
+      {/* 기본배송지를 해제하면 기본이 0건이 된다. 다른 배송지를 기본으로 지정하는 방식으로만
+          바꿀 수 있다(BR-B30-02-06). */}
       <AddressForm
+        lockDefault={address.isDefault}
         successHref="/mypage/addresses"
         defaultValues={{
           postalCode: address.postalCode,
