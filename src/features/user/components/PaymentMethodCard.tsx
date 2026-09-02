@@ -1,3 +1,4 @@
+import { cn } from '@/lib/cn';
 import type { PaymentMethod } from '@/types/payment';
 
 // 결제수단 목록(B-14)의 카드 한 장. 카드 썸네일 + 카드명 + 마스킹 번호로 구성한다.
@@ -52,16 +53,17 @@ export function PaymentMethodCard(props: PaymentMethodCardProps) {
       <li className="w-full">
         <button
           aria-checked={selected}
-          className={`${CARD_BASE} ${surfaceClass(selected)} active:bg-surface-tertiary`}
+          className={cn(CARD_BASE, surfaceClass(selected), 'active:bg-surface-tertiary')}
           onClick={onSelect}
           role="radio"
           type="button"
         >
           <span
             aria-hidden
-            className={`flex size-5 shrink-0 items-center justify-center rounded-full border ${
-              selected ? 'border-content-primary' : 'border-border-tertiary'
-            }`}
+            className={cn(
+              'flex size-5 shrink-0 items-center justify-center rounded-full border',
+              selected ? 'border-content-primary' : 'border-border-tertiary',
+            )}
           >
             {selected && <span className="bg-content-primary size-2.5 rounded-full" />}
           </span>
@@ -76,7 +78,7 @@ export function PaymentMethodCard(props: PaymentMethodCardProps) {
   // 조회 모드. 2건 이상이면 행 탭으로 기본변경 모드에 진입한다(onActivate가 있을 때만 버튼으로).
   if (onActivate === undefined) {
     return (
-      <li className={`${CARD_BASE} ${surfaceClass(method.isDefault)}`}>
+      <li className={cn(CARD_BASE, surfaceClass(method.isDefault))}>
         <CardBody method={method} />
         {method.isDefault && <DefaultBadge />}
       </li>
@@ -86,7 +88,7 @@ export function PaymentMethodCard(props: PaymentMethodCardProps) {
   return (
     <li className="w-full">
       <button
-        className={`${CARD_BASE} ${surfaceClass(method.isDefault)} active:bg-surface-tertiary`}
+        className={cn(CARD_BASE, surfaceClass(method.isDefault), 'active:bg-surface-tertiary')}
         onClick={onActivate}
         type="button"
       >
