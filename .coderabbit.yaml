@@ -35,8 +35,11 @@ reviews:
       instructions: |
         - `export function`을 쓴다. default export는 App Router 예약 파일(page/layout/route 등)과 설정 파일에서만 허용된다.
         - `any` 금지. 인라인 style 속성 금지(Tailwind 유틸리티만 쓴다).
-        - 색·간격·타이포는 반드시 시맨틱 토큰 유틸리티를 쓴다(`text-content-primary`, `bg-surface-secondary`, `text-body-15`, `rounded-8` 등).
+        - 색·타이포·radius는 반드시 시맨틱 토큰 유틸리티를 쓴다(`text-content-primary`, `bg-surface-secondary`, `text-body-15`, `rounded-8` 등).
           `text-white`, `bg-gray-100`, `text-sm`, `rounded-md` 같은 기본 Tailwind 값이 보이면 지적한다.
+        - 간격(margin·padding·gap·size)은 예외다. 디자인 토큰의 number 값이 전부 4의 배수라 Tailwind 기본
+          스케일과 1:1로 대응해 `--spacing-*`를 정의하지 않았다(`globals.css` 하단 주석 참고).
+          `p-4`·`gap-1`·`h-11` 같은 기본 유틸리티가 정상이며 지적 대상이 아니다.
         - 조건부 클래스는 `@/lib/cn`(clsx + tailwind-merge)을 쓴다.
         - 주석은 "무엇"이 아니라 **왜 이렇게 했는지**를 적는다. 코드를 그대로 옮겨 적은 주석은 지적한다.
 
