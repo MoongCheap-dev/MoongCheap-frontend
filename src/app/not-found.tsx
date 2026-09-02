@@ -1,8 +1,5 @@
-'use client';
-
-import { useRouter } from 'next/navigation';
-
 import { ERROR_ACTION_CLASS, ErrorScreen } from '@/components/ui/ErrorScreen';
+import { GoBackButton } from '@/components/ui/GoBackButton';
 import { ERROR_SCREEN_RETRY_LABEL } from '@/constants/commonMessages';
 
 // 404(#44). 아직 화면이 없는 진입점이 여러 개라 실제로 도달한다
@@ -19,14 +16,10 @@ import { ERROR_SCREEN_RETRY_LABEL } from '@/constants/commonMessages';
 //
 // not-found.tsx는 App Router 예약 파일이라 default export를 쓴다(프로젝트 규칙의 예외).
 export default function NotFound() {
-  const router = useRouter();
-
   return (
     <div className="max-w-mobile mx-auto flex min-h-svh w-full flex-col">
       <ErrorScreen>
-        <button className={ERROR_ACTION_CLASS} onClick={() => router.back()} type="button">
-          {ERROR_SCREEN_RETRY_LABEL}
-        </button>
+        <GoBackButton className={ERROR_ACTION_CLASS}>{ERROR_SCREEN_RETRY_LABEL}</GoBackButton>
       </ErrorScreen>
     </div>
   );
