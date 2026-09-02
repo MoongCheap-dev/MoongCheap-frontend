@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useId, useRef } from 'react';
 
 import { Button } from '@/components/ui/Button';
 
@@ -58,6 +58,12 @@ export function AlertDialog({
   onClose,
 }: AlertDialogProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
+  // 한 화면에 인스턴스가 여럿 뜬다(B-24의 로그아웃·회원탈퇴). ID를 고정하면 문서에 중복이
+  // 생겨 aria-labelledby가 다른 다이얼로그의 문구를 가리킬 수 있다. useId는 SSR·CSR 값이
+  // 일치하도록 React가 보장하므로 하이드레이션 경고도 나지 않는다.
+  const id = useId();
+  const titleId = `${id}-title`;
+  const messageId = `${id}-message`;
 
   useEffect(() => {
     const dialog = dialogRef.current;
@@ -78,18 +84,18 @@ export function AlertDialog({
       onClose={onClose}
       role="alertdialog"
       // 제목이 있으면 제목이 이름, 없으면 메시지를 이름으로 삼아 모달에 항상 접근성 이름을 준다.
-      aria-labelledby={title !== undefined ? 'alert-dialog-title' : 'alert-dialog-message'}
-      aria-describedby={title !== undefined ? 'alert-dialog-message' : undefined}
+      aria-labelledby={title !== undefined ? titleId : messageId}
+      aria-describedby={title !== undefined ? messageId : undefined}
       className="bg-surface-primary rounded-32 m-auto w-[calc(100%-54px)] max-w-85 p-0 backdrop:bg-black/40"
     >
       <div className="flex flex-col gap-3 p-5">
         <div className="flex flex-col gap-2">
           {title !== undefined && (
-            <p className="text-title-17 text-content-primary" id="alert-dialog-title">
+            <p className="text-title-17 text-content-primary" id={titleId}>
               {title}
             </p>
           )}
-          <p className="text-body-14 text-content-quarternary" id="alert-dialog-message">
+          <p className="text-body-14 text-content-quarternary" id={messageId}>
             {message}
           </p>
         </div>
