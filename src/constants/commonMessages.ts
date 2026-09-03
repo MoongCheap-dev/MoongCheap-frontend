@@ -30,3 +30,19 @@ export const ERROR_SCREEN_DESCRIPTION = [
 
 /** 전체화면 오류의 재시도 버튼 라벨. 출처: 시안. */
 export const ERROR_SCREEN_RETRY_LABEL = '다시 시도';
+
+/* ── B-24 계정 설정 확인 다이얼로그. 문구는 시안 그대로다. ── */
+
+/** 로그아웃 확인. 출처: 시안 453:25474 · FN-B24-02. */
+export const LOGOUT_CONFIRM = {
+  title: '로그아웃 하시겠습니까?',
+  message: '로그아웃 후 다시 이용하려면 로그인이 필요해요.',
+  confirmLabel: '로그아웃',
+} as const;
+
+/** 회원탈퇴 확인. 출처: 시안 453:25499. */
+export const WITHDRAW_CONFIRM = {
+  title: '회원 탈퇴하시겠습니까?',
+  message: '탈퇴 시 계정 정보와 이용 내역이 삭제되며 복구할 수 없어요.',
+  confirmLabel: '회원탈퇴',
+} as const;

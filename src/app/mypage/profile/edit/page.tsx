@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 
 import { AppBar } from '@/components/layout/AppBar';
+import { LOGOUT_CONFIRM, WITHDRAW_CONFIRM } from '@/constants/commonMessages';
 import { LinkButton } from '@/features/user/components/LinkButton';
 import { ProfileCard } from '@/features/user/components/ProfileCard';
 import { SettingsList } from '@/features/user/components/SettingsList';
@@ -40,9 +41,10 @@ export default async function ProfileEditPage() {
             <SettingsRow comingSoon label="비밀번호 변경" />
             {/* 환불계좌는 기능 명세서에 근거가 없다. `User-09`는 판매자 정산 계좌다. PM 확인 필요. */}
             <SettingsRow comingSoon label="환불계좌 관리" />
-            {/* 로그아웃·회원탈퇴는 확인 모달이 필요해(`Auth-06` `Auth-11`) 이번 범위에서 제외한다. */}
-            <SettingsRow label="로그아웃" />
-            <SettingsRow label="회원탈퇴" />
+            {/* 두 행 다 확인 다이얼로그까지만 붙인다. 로그아웃의 세션 폐기(POST /api/auth/logout)는
+                API 계층과 함께 오고, 회원탈퇴는 진입점만 노출하고 동작은 mock이다(BR-B24-01-04). */}
+            <SettingsRow confirm={LOGOUT_CONFIRM} label="로그아웃" />
+            <SettingsRow confirm={WITHDRAW_CONFIRM} label="회원탈퇴" />
           </SettingsList>
         </SettingsSection>
       </div>
