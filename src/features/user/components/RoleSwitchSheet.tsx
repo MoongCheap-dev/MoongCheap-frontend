@@ -22,8 +22,15 @@ import { cn } from '@/lib/cn';
 const ROLE_LABELS = { buyer: '구매자', seller: '판매자' } as const;
 const CURRENT_BADGE_LABEL = '현재상태';
 
-/** 시안 실측: 높이 48 · 좌우 16 · 상하 12. 라벨은 body-15. */
-const ROW_CLASS = 'flex h-12 w-full items-center justify-between px-4 py-3';
+/**
+ * 시안 실측: 높이 48 · 좌우 16 · 상하 12. 라벨은 body-15.
+ *
+ * 라디오 input이 sr-only라 포커스 표시가 사라진다. 표식은 input의 형제가 아니라 조카여서
+ * `peer-focus-visible`(형제 결합자)이 닿지 않으므로, 행 전체에 `has-[:focus-visible]`로 링을
+ * 준다(ModeSelectStep과 같은 방식). 키보드로 방향키를 눌렀을 때 어느 행인지 보인다.
+ */
+const ROW_CLASS =
+  'has-[:focus-visible]:ring-effect-focus-ring-primary flex h-12 w-full items-center justify-between px-4 py-3 has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-offset-2';
 
 interface RoleSwitchSheetProps {
   isOpen: boolean;
@@ -60,11 +67,8 @@ export function RoleSwitchSheet({
     }
   }, [isOpen]);
 
+  // 라디오 값이 실제로 바뀔 때만 불린다. 현재 역할 재선택은 위 input의 onClick이 맡는다.
   function handleSelect(role: 'buyer' | 'seller') {
-    if (role === currentRole) {
-      onClose();
-      return;
-    }
     if (role === 'seller') {
       // 판매자 계정이 없으면 승격 화면부터 거친다. 이미 판매자인 경우의 분기는 시안·명세에
       // 근거가 없어 두지 않았다(승격 화면이 상태를 판단한다).
@@ -108,11 +112,15 @@ export function RoleSwitchSheet({
                 )}
                 key={role}
               >
+                {/* 이미 선택된 라디오를 다시 눌러도 값이 안 바뀌어 onChange가 안 온다.
+                    그 경우(현재 역할 재선택)만 onClick으로 받아 닫는다. 선택되지 않은 행은
+                    onClick을 달지 않아 onChange와 두 번 실행되지 않는다. */}
                 <input
                   checked={selected}
                   className="sr-only"
                   name="role-switch"
                   onChange={() => handleSelect(role)}
+                  onClick={selected ? onClose : undefined}
                   type="radio"
                   value={role}
                 />
@@ -127,9 +135,9 @@ export function RoleSwitchSheet({
                   {/* 라디오 표식. 시안은 두 상태 모두 회색 링이고 선택 시 안쪽 점만 생긴다. */}
                   <span
                     aria-hidden
-                    className="border-border-quarternary flex size-6 shrink-0 items-center justify-center rounded-full border-2"
+                    className="border-border-quarternary rounded-round flex size-6 shrink-0 items-center justify-center border-2"
                   >
-                    {selected && <span className="bg-surface-quinary size-4 rounded-full" />}
+                    {selected && <span className="bg-surface-quinary rounded-round size-4" />}
                   </span>
                 </span>
               </label>
