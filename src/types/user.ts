@@ -26,5 +26,12 @@ export type OrderProgressCounts = Record<OrderProgressStatus, number>;
 export interface MyPageOverview {
   nickname: string;
   email: string;
+  /**
+   * 지금 쓰고 있는 역할. 프로필 카드의 전환 버튼 라벨과 전환 시트의 '현재상태' 표시를 가른다.
+   *
+   * `types/auth.ts`의 `UserRole`(CONSUMER·SELLER·ADMIN)과 달리 두 값만 둔다. 이 화면이 가르는
+   * 것은 구매자 화면이냐 판매자 화면이냐뿐이고, ADMIN은 진입 자체가 없다.
+   */
+  role: 'buyer' | 'seller';
   orderProgress: OrderProgressCounts;
 }
