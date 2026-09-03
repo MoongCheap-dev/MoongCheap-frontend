@@ -74,7 +74,17 @@ function ScreenHeader({ title, description }: ScreenHeaderProps) {
   );
 }
 
-export function SellerApplyWizard() {
+interface SellerApplyWizardProps {
+  /**
+   * 전환을 그만두고 돌아갈 경로. '나중에 하기'(온보딩)와 '구매자 계정 유지하기'(완료)가 함께 쓴다.
+   *
+   * 두 버튼의 목적지는 시안에 없다. 진입점이 어디냐에 따라 달라질 수 있어(마이페이지 외에
+   * 판매자 유도 배너 등이 생길 수 있다) 컴포넌트가 경로를 들고 있지 않는다.
+   */
+  exitHref: string;
+}
+
+export function SellerApplyWizard({ exitHref }: SellerApplyWizardProps) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -201,8 +211,7 @@ export function SellerApplyWizard() {
           <ComingSoonButton className={cn(BUTTON_BASE_CLASS, BUTTON_TERTIARY_CLASS)}>
             {SELLER_APPLY_DONE.sellLabel}
           </ComingSoonButton>
-          {/* 이동할 곳이 시안에 없다. 진입점이 마이페이지라 그리로 되돌린다. */}
-          <Link className={cn(BUTTON_BASE_CLASS, BUTTON_QUARTERNARY_CLASS)} href="/mypage">
+          <Link className={cn(BUTTON_BASE_CLASS, BUTTON_QUARTERNARY_CLASS)} href={exitHref}>
             {SELLER_APPLY_DONE.keepBuyerLabel}
           </Link>
         </div>
@@ -246,8 +255,7 @@ export function SellerApplyWizard() {
         >
           {SELLER_APPLY_INTRO.applyLabel}
         </button>
-        {/* 이동할 곳이 시안에 없다. 진입점이 마이페이지라 그리로 되돌린다. */}
-        <Link className={cn(BUTTON_BASE_CLASS, BUTTON_QUARTERNARY_CLASS)} href="/mypage">
+        <Link className={cn(BUTTON_BASE_CLASS, BUTTON_QUARTERNARY_CLASS)} href={exitHref}>
           {SELLER_APPLY_INTRO.laterLabel}
         </Link>
       </div>

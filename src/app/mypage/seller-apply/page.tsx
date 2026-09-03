@@ -19,7 +19,9 @@ export default function SellerApplyPage() {
   return (
     <main className="bg-background-default flex w-full flex-1 flex-col">
       <Suspense fallback={null}>
-        <SellerApplyWizard />
+        {/* '나중에 하기'·'구매자 계정 유지하기'의 목적지. 시안에 없어 진입점인 마이페이지로 되돌린다.
+            주문 플로우 등 다른 진입점이 생기면 그 페이지가 자기 경로를 넘긴다. */}
+        <SellerApplyWizard exitHref="/mypage" />
       </Suspense>
     </main>
   );
