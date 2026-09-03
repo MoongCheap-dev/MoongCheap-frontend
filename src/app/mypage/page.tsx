@@ -3,6 +3,7 @@ import type { Metadata } from 'next';
 import { LinkButton } from '@/features/user/components/LinkButton';
 import { OrderProgressSummary } from '@/features/user/components/OrderProgressSummary';
 import { ProfileCard } from '@/features/user/components/ProfileCard';
+import { RoleSwitchButton } from '@/features/user/components/RoleSwitchButton';
 import { SettingsList } from '@/features/user/components/SettingsList';
 import { SettingsRow } from '@/features/user/components/SettingsRow';
 import { SettingsSection } from '@/features/user/components/SettingsSection';
@@ -29,11 +30,15 @@ export default async function MyPage() {
       </header>
 
       <div className="flex w-full flex-col gap-6 px-4">
+        {/* 전환 버튼은 시트를 여는 client 조각이 맡는다. 시트의 '판매자' 선택은 S-01로 보낸다
+            (기능명세 FN-B26-01이 판매자 전환을 미확정으로 남겨, IA의 판매자 전환 → S-01 매핑을 따랐다). */}
         <ProfileCard
           editHref="/mypage/profile/edit"
           email={overview.email}
           nickname={overview.nickname}
-          roleSwitchHref="/mypage/seller-apply"
+          roleSwitch={
+            <RoleSwitchButton currentRole={overview.role} sellerApplyHref="/mypage/seller-apply" />
+          }
         />
 
         {/* 주문 내역(B-21)은 도메인 B라 명세도 화면도 아직 없다. */}
