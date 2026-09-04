@@ -121,3 +121,40 @@ export function getOrderStatusMeta(status: OrderStatus) {
 export function canTransitionOrder(from: OrderStatus, to: OrderStatus): boolean {
   return canTransition(ORDER_STATUS, from, to);
 }
+
+/**
+ * B-21 주문 내역의 상태 탭.
+ *
+ * ⚠️ 시안(`818:35719`)은 `전체 / 배송 준비중 / 완료` 3종인데, **어떤 상태를 묶는지가 없다.**
+ *    기능명세 `FN-B21-01`만 매핑을 정의하고 있어 명세의 4종을 따른다(2026-09-04 결정).
+ *    시안이 4탭으로 갱신되면 라벨만 맞추면 된다.
+ *
+ * `PAYMENT_PENDING`(결제대기)은 명세의 어느 탭에도 없다. 명세가 '진행중'을 결제완료부터로
+ * 정의하는데, 2026-08-27 구조 변경으로 결제대기가 그 앞에 생겼기 때문이다. 실제로는 가장 많은
+ * 주문이 머무는 단계라 '진행중'에 넣어 두고 PM 확인 대상으로 남긴다.
+ * `CANCELED`는 별도 진입점(취소/교환/반품 조회)이라 탭에 넣지 않는다 — '전체'에서만 보인다.
+ */
+export const ORDER_LIST_TABS = [
+  { key: 'all', label: '전체', statuses: null },
+  {
+    key: 'inProgress',
+    label: '진행중',
+    statuses: [
+      'PAYMENT_PENDING',
+      'PAYMENT_COMPLETED',
+      'DELIVERY_REQUESTED',
+      'PREPARING',
+      'SHIPPING',
+    ],
+  },
+  { key: 'delivered', label: '배송완료', statuses: ['DELIVERED'] },
+  { key: 'confirmed', label: '완료', statuses: ['PURCHASE_CONFIRMED'] },
+] as const satisfies readonly {
+  key: string;
+  label: string;
+  /** null이면 전 상태. */
+  statuses: readonly OrderStatus[] | null;
+}[];
+
+/** 탭 키 유니온. 탭 정의에서 파생하므로 상수와 항상 일치한다. */
+export type OrderListTabKey = (typeof ORDER_LIST_TABS)[number]['key'];
