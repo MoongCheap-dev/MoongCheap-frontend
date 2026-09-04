@@ -29,7 +29,7 @@ const SPLIT_ACTION_CLASS =
 function OrderItemRow({ item }: { item: OrderItem }) {
   return (
     <div className="flex w-full items-center gap-3">
-      {/* 시안은 60×60 상품 사진이다. 목에는 이미지가 없어 자리만 회색으로 둔다. */}
+      {/* 시안은 60×60 상품 사진이다. 응답에 이미지가 없으면 자리만 회색으로 둔다. */}
       {item.imageUrl === undefined ? (
         <div aria-hidden className="bg-surface-tertiary rounded-8 size-15 shrink-0" />
       ) : (
