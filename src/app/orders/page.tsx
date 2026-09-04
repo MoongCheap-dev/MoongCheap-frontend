@@ -21,7 +21,8 @@ export default async function OrdersPage() {
   return (
     <main className="flex w-full flex-1 flex-col">
       <AppBar backHref="/mypage" title="주문 내역" />
-      <OrderList orders={orders} />
+      {/* 상세 경로는 라우트가 만든다. 목록 컴포넌트는 라우트 구조를 모른다. */}
+      <OrderList items={orders.map((order) => ({ order, detailHref: `/orders/${order.id}` }))} />
     </main>
   );
 }

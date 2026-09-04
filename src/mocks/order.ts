@@ -71,40 +71,69 @@ export async function mockGetOrders(): Promise<OrderSummary[]> {
 }
 
 /**
- * 주문 상세 목. 시안(`453:25878`)의 값을 그대로 옮겼다.
+ * 주문 상세 목. 목록 3건 각각에 대응한다.
  *
- * 시안은 목록 1번 주문(뉴베러)을 상세로 보여 주는데 **상태만 다르다** — 목록은 '배송완료',
- * 상세는 '배송준비중'이다. 시안 각각을 그대로 따랐다.
+ * 1번(뉴베러)은 시안(`453:25878`)의 값을 그대로 옮겼다. 시안은 목록과 **상태가 다르다** —
+ * 목록은 '배송완료', 상세는 '배송준비중'이다. 시안 각각을 그대로 따랐다.
+ *
+ * 2·3번은 상세 시안이 없다. 목록에 있는 상품 금액에 배송비를 더해 총액을 맞췄다. 쿠폰·포인트는
+ * 시안 1번에만 있는 항목이라 넣지 않았다.
  *
  * ⚠️ 쿠폰 할인·포인트 사용은 시안에만 있고 기능명세 `FN-B28-01` 결제 내역 정의에는 없다
  *    (명세는 상품 금액·배송비·총 결제 금액·결제수단만 적는다). 시안대로 넣고 PM 확인 대상으로 남긴다.
  */
-const mockOrderDetail: OrderDetail = {
-  ...mockOrders[0],
-  status: 'PREPARING',
-  orderNumber: '12012348371629',
-  paidAt: '26.08.26',
-  shipping: {
-    recipient: '김뭉치',
-    phoneMasked: '010 - **** - 1234',
-    address: '[12345] 서울 강남구 역삼동 646-15',
+
+/** 시안 배송비. 3건이 같은 값을 쓴다. */
+const MOCK_SHIPPING_FEE = 3_000;
+
+/** 배송지도 시안 1번 값을 3건이 공유한다. 본인 주문이라 수령인이 같다. */
+const mockShipping = {
+  recipient: '김뭉치',
+  phoneMasked: '010 - **** - 1234',
+  address: '[12345] 서울 강남구 역삼동 646-15',
+} as const;
+
+const mockOrderDetails: OrderDetail[] = [
+  {
+    ...mockOrders[0],
+    status: 'PREPARING',
+    orderNumber: '12012348371629',
+    paidAt: '26.08.26',
+    shipping: { ...mockShipping },
+    payment: {
+      lines: [
+        { label: '상품 금액', amount: 35_100 },
+        { label: '쿠폰 할인', amount: -5_400 },
+        { label: '포인트 사용', amount: -2_400 },
+        { label: '배송비', amount: MOCK_SHIPPING_FEE },
+      ],
+      total: 27_300,
+      method: '카드결제',
+    },
   },
-  payment: {
-    lines: [
-      { label: '상품 금액', amount: 35_100 },
-      { label: '쿠폰 할인', amount: -5_400 },
-      { label: '포인트 사용', amount: -2_400 },
-      { label: '배송비', amount: 3_000 },
-    ],
-    total: 27_300,
-    method: '카드결제',
-  },
-};
+  ...mockOrders.slice(1).map((order, index): OrderDetail => {
+    const itemsTotal = order.items.reduce((sum, item) => sum + item.price, 0);
+    return {
+      ...order,
+      orderNumber: `1201234837162${index + 1}`,
+      paidAt: order.orderedAt,
+      shipping: { ...mockShipping },
+      payment: {
+        lines: [
+          { label: '상품 금액', amount: itemsTotal },
+          { label: '배송비', amount: MOCK_SHIPPING_FEE },
+        ],
+        total: itemsTotal + MOCK_SHIPPING_FEE,
+        method: '카드결제',
+      },
+    };
+  }),
+];
 
 /**
- * 주문 상세 조회. 주문 목록이 목 3건뿐이라 어느 id로 들어와도 같은 상세를 돌려준다.
+ * 주문 상세 조회. 없는 주문이면 null을 돌려주고 라우트가 404로 처리한다.
  * 연동 시 이 본문만 `GET /orders/{orderId}`로 바꾼다.
  */
-export async function mockGetOrderDetail(orderId: string): Promise<OrderDetail> {
-  return { ...mockOrderDetail, id: orderId };
+export async function mockGetOrderDetail(orderId: string): Promise<OrderDetail | null> {
+  return mockOrderDetails.find((order) => order.id === orderId) ?? null;
 }

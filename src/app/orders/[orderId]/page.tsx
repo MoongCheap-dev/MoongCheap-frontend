@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { notFound } from 'next/navigation';
 
 import { AppBar } from '@/components/layout/AppBar';
 import { OrderDetail } from '@/features/order/components/OrderDetail';
@@ -21,6 +22,12 @@ export default async function OrderDetailPage({
 }) {
   const { orderId } = await params;
   const order = await mockGetOrderDetail(orderId);
+
+  // 없는 주문번호로 직접 들어온 경우. 실제로는 본인 주문이 아닌 접근도 서버가 막는다
+  // (`FN-B28-01` 예외 처리). 화면은 둘 다 404로 같게 다룬다.
+  if (order === null) {
+    notFound();
+  }
 
   return (
     <main className="flex w-full flex-1 flex-col">
