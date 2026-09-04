@@ -49,8 +49,8 @@ export function ErrorScreen({
       className="flex w-full flex-1 flex-col items-center justify-center gap-8 px-4 text-center"
     >
       {/* 제목이 상태를 설명하므로 삽화는 장식으로 둔다.
-          ⚠️ 현재 파일은 시안 크기 그대로인 1x(123×112)라 고해상도 화면에서 흐리다.
-             디자인에서 원본을 받으면 같은 경로에 덮어쓴다(코드 수정 불필요). */}
+          파일은 4x(492×448) 원본이고 width/height는 시안 표시 크기다. next/image가
+          srcset으로 화면 배율에 맞춰 내려보낸다. */}
       <Image src="/images/error-cone.png" alt="" width={123} height={112} priority />
 
       <div className="flex flex-col items-center gap-5">
