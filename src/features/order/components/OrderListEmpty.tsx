@@ -9,6 +9,9 @@ import Image from 'next/image';
 // 훨씬 크다. 억지로 className으로 덮으면 두 화면이 서로를 깨뜨린다.
 // 세 번째 빈 상태가 나오면 그때 두 변형을 하나로 합친다(공통 UI 2회 규칙).
 
+/** 시안이 끊어 놓은 두 줄. 문구·줄바꿈 위치 모두 시안 그대로다. */
+const EMPTY_DESCRIPTION = ['상품을 구매한 뒤에', '확인해주세요.'] as const;
+
 interface OrderListEmptyProps {
   /** 하단 CTA. 이동 경로가 화면마다 다를 수 있어 호출부가 넣는다. */
   action?: ReactNode;
@@ -32,9 +35,14 @@ export function OrderListEmpty({ action }: OrderListEmptyProps) {
       <div className="flex w-full flex-col items-center gap-5 px-4">
         <div className="flex w-full flex-col items-center gap-2 text-center">
           <p className="text-heading-18 text-content-primary w-full">주문 내역이 없어요</p>
-          {/* 시안이 두 줄로 끊어 놓았다. 폭 163에서 자연스럽게 나뉘도록 폭을 고정한다. */}
-          <p className="text-button-14 text-content-quarternary w-40.75">
-            상품을 구매한 뒤에 확인해주세요.
+          {/* 시안이 두 줄을 각각 별도 텍스트로 두고 있다. 폭에 기대 자연 줄바꿈시키면 글꼴·자간이
+              조금만 달라져도 끊기는 자리가 밀린다. 줄을 그대로 명시한다(ErrorScreen과 같은 방식). */}
+          <p className="text-button-14 text-content-quarternary">
+            {EMPTY_DESCRIPTION.map((line) => (
+              <span className="block" key={line}>
+                {line}
+              </span>
+            ))}
           </p>
         </div>
 
