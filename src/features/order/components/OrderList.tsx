@@ -3,6 +3,7 @@
 import { useState } from 'react';
 
 import { ChevronRight, Search } from 'lucide-react';
+import Link from 'next/link';
 
 import { ComingSoonButton } from '@/components/ui/ComingSoonButton';
 import { ORDER_LIST_TABS, type OrderListTabKey } from '@/constants/orderStatus';
@@ -96,11 +97,13 @@ export function OrderList({ orders }: OrderListProps) {
             <li className="flex w-full flex-col gap-1" key={order.id}>
               <div className="flex w-full items-center justify-between px-4 py-2">
                 <p className="text-label-16 text-content-primary">{order.orderedAt}</p>
-                {/* B-28 주문상세는 다음 이슈다. 화면이 생기면 Link로 바꾼다. */}
-                <ComingSoonButton className="text-caption-12 text-content-primary flex shrink-0 items-center gap-0.5">
+                <Link
+                  className="text-caption-12 text-content-primary flex shrink-0 items-center gap-0.5"
+                  href={`/orders/${order.id}`}
+                >
                   주문상세
                   <ChevronRight aria-hidden className="size-4.5" />
-                </ComingSoonButton>
+                </Link>
               </div>
 
               <div className="w-full px-4">

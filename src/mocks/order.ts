@@ -1,4 +1,4 @@
-import type { OrderSummary } from '@/types/order';
+import type { OrderDetail, OrderSummary } from '@/types/order';
 
 /**
  * 주문 목 데이터.
@@ -68,4 +68,43 @@ const mockOrders: OrderSummary[] = [
 
 export async function mockGetOrders(): Promise<OrderSummary[]> {
   return mockOrders;
+}
+
+/**
+ * 주문 상세 목. 시안(`453:25878`)의 값을 그대로 옮겼다.
+ *
+ * 시안은 목록 1번 주문(뉴베러)을 상세로 보여 주는데 **상태만 다르다** — 목록은 '배송완료',
+ * 상세는 '배송준비중'이다. 시안 각각을 그대로 따랐다.
+ *
+ * ⚠️ 쿠폰 할인·포인트 사용은 시안에만 있고 기능명세 `FN-B28-01` 결제 내역 정의에는 없다
+ *    (명세는 상품 금액·배송비·총 결제 금액·결제수단만 적는다). 시안대로 넣고 PM 확인 대상으로 남긴다.
+ */
+const mockOrderDetail: OrderDetail = {
+  ...mockOrders[0],
+  status: 'PREPARING',
+  orderNumber: '12012348371629',
+  paidAt: '26.08.26',
+  shipping: {
+    recipient: '김뭉치',
+    phoneMasked: '010 - **** - 1234',
+    address: '[12345] 서울 강남구 역삼동 646-15',
+  },
+  payment: {
+    lines: [
+      { label: '상품 금액', amount: 35_100 },
+      { label: '쿠폰 할인', amount: -5_400 },
+      { label: '포인트 사용', amount: -2_400 },
+      { label: '배송비', amount: 3_000 },
+    ],
+    total: 27_300,
+    method: '카드결제',
+  },
+};
+
+/**
+ * 주문 상세 조회. 주문 목록이 목 3건뿐이라 어느 id로 들어와도 같은 상세를 돌려준다.
+ * 연동 시 이 본문만 `GET /orders/{orderId}`로 바꾼다.
+ */
+export async function mockGetOrderDetail(orderId: string): Promise<OrderDetail> {
+  return { ...mockOrderDetail, id: orderId };
 }
