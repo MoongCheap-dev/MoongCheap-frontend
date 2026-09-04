@@ -44,6 +44,16 @@ export interface OrderSummary {
   items: OrderItem[];
 }
 
+/**
+ * 주문 목록(B-21)이 카드 한 장을 그리는 데 필요한 것.
+ *
+ * 상세 경로를 함께 담는다. 라우팅은 `app/`이 정하고 도메인 컴포넌트는 받은 값만 쓴다.
+ */
+export interface OrderListItem {
+  order: OrderSummary;
+  detailHref: string;
+}
+
 /** B-28 결제내역 한 줄. 시안이 항목을 고정하지 않고 나열만 해 배열로 받는다. */
 export interface OrderPaymentLine {
   label: string;
