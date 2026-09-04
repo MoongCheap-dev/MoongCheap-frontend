@@ -38,8 +38,10 @@ export default async function MyPage() {
           roleSwitchComingSoon
         />
 
-        {/* 주문 내역(B-21)은 도메인 B라 명세도 화면도 아직 없다. */}
-        <SettingsSection actionLabel="자세히보기" title="진행중인 주문내역">
+        {/* 진행 단계 숫자를 탭하면 해당 상태로 필터된 B-21로 가야 한다(BR-B21-01-09). 다만 명세가
+            "세부 상태까지 필터할지"를 [⚠️ 기능·화면 미확정] 11번으로 남겨 둬 숫자는 아직 링크가 아니다.
+            취소/교환/반품 조회는 MVP 미구현이라 준비 중 토스트를 유지한다(BR-B21-01-09). */}
+        <SettingsSection actionHref="/orders" actionLabel="자세히보기" title="진행중인 주문내역">
           <div className="flex w-full flex-col gap-1.5">
             <OrderProgressSummary counts={overview.orderProgress} />
             <LinkButton label="취소/교환/반품 조회" />
