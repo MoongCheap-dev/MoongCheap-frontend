@@ -13,6 +13,8 @@ import type { MyPageOverview } from '@/types/user';
 const mockOverview: MyPageOverview = {
   nickname: '김뭉치',
   email: 'moongcheap@gmail.com',
+  // 판매자 시트(시안 453:25351)를 확인하려면 'seller'로 바꾼다.
+  role: 'buyer',
   orderProgress: {
     PAYMENT_PENDING: 2,
     PAYMENT_COMPLETED: 0,
