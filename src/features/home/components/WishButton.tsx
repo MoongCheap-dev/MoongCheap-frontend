@@ -6,7 +6,7 @@ import { ComingSoonButton } from '@/components/ui/ComingSoonButton';
 // 하고 탭하면 '준비 중' 토스트를 띄운다.
 export function WishButton() {
   return (
-    <ComingSoonButton className="flex size-6 items-center justify-center">
+    <ComingSoonButton className="pointer-events-auto flex size-6 items-center justify-center">
       <svg
         className="size-6 opacity-80"
         viewBox="0 0 24 24"

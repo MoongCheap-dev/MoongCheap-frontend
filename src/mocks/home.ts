@@ -1,4 +1,4 @@
-import type { HomeBanner } from '@/types/home';
+import type { HomeBanner, HomeProductCard } from '@/types/home';
 
 /**
  * 홈피드 목 데이터. API가 없어 화면 검수용으로만 쓴다.
@@ -72,4 +72,175 @@ const mockBanners: readonly HomeBanner[] = [
 
 export async function mockGetHomeBanners(): Promise<readonly HomeBanner[]> {
   return mockBanners;
+}
+
+/**
+ * card-list-1(유산균에서 현재 수요가 있어요!) 목록. 시안 `981:18263`의 값 그대로다.
+ *
+ * ⚠️ 시안 3번 카드만 희망가격대가 `3만원이하`로 띄어쓰기가 빠져 있다. 같은 목록 안 표기
+ * 불일치라 실수로 보고 `3만원 이하`로 통일했다. 문구가 아니라 표기 규칙이라 판단.
+ *
+ * `deadline`은 화면 확인용으로 현재 시각 기준 상대값을 만든다. 정적 렌더라 빌드 시각이
+ * 기준이 되므로, 실제 마감 시각은 API 연동 때 서버 값으로 바뀐다.
+ */
+function hoursFromNow(hours: number): string {
+  return new Date(Date.now() + hours * 60 * 60 * 1000).toISOString();
+}
+
+const mockDemandProducts: readonly HomeProductCard[] = [
+  {
+    id: 'demand-1',
+    name: '락토핏 생유산균 골드',
+    thumbnailUrl: '/images/main-home/card-list-1/1-1.png',
+    participantCount: 1200,
+    sellerCount: 3,
+    desiredPriceLabel: '3만원 이하',
+    dday: 1,
+  },
+  {
+    id: 'demand-2',
+    name: '락토핏 다이어트',
+    thumbnailUrl: '/images/main-home/card-list-1/1-2.png',
+    participantCount: 800,
+    sellerCount: 2,
+    desiredPriceLabel: '2만원 이하',
+    dday: 2,
+  },
+  {
+    id: 'demand-3',
+    name: '락토핏 코어',
+    thumbnailUrl: '/images/main-home/card-list-1/1-3.png',
+    participantCount: 680,
+    sellerCount: 4,
+    desiredPriceLabel: '3만원 이하',
+    deadline: hoursFromNow(3),
+  },
+  {
+    id: 'demand-4',
+    name: '락토핏 당케어 데일리',
+    thumbnailUrl: '/images/main-home/card-list-1/1-4.png',
+    participantCount: 180,
+    sellerCount: 1,
+    desiredPriceLabel: '3만원 이하',
+    deadline: hoursFromNow(1),
+  },
+  {
+    id: 'demand-5',
+    name: '락토핏 뷰티',
+    thumbnailUrl: '/images/main-home/card-list-1/1-5.png',
+    participantCount: 220,
+    sellerCount: 5,
+    desiredPriceLabel: '1만원 이하',
+    dday: 1,
+  },
+];
+
+export async function mockGetDemandProducts(): Promise<readonly HomeProductCard[]> {
+  return mockDemandProducts;
+}
+
+/** card-list-2(성사 직전 공구). 시안 `981:18273`. */
+const mockClosingProducts: readonly HomeProductCard[] = [
+  {
+    id: 'closing-1',
+    name: '지리산 감자 2kg',
+    thumbnailUrl: '/images/main-home/card-list-2/2-1.png',
+    participantCount: 1800,
+    sellerCount: 5,
+    desiredPriceLabel: '1만원 이하',
+    deadline: hoursFromNow(12),
+  },
+  {
+    id: 'closing-2',
+    name: '군산 양배추 5kg',
+    thumbnailUrl: '/images/main-home/card-list-2/2-2.png',
+    participantCount: 1530,
+    sellerCount: 2,
+    desiredPriceLabel: '3만원 이하',
+    dday: 2,
+  },
+  {
+    id: 'closing-3',
+    name: '제주 애월 당근 3kg',
+    thumbnailUrl: '/images/main-home/card-list-2/2-3.png',
+    participantCount: 1420,
+    sellerCount: 3,
+    desiredPriceLabel: '3만원 이하',
+    dday: 2,
+  },
+  {
+    id: 'closing-4',
+    name: '홍천 급냉 찐 옥수수 1kg',
+    thumbnailUrl: '/images/main-home/card-list-2/2-4.png',
+    participantCount: 1240,
+    sellerCount: 1,
+    desiredPriceLabel: '1만원 이하',
+    dday: 1,
+  },
+  {
+    id: 'closing-5',
+    name: '해남 고구마 5kg',
+    thumbnailUrl: '/images/main-home/card-list-2/2-5.png',
+    participantCount: 1320,
+    sellerCount: 6,
+    desiredPriceLabel: '5만원 이하',
+    dday: 1,
+  },
+];
+
+/** card-list-6(참여가능 마감 직전 공구). 시안 `981:18307`. 전부 카운트다운이다. */
+const mockDeadlineProducts: readonly HomeProductCard[] = [
+  {
+    id: 'deadline-1',
+    name: '국내산 생 들기름 250ml',
+    thumbnailUrl: '/images/main-home/card-list-6/6-1.png',
+    participantCount: 780,
+    sellerCount: 1,
+    desiredPriceLabel: '2만원 이하',
+    deadline: hoursFromNow(11),
+  },
+  {
+    id: 'deadline-2',
+    name: '카누 미니 30입 5개',
+    thumbnailUrl: '/images/main-home/card-list-6/6-2.png',
+    participantCount: 126,
+    sellerCount: 2,
+    desiredPriceLabel: '1만원 이하',
+    deadline: hoursFromNow(10),
+  },
+  {
+    id: 'deadline-3',
+    name: '청수당 말차라떼 18g*35입',
+    thumbnailUrl: '/images/main-home/card-list-6/6-3.png',
+    participantCount: 1420,
+    sellerCount: 1,
+    desiredPriceLabel: '3만원 이하',
+    deadline: hoursFromNow(9),
+  },
+  {
+    id: 'deadline-4',
+    name: '화이트하임 5박스',
+    thumbnailUrl: '/images/main-home/card-list-6/6-4.png',
+    participantCount: 1240,
+    sellerCount: 3,
+    desiredPriceLabel: '3만원 이하',
+    deadline: hoursFromNow(7),
+  },
+  {
+    id: 'deadline-5',
+    name: '쿠크다스 4박스',
+    thumbnailUrl: '/images/main-home/card-list-6/6-5.png',
+    participantCount: 1320,
+    sellerCount: 2,
+    desiredPriceLabel: '1만원 이하',
+    deadline: hoursFromNow(3),
+  },
+];
+
+export async function mockGetClosingProducts(): Promise<readonly HomeProductCard[]> {
+  return mockClosingProducts;
+}
+
+export async function mockGetDeadlineProducts(): Promise<readonly HomeProductCard[]> {
+  return mockDeadlineProducts;
 }

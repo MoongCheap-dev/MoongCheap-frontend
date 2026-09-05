@@ -76,8 +76,12 @@ export function ProductCard({ product }: ProductCardProps) {
         </span>
       </ComingSoonButton>
 
-      {/* 시안: 이미지 왼쪽 아래 기준 px-8 py-4, 오른쪽 정렬. */}
-      <span className="absolute top-0 left-0 flex w-full justify-end px-2 py-1">
+      {/*
+        찜 버튼. 시안에서는 이미지 박스 안쪽 아래에 오른쪽 정렬로 얹혀 있다(px-8 py-4).
+        카드 전체 버튼과 겹치지 않게 형제로 두고, 이미지 높이(= 카드 폭, 정사각)만큼만
+        차지하게 한다. 덮개는 클릭을 통과시키고 버튼만 받는다.
+      */}
+      <span className="pointer-events-none absolute top-0 left-0 flex h-[121px] w-full items-end justify-end px-2 py-1">
         <WishButton />
       </span>
     </article>
