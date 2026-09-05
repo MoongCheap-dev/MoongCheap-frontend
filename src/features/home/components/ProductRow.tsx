@@ -2,7 +2,7 @@ import Image from 'next/image';
 
 import { ComingSoonButton } from '@/components/ui/ComingSoonButton';
 import { HOME_CARD } from '@/constants/homeMessages';
-import { CountdownTimer } from '@/features/home/components/CountdownTimer';
+import { TimeBadge } from '@/features/home/components/TimeBadge';
 import type { HomeProductCard } from '@/types/home';
 
 // 세로 목록의 가로 행. 시안 컴포넌트 `img-card`(622:177 계열, 361×65).
@@ -39,18 +39,12 @@ export function ProductRow({ product }: ProductRowProps) {
 
       <span className="flex min-w-0 flex-1 flex-col justify-between self-stretch">
         <span className="flex items-center gap-1.5">
-          {(product.dday !== undefined || product.deadline !== undefined) && (
-            <span className={TIME_BADGE_CLASS}>
-              {product.deadline !== undefined ? (
-                <CountdownTimer deadline={product.deadline} />
-              ) : (
-                `D-${product.dday}`
-              )}
+          <TimeBadge className={TIME_BADGE_CLASS} dday={product.dday} deadline={product.deadline} />
+          {product.participantCount !== undefined && (
+            <span className={PERSONNEL_BADGE_CLASS}>
+              {HOME_CARD.participants(product.participantCount)}
             </span>
           )}
-          <span className={PERSONNEL_BADGE_CLASS}>
-            {HOME_CARD.participants(product.participantCount)}
-          </span>
         </span>
 
         <span className="flex w-full items-center justify-between gap-2">

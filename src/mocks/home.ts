@@ -1,4 +1,4 @@
-import type { HomeBanner, HomeProductCard } from '@/types/home';
+import type { HomeBanner, HomeBrand, HomeBrandDeal, HomeProductCard } from '@/types/home';
 
 /**
  * 홈피드 목 데이터. API가 없어 화면 검수용으로만 쓴다.
@@ -243,4 +243,259 @@ export async function mockGetClosingProducts(): Promise<readonly HomeProductCard
 
 export async function mockGetDeadlineProducts(): Promise<readonly HomeProductCard[]> {
   return mockDeadlineProducts;
+}
+
+/**
+ * card-list-4(성사된 공구에 바로 참여해보세요!). 시안 `981:18293`.
+ *
+ * ⚠️ 2번 상품명이 시안에 `매디큐브 뷰티디자이스 종합전`으로 적혀 있다. 같은 시안 배너에는
+ * `메디큐브 뷰티디바이스`로 나와 표기가 어긋난다. 상품명은 표기 규칙이 아니라 내용이라
+ * 임의로 고치지 않고 시안 그대로 두었다. 디자인 확인 대상.
+ *
+ * ⚠️ 3번 희망가격이 시안에 `5천원이하`로 띄어쓰기가 빠져 있다. card-list-1과 같은 사례라
+ * `5천원 이하`로 통일했다.
+ */
+const mockSucceededProducts: readonly HomeProductCard[] = [
+  {
+    id: 'succeeded-1',
+    name: '휴대용 미니 선풍기',
+    thumbnailUrl: '/images/main-home/card-list-4/4-1.png',
+    sellerCount: 2,
+    desiredPriceLabel: '1만원 이하',
+  },
+  {
+    id: 'succeeded-2',
+    name: '매디큐브 뷰티디자이스 종합전',
+    thumbnailUrl: '/images/main-home/card-list-4/4-2.png',
+    sellerCount: 1,
+    desiredPriceLabel: '10만원 이하',
+  },
+  {
+    id: 'succeeded-3',
+    name: '오리지널 왕 칫솔 5개입 1+1',
+    thumbnailUrl: '/images/main-home/card-list-4/4-3.png',
+    sellerCount: 5,
+    desiredPriceLabel: '5천원 이하',
+  },
+  {
+    id: 'succeeded-4',
+    name: '펩시제로 제로슈거 라임향 355ml(24개)',
+    thumbnailUrl: '/images/main-home/card-list-4/4-4.png',
+    sellerCount: 3,
+    desiredPriceLabel: '1만원 이하',
+  },
+  {
+    id: 'succeeded-5',
+    name: '매일유업 소화가잘되는 우유 24개',
+    thumbnailUrl: '/images/main-home/card-list-4/4-5.png',
+    sellerCount: 2,
+    desiredPriceLabel: '2만원 이하',
+  },
+];
+
+/** card-list-5(현재 인기 브랜드딜). 시안 `981:18301`. */
+const mockBrandDeals: readonly HomeBrandDeal[] = [
+  {
+    id: 'brand-deal-1',
+    title: '매일유업 브랜드딜',
+    description: '매일유업의 상품을 최저가로 구매해보세요',
+    imageUrl: '/images/main-home/card-list-5/5-1.png',
+    dday: 2,
+  },
+  {
+    id: 'brand-deal-2',
+    title: '종근당 건강 브랜드딜',
+    description: '종근당 건강의 상품을 최저가로 구매해보세요',
+    imageUrl: '/images/main-home/card-list-5/5-2.png',
+    dday: 1,
+  },
+  {
+    id: 'brand-deal-3',
+    title: '비비고 상품 브랜드딜',
+    description: '비비고의 상품을 최저가로 구매해보세요',
+    imageUrl: '/images/main-home/card-list-5/5-3.png',
+    dday: 1,
+  },
+];
+
+export async function mockGetSucceededProducts(): Promise<readonly HomeProductCard[]> {
+  return mockSucceededProducts;
+}
+
+export async function mockGetBrandDeals(): Promise<readonly HomeBrandDeal[]> {
+  return mockBrandDeals;
+}
+
+/**
+ * card-list-7(현재 인기 공구 상품). 시안 `981:18319`. 한 열에 2장씩 3열.
+ *
+ * ⚠️ 마감 배지 표기가 열마다 다르다. 1열은 `D-1`·`D-2`만, 2·3열은 `D-1 15:02:11`처럼 D-day와
+ * 카운트다운을 함께 쓴다. 규칙을 알 수 없어 시안에 적힌 그대로 넣었다.
+ */
+const mockPopularProducts: readonly HomeProductCard[] = [
+  {
+    id: 'popular-1',
+    name: '크라운 우베 시리즈 기획전',
+    brandName: '크라운제과',
+    thumbnailUrl: '/images/main-home/card-list-7/7-1.png',
+    participantCount: 1254,
+    desiredPriceLabel: '2만원 이하',
+    dday: 1,
+  },
+  {
+    id: 'popular-2',
+    name: '라라스윗 과자 기획전',
+    brandName: '라라스윗',
+    thumbnailUrl: '/images/main-home/card-list-7/7-2.png',
+    participantCount: 340,
+    desiredPriceLabel: '1만원 이하',
+    dday: 2,
+  },
+  {
+    id: 'popular-3',
+    name: '3in1 믹스커피 2종 (택1)',
+    brandName: 'G7',
+    thumbnailUrl: '/images/main-home/card-list-7/7-3.png',
+    participantCount: 280,
+    desiredPriceLabel: '3만원 이하',
+    dday: 1,
+    deadline: hoursFromNow(15),
+  },
+  {
+    id: 'popular-4',
+    name: '끓여먹는 차 5종 (택1)',
+    brandName: '동서식품',
+    thumbnailUrl: '/images/main-home/card-list-7/7-4.png',
+    participantCount: 120,
+    desiredPriceLabel: '1만원 이하',
+    dday: 0,
+    deadline: hoursFromNow(23),
+  },
+  {
+    id: 'popular-5',
+    name: '햄 가득 송탄식 부대찌개',
+    brandName: '차려낸',
+    thumbnailUrl: '/images/main-home/card-list-7/7-5.png',
+    participantCount: 80,
+    desiredPriceLabel: '1만원 이하',
+    dday: 1,
+    deadline: hoursFromNow(1),
+  },
+  {
+    id: 'popular-6',
+    name: '춘천 국물 닭갈비 떡볶이',
+    brandName: '올마레',
+    thumbnailUrl: '/images/main-home/card-list-7/7-6.png',
+    participantCount: 330,
+    desiredPriceLabel: '1만원 이하',
+    dday: 1,
+    deadline: hoursFromNow(3),
+  },
+];
+
+/** card-list-8 브랜드 칩. 이름은 이미지 반입 이슈(#60)가 정리한 대응표를 따른다. */
+const mockBrands: readonly HomeBrand[] = [
+  { id: 'brand-1', name: '라라스윗', logoUrl: '/images/main-home/card-list-8/brand-1.png' },
+  { id: 'brand-2', name: '동서식품', logoUrl: '/images/main-home/card-list-8/brand-2.png' },
+  { id: 'brand-3', name: '크라운', logoUrl: '/images/main-home/card-list-8/brand-3.png' },
+  { id: 'brand-4', name: '해태', logoUrl: '/images/main-home/card-list-8/brand-4.png' },
+  { id: 'brand-5', name: '농심', logoUrl: '/images/main-home/card-list-8/brand-5.png' },
+  { id: 'brand-6', name: '풀무원', logoUrl: '/images/main-home/card-list-8/brand-6.png' },
+  { id: 'brand-7', name: '청정원', logoUrl: '/images/main-home/card-list-8/brand-7.png' },
+];
+
+/** card-list-8 목록. 시안은 첫 칩(라라스윗)이 선택된 상태만 그린다. */
+const mockBrandProducts: readonly HomeProductCard[] = [
+  {
+    id: 'by-brand-1',
+    name: '저당 요거트바 딸기/복숭아',
+    brandName: '라라스윗',
+    thumbnailUrl: '/images/main-home/card-list-8/8-1.png',
+    participantCount: 1830,
+    desiredPriceLabel: '1만원 이하',
+    deadline: hoursFromNow(13),
+  },
+  {
+    id: 'by-brand-2',
+    name: '라라스윗 파인트',
+    brandName: '라라스윗',
+    thumbnailUrl: '/images/main-home/card-list-8/8-2.png',
+    participantCount: 1240,
+    desiredPriceLabel: '1만원 이하',
+    deadline: hoursFromNow(11),
+  },
+  {
+    id: 'by-brand-3',
+    name: '라라스윗 저당 팝콘',
+    brandName: '라라스윗',
+    thumbnailUrl: '/images/main-home/card-list-8/8-3.png',
+    participantCount: 867,
+    desiredPriceLabel: '5천원 이하',
+    dday: 2,
+  },
+];
+
+export async function mockGetPopularProducts(): Promise<readonly HomeProductCard[]> {
+  return mockPopularProducts;
+}
+
+export async function mockGetBrands(): Promise<readonly HomeBrand[]> {
+  return mockBrands;
+}
+
+export async function mockGetBrandProducts(): Promise<readonly HomeProductCard[]> {
+  return mockBrandProducts;
+}
+
+/** card-list-3(뭉치님의 관심사 추천!). 시안 `981:18285`. */
+const mockInterestProducts: readonly HomeProductCard[] = [
+  {
+    id: 'interest-1',
+    name: '데체코 스파게티면 1kg',
+    thumbnailUrl: '/images/main-home/card-list-3/3-1.png',
+    participantCount: 50,
+    sellerCount: 3,
+    desiredPriceLabel: '5천원 이하',
+    dday: 2,
+  },
+  {
+    id: 'interest-2',
+    name: '데체코 토마토 파스타 소스 3종',
+    thumbnailUrl: '/images/main-home/card-list-3/3-2.png',
+    participantCount: 600,
+    sellerCount: 1,
+    desiredPriceLabel: '1만원 이하',
+    deadline: hoursFromNow(14),
+  },
+  {
+    id: 'interest-3',
+    name: '국내산 한돈 삼겹살 3kg',
+    thumbnailUrl: '/images/main-home/card-list-3/3-3.png',
+    participantCount: 450,
+    sellerCount: 2,
+    desiredPriceLabel: '1만원 이하',
+    deadline: hoursFromNow(11),
+  },
+  {
+    id: 'interest-4',
+    name: '비비고 왕교자 1.05kg',
+    thumbnailUrl: '/images/main-home/card-list-3/3-4.png',
+    participantCount: 127,
+    sellerCount: 4,
+    desiredPriceLabel: '2만원 이하',
+    deadline: hoursFromNow(8),
+  },
+  {
+    id: 'interest-5',
+    name: '사세 매콤점보 닭다리 1kg',
+    thumbnailUrl: '/images/main-home/card-list-3/3-5.png',
+    participantCount: 170,
+    sellerCount: 1,
+    desiredPriceLabel: '3만원 이하',
+    deadline: hoursFromNow(0.07),
+  },
+];
+
+export async function mockGetInterestProducts(): Promise<readonly HomeProductCard[]> {
+  return mockInterestProducts;
 }

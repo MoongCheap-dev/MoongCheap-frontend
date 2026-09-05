@@ -18,11 +18,17 @@ export interface ProductCatalogSummary {
 export interface HomeProductCard extends ProductCatalogSummary {
   /** 브랜드·셀러명. 시안에서 상품명 아래 회색 한 줄로 나온다. */
   brandName?: string;
-  /** 참여 인원. 시안 `현재 1200명` / `1,200명 참여`. */
-  participantCount: number;
+  /**
+   * 참여 인원. 시안 `현재 1200명` / `1,200명 참여`.
+   * 성사된 공구(card-list-4)에는 인원 표시가 없어 선택값이다.
+   */
+  participantCount?: number;
   /** 응찰한 판매자 수. 시안 `참여업체 3곳`. */
   sellerCount?: number;
-  /** 희망 가격대 라벨. 시안이 문자열로 그린다(`3만원 이하`). */
+  /**
+   * 희망 가격대 라벨. 시안이 문자열로 그린다(`3만원 이하`).
+   * 성사된 공구에서는 `희망가격대` 설명 없이 코랄색 값만 나온다.
+   */
   desiredPriceLabel: string;
   /**
    * 마감까지 남은 시간. 시안이 두 가지로 그린다.
@@ -50,4 +56,13 @@ export interface HomeBrand {
   id: string;
   name: string;
   logoUrl?: string;
+}
+
+/** 브랜드딜 카드(card-list-5). 상품이 아니라 브랜드 기획전이라 필드가 다르다. */
+export interface HomeBrandDeal {
+  id: string;
+  title: string;
+  description: string;
+  imageUrl?: string;
+  dday: number;
 }
