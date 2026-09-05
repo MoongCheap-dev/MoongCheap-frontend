@@ -36,7 +36,12 @@ export function BrandSection({ brands, products }: BrandSectionProps) {
               )}
               key={brand.id}
             >
-              {brand.logoUrl !== undefined && (
+              {brand.logoUrl === undefined ? (
+                // 로고가 없으면 빈 버튼이 되어 표시 이름도 접근 가능한 이름도 사라진다.
+                <span className="text-caption-10 text-content-primary flex size-full items-center justify-center px-1 text-center">
+                  {brand.name}
+                </span>
+              ) : (
                 <Image
                   alt={brand.name}
                   className="object-cover"

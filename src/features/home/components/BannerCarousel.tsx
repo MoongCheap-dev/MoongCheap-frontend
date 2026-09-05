@@ -15,6 +15,9 @@ import type { HomeBanner } from '@/types/home';
 // 총 개수를 못 고친 것으로 보여, 총 개수는 슬라이드 수에서 계산한다.
 //
 // 배너 이미지는 아직 없다(이슈 #60). 없으면 회색 자리로 둔다.
+//
+// 오버레이 문구가 있는 배너는 그 문구가 곧 이미지 설명이라 이미지를 장식으로 두고(`alt=""`),
+// 문구가 이미지에 인쇄된 배너만 `imageAltText`를 받아 대체 텍스트로 넣는다.
 
 /** 시안: 아래쪽만 어두워지는 오버레이. 흰 글씨 가독성용이다. */
 const OVERLAY_CLASS =
@@ -51,7 +54,7 @@ export function BannerCarousel({ banners }: BannerCarouselProps) {
                 <div aria-hidden className="bg-surface-tertiary size-full" />
               ) : (
                 <Image
-                  alt=""
+                  alt={banner.imageAltText ?? ''}
                   className="object-cover"
                   fill
                   sizes="393px"
@@ -77,7 +80,7 @@ export function BannerCarousel({ banners }: BannerCarouselProps) {
         </div>
 
         <div className="pointer-events-none absolute top-0 right-0 flex items-center justify-center p-2.5">
-          <span className="text-label-12 text-content-oncolor rounded-round border-border-oncolor border bg-white/20 px-2 py-0.5">
+          <span className="text-label-12 text-content-oncolor rounded-round border-border-oncolor bg-normal-1/20 border px-2 py-0.5">
             {index + 1}/{banners.length}
           </span>
         </div>

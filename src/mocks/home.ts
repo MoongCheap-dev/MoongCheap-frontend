@@ -29,7 +29,13 @@ const mockBanners: readonly HomeBanner[] = [
     description: '다이어트 때 빵 땡긴다면?',
   },
   // 시안 4번(신라면 블랙)은 문구가 이미지에 인쇄돼 있어 오버레이가 없다.
-  { id: 'banner-4', imageUrl: '/images/main-home/banner-carousel/banner-4.png' },
+  {
+    id: 'banner-4',
+    imageUrl: '/images/main-home/banner-carousel/banner-4.png',
+    // 인쇄된 문구를 대체 텍스트로 옮긴다. 시안 이미지에서 읽은 값이라 디자인 확인 대상이다
+    // (원문 표기는 `辛라면 블랙`).
+    imageAltText: '깊고 진한 신라면 블랙',
+  },
   {
     id: 'banner-5',
     imageUrl: '/images/main-home/banner-carousel/banner-5.png',
@@ -37,7 +43,11 @@ const mockBanners: readonly HomeBanner[] = [
     description: '60개입을 만원대에 GET',
   },
   // 시안 6번(비비고)도 문구가 이미지에 인쇄돼 있다.
-  { id: 'banner-6', imageUrl: '/images/main-home/banner-carousel/banner-6.png' },
+  {
+    id: 'banner-6',
+    imageUrl: '/images/main-home/banner-carousel/banner-6.png',
+    imageAltText: '새로워진 비비고 세계를 더 맛있게',
+  },
   {
     id: 'banner-7',
     imageUrl: '/images/main-home/banner-carousel/banner-7.png',
@@ -87,162 +97,168 @@ function hoursFromNow(hours: number): string {
   return new Date(Date.now() + hours * 60 * 60 * 1000).toISOString();
 }
 
-const mockDemandProducts: readonly HomeProductCard[] = [
-  {
-    id: 'demand-1',
-    name: '락토핏 생유산균 골드',
-    thumbnailUrl: '/images/main-home/card-list-1/1-1.png',
-    participantCount: 1200,
-    sellerCount: 3,
-    desiredPriceLabel: '3만원 이하',
-    dday: 1,
-  },
-  {
-    id: 'demand-2',
-    name: '락토핏 다이어트',
-    thumbnailUrl: '/images/main-home/card-list-1/1-2.png',
-    participantCount: 800,
-    sellerCount: 2,
-    desiredPriceLabel: '2만원 이하',
-    dday: 2,
-  },
-  {
-    id: 'demand-3',
-    name: '락토핏 코어',
-    thumbnailUrl: '/images/main-home/card-list-1/1-3.png',
-    participantCount: 680,
-    sellerCount: 4,
-    desiredPriceLabel: '3만원 이하',
-    deadline: hoursFromNow(3),
-  },
-  {
-    id: 'demand-4',
-    name: '락토핏 당케어 데일리',
-    thumbnailUrl: '/images/main-home/card-list-1/1-4.png',
-    participantCount: 180,
-    sellerCount: 1,
-    desiredPriceLabel: '3만원 이하',
-    deadline: hoursFromNow(1),
-  },
-  {
-    id: 'demand-5',
-    name: '락토핏 뷰티',
-    thumbnailUrl: '/images/main-home/card-list-1/1-5.png',
-    participantCount: 220,
-    sellerCount: 5,
-    desiredPriceLabel: '1만원 이하',
-    dday: 1,
-  },
-];
+function buildDemandProducts(): readonly HomeProductCard[] {
+  return [
+    {
+      id: 'demand-1',
+      name: '락토핏 생유산균 골드',
+      thumbnailUrl: '/images/main-home/card-list-1/1-1.png',
+      participantCount: 1200,
+      sellerCount: 3,
+      desiredPriceLabel: '3만원 이하',
+      dday: 1,
+    },
+    {
+      id: 'demand-2',
+      name: '락토핏 다이어트',
+      thumbnailUrl: '/images/main-home/card-list-1/1-2.png',
+      participantCount: 800,
+      sellerCount: 2,
+      desiredPriceLabel: '2만원 이하',
+      dday: 2,
+    },
+    {
+      id: 'demand-3',
+      name: '락토핏 코어',
+      thumbnailUrl: '/images/main-home/card-list-1/1-3.png',
+      participantCount: 680,
+      sellerCount: 4,
+      desiredPriceLabel: '3만원 이하',
+      deadline: hoursFromNow(3),
+    },
+    {
+      id: 'demand-4',
+      name: '락토핏 당케어 데일리',
+      thumbnailUrl: '/images/main-home/card-list-1/1-4.png',
+      participantCount: 180,
+      sellerCount: 1,
+      desiredPriceLabel: '3만원 이하',
+      deadline: hoursFromNow(1),
+    },
+    {
+      id: 'demand-5',
+      name: '락토핏 뷰티',
+      thumbnailUrl: '/images/main-home/card-list-1/1-5.png',
+      participantCount: 220,
+      sellerCount: 5,
+      desiredPriceLabel: '1만원 이하',
+      dday: 1,
+    },
+  ];
+}
 
 export async function mockGetDemandProducts(): Promise<readonly HomeProductCard[]> {
-  return mockDemandProducts;
+  return buildDemandProducts();
 }
 
 /** card-list-2(성사 직전 공구). 시안 `981:18273`. */
-const mockClosingProducts: readonly HomeProductCard[] = [
-  {
-    id: 'closing-1',
-    name: '지리산 감자 2kg',
-    thumbnailUrl: '/images/main-home/card-list-2/2-1.png',
-    participantCount: 1800,
-    sellerCount: 5,
-    desiredPriceLabel: '1만원 이하',
-    deadline: hoursFromNow(12),
-  },
-  {
-    id: 'closing-2',
-    name: '군산 양배추 5kg',
-    thumbnailUrl: '/images/main-home/card-list-2/2-2.png',
-    participantCount: 1530,
-    sellerCount: 2,
-    desiredPriceLabel: '3만원 이하',
-    dday: 2,
-  },
-  {
-    id: 'closing-3',
-    name: '제주 애월 당근 3kg',
-    thumbnailUrl: '/images/main-home/card-list-2/2-3.png',
-    participantCount: 1420,
-    sellerCount: 3,
-    desiredPriceLabel: '3만원 이하',
-    dday: 2,
-  },
-  {
-    id: 'closing-4',
-    name: '홍천 급냉 찐 옥수수 1kg',
-    thumbnailUrl: '/images/main-home/card-list-2/2-4.png',
-    participantCount: 1240,
-    sellerCount: 1,
-    desiredPriceLabel: '1만원 이하',
-    dday: 1,
-  },
-  {
-    id: 'closing-5',
-    name: '해남 고구마 5kg',
-    thumbnailUrl: '/images/main-home/card-list-2/2-5.png',
-    participantCount: 1320,
-    sellerCount: 6,
-    desiredPriceLabel: '5만원 이하',
-    dday: 1,
-  },
-];
+function buildClosingProducts(): readonly HomeProductCard[] {
+  return [
+    {
+      id: 'closing-1',
+      name: '지리산 감자 2kg',
+      thumbnailUrl: '/images/main-home/card-list-2/2-1.png',
+      participantCount: 1800,
+      sellerCount: 5,
+      desiredPriceLabel: '1만원 이하',
+      deadline: hoursFromNow(12),
+    },
+    {
+      id: 'closing-2',
+      name: '군산 양배추 5kg',
+      thumbnailUrl: '/images/main-home/card-list-2/2-2.png',
+      participantCount: 1530,
+      sellerCount: 2,
+      desiredPriceLabel: '3만원 이하',
+      dday: 2,
+    },
+    {
+      id: 'closing-3',
+      name: '제주 애월 당근 3kg',
+      thumbnailUrl: '/images/main-home/card-list-2/2-3.png',
+      participantCount: 1420,
+      sellerCount: 3,
+      desiredPriceLabel: '3만원 이하',
+      dday: 2,
+    },
+    {
+      id: 'closing-4',
+      name: '홍천 급냉 찐 옥수수 1kg',
+      thumbnailUrl: '/images/main-home/card-list-2/2-4.png',
+      participantCount: 1240,
+      sellerCount: 1,
+      desiredPriceLabel: '1만원 이하',
+      dday: 1,
+    },
+    {
+      id: 'closing-5',
+      name: '해남 고구마 5kg',
+      thumbnailUrl: '/images/main-home/card-list-2/2-5.png',
+      participantCount: 1320,
+      sellerCount: 6,
+      desiredPriceLabel: '5만원 이하',
+      dday: 1,
+    },
+  ];
+}
 
 /** card-list-6(참여가능 마감 직전 공구). 시안 `981:18307`. 전부 카운트다운이다. */
-const mockDeadlineProducts: readonly HomeProductCard[] = [
-  {
-    id: 'deadline-1',
-    name: '국내산 생 들기름 250ml',
-    thumbnailUrl: '/images/main-home/card-list-6/6-1.png',
-    participantCount: 780,
-    sellerCount: 1,
-    desiredPriceLabel: '2만원 이하',
-    deadline: hoursFromNow(11),
-  },
-  {
-    id: 'deadline-2',
-    name: '카누 미니 30입 5개',
-    thumbnailUrl: '/images/main-home/card-list-6/6-2.png',
-    participantCount: 126,
-    sellerCount: 2,
-    desiredPriceLabel: '1만원 이하',
-    deadline: hoursFromNow(10),
-  },
-  {
-    id: 'deadline-3',
-    name: '청수당 말차라떼 18g*35입',
-    thumbnailUrl: '/images/main-home/card-list-6/6-3.png',
-    participantCount: 1420,
-    sellerCount: 1,
-    desiredPriceLabel: '3만원 이하',
-    deadline: hoursFromNow(9),
-  },
-  {
-    id: 'deadline-4',
-    name: '화이트하임 5박스',
-    thumbnailUrl: '/images/main-home/card-list-6/6-4.png',
-    participantCount: 1240,
-    sellerCount: 3,
-    desiredPriceLabel: '3만원 이하',
-    deadline: hoursFromNow(7),
-  },
-  {
-    id: 'deadline-5',
-    name: '쿠크다스 4박스',
-    thumbnailUrl: '/images/main-home/card-list-6/6-5.png',
-    participantCount: 1320,
-    sellerCount: 2,
-    desiredPriceLabel: '1만원 이하',
-    deadline: hoursFromNow(3),
-  },
-];
+function buildDeadlineProducts(): readonly HomeProductCard[] {
+  return [
+    {
+      id: 'deadline-1',
+      name: '국내산 생 들기름 250ml',
+      thumbnailUrl: '/images/main-home/card-list-6/6-1.png',
+      participantCount: 780,
+      sellerCount: 1,
+      desiredPriceLabel: '2만원 이하',
+      deadline: hoursFromNow(11),
+    },
+    {
+      id: 'deadline-2',
+      name: '카누 미니 30입 5개',
+      thumbnailUrl: '/images/main-home/card-list-6/6-2.png',
+      participantCount: 126,
+      sellerCount: 2,
+      desiredPriceLabel: '1만원 이하',
+      deadline: hoursFromNow(10),
+    },
+    {
+      id: 'deadline-3',
+      name: '청수당 말차라떼 18g*35입',
+      thumbnailUrl: '/images/main-home/card-list-6/6-3.png',
+      participantCount: 1420,
+      sellerCount: 1,
+      desiredPriceLabel: '3만원 이하',
+      deadline: hoursFromNow(9),
+    },
+    {
+      id: 'deadline-4',
+      name: '화이트하임 5박스',
+      thumbnailUrl: '/images/main-home/card-list-6/6-4.png',
+      participantCount: 1240,
+      sellerCount: 3,
+      desiredPriceLabel: '3만원 이하',
+      deadline: hoursFromNow(7),
+    },
+    {
+      id: 'deadline-5',
+      name: '쿠크다스 4박스',
+      thumbnailUrl: '/images/main-home/card-list-6/6-5.png',
+      participantCount: 1320,
+      sellerCount: 2,
+      desiredPriceLabel: '1만원 이하',
+      deadline: hoursFromNow(3),
+    },
+  ];
+}
 
 export async function mockGetClosingProducts(): Promise<readonly HomeProductCard[]> {
-  return mockClosingProducts;
+  return buildClosingProducts();
 }
 
 export async function mockGetDeadlineProducts(): Promise<readonly HomeProductCard[]> {
-  return mockDeadlineProducts;
+  return buildDeadlineProducts();
 }
 
 /**
@@ -332,66 +348,68 @@ export async function mockGetBrandDeals(): Promise<readonly HomeBrandDeal[]> {
  * ⚠️ 마감 배지 표기가 열마다 다르다. 1열은 `D-1`·`D-2`만, 2·3열은 `D-1 15:02:11`처럼 D-day와
  * 카운트다운을 함께 쓴다. 규칙을 알 수 없어 시안에 적힌 그대로 넣었다.
  */
-const mockPopularProducts: readonly HomeProductCard[] = [
-  {
-    id: 'popular-1',
-    name: '크라운 우베 시리즈 기획전',
-    brandName: '크라운제과',
-    thumbnailUrl: '/images/main-home/card-list-7/7-1.png',
-    participantCount: 1254,
-    desiredPriceLabel: '2만원 이하',
-    dday: 1,
-  },
-  {
-    id: 'popular-2',
-    name: '라라스윗 과자 기획전',
-    brandName: '라라스윗',
-    thumbnailUrl: '/images/main-home/card-list-7/7-2.png',
-    participantCount: 340,
-    desiredPriceLabel: '1만원 이하',
-    dday: 2,
-  },
-  {
-    id: 'popular-3',
-    name: '3in1 믹스커피 2종 (택1)',
-    brandName: 'G7',
-    thumbnailUrl: '/images/main-home/card-list-7/7-3.png',
-    participantCount: 280,
-    desiredPriceLabel: '3만원 이하',
-    dday: 1,
-    deadline: hoursFromNow(15),
-  },
-  {
-    id: 'popular-4',
-    name: '끓여먹는 차 5종 (택1)',
-    brandName: '동서식품',
-    thumbnailUrl: '/images/main-home/card-list-7/7-4.png',
-    participantCount: 120,
-    desiredPriceLabel: '1만원 이하',
-    dday: 0,
-    deadline: hoursFromNow(23),
-  },
-  {
-    id: 'popular-5',
-    name: '햄 가득 송탄식 부대찌개',
-    brandName: '차려낸',
-    thumbnailUrl: '/images/main-home/card-list-7/7-5.png',
-    participantCount: 80,
-    desiredPriceLabel: '1만원 이하',
-    dday: 1,
-    deadline: hoursFromNow(1),
-  },
-  {
-    id: 'popular-6',
-    name: '춘천 국물 닭갈비 떡볶이',
-    brandName: '올마레',
-    thumbnailUrl: '/images/main-home/card-list-7/7-6.png',
-    participantCount: 330,
-    desiredPriceLabel: '1만원 이하',
-    dday: 1,
-    deadline: hoursFromNow(3),
-  },
-];
+function buildPopularProducts(): readonly HomeProductCard[] {
+  return [
+    {
+      id: 'popular-1',
+      name: '크라운 우베 시리즈 기획전',
+      brandName: '크라운제과',
+      thumbnailUrl: '/images/main-home/card-list-7/7-1.png',
+      participantCount: 1254,
+      desiredPriceLabel: '2만원 이하',
+      dday: 1,
+    },
+    {
+      id: 'popular-2',
+      name: '라라스윗 과자 기획전',
+      brandName: '라라스윗',
+      thumbnailUrl: '/images/main-home/card-list-7/7-2.png',
+      participantCount: 340,
+      desiredPriceLabel: '1만원 이하',
+      dday: 2,
+    },
+    {
+      id: 'popular-3',
+      name: '3in1 믹스커피 2종 (택1)',
+      brandName: 'G7',
+      thumbnailUrl: '/images/main-home/card-list-7/7-3.png',
+      participantCount: 280,
+      desiredPriceLabel: '3만원 이하',
+      dday: 1,
+      deadline: hoursFromNow(15),
+    },
+    {
+      id: 'popular-4',
+      name: '끓여먹는 차 5종 (택1)',
+      brandName: '동서식품',
+      thumbnailUrl: '/images/main-home/card-list-7/7-4.png',
+      participantCount: 120,
+      desiredPriceLabel: '1만원 이하',
+      dday: 0,
+      deadline: hoursFromNow(23),
+    },
+    {
+      id: 'popular-5',
+      name: '햄 가득 송탄식 부대찌개',
+      brandName: '차려낸',
+      thumbnailUrl: '/images/main-home/card-list-7/7-5.png',
+      participantCount: 80,
+      desiredPriceLabel: '1만원 이하',
+      dday: 1,
+      deadline: hoursFromNow(1),
+    },
+    {
+      id: 'popular-6',
+      name: '춘천 국물 닭갈비 떡볶이',
+      brandName: '올마레',
+      thumbnailUrl: '/images/main-home/card-list-7/7-6.png',
+      participantCount: 330,
+      desiredPriceLabel: '1만원 이하',
+      dday: 1,
+      deadline: hoursFromNow(3),
+    },
+  ];
+}
 
 /** card-list-8 브랜드 칩. 이름은 이미지 반입 이슈(#60)가 정리한 대응표를 따른다. */
 const mockBrands: readonly HomeBrand[] = [
@@ -405,38 +423,40 @@ const mockBrands: readonly HomeBrand[] = [
 ];
 
 /** card-list-8 목록. 시안은 첫 칩(라라스윗)이 선택된 상태만 그린다. */
-const mockBrandProducts: readonly HomeProductCard[] = [
-  {
-    id: 'by-brand-1',
-    name: '저당 요거트바 딸기/복숭아',
-    brandName: '라라스윗',
-    thumbnailUrl: '/images/main-home/card-list-8/8-1.png',
-    participantCount: 1830,
-    desiredPriceLabel: '1만원 이하',
-    deadline: hoursFromNow(13),
-  },
-  {
-    id: 'by-brand-2',
-    name: '라라스윗 파인트',
-    brandName: '라라스윗',
-    thumbnailUrl: '/images/main-home/card-list-8/8-2.png',
-    participantCount: 1240,
-    desiredPriceLabel: '1만원 이하',
-    deadline: hoursFromNow(11),
-  },
-  {
-    id: 'by-brand-3',
-    name: '라라스윗 저당 팝콘',
-    brandName: '라라스윗',
-    thumbnailUrl: '/images/main-home/card-list-8/8-3.png',
-    participantCount: 867,
-    desiredPriceLabel: '5천원 이하',
-    dday: 2,
-  },
-];
+function buildBrandProducts(): readonly HomeProductCard[] {
+  return [
+    {
+      id: 'by-brand-1',
+      name: '저당 요거트바 딸기/복숭아',
+      brandName: '라라스윗',
+      thumbnailUrl: '/images/main-home/card-list-8/8-1.png',
+      participantCount: 1830,
+      desiredPriceLabel: '1만원 이하',
+      deadline: hoursFromNow(13),
+    },
+    {
+      id: 'by-brand-2',
+      name: '라라스윗 파인트',
+      brandName: '라라스윗',
+      thumbnailUrl: '/images/main-home/card-list-8/8-2.png',
+      participantCount: 1240,
+      desiredPriceLabel: '1만원 이하',
+      deadline: hoursFromNow(11),
+    },
+    {
+      id: 'by-brand-3',
+      name: '라라스윗 저당 팝콘',
+      brandName: '라라스윗',
+      thumbnailUrl: '/images/main-home/card-list-8/8-3.png',
+      participantCount: 867,
+      desiredPriceLabel: '5천원 이하',
+      dday: 2,
+    },
+  ];
+}
 
 export async function mockGetPopularProducts(): Promise<readonly HomeProductCard[]> {
-  return mockPopularProducts;
+  return buildPopularProducts();
 }
 
 export async function mockGetBrands(): Promise<readonly HomeBrand[]> {
@@ -444,58 +464,60 @@ export async function mockGetBrands(): Promise<readonly HomeBrand[]> {
 }
 
 export async function mockGetBrandProducts(): Promise<readonly HomeProductCard[]> {
-  return mockBrandProducts;
+  return buildBrandProducts();
 }
 
 /** card-list-3(뭉치님의 관심사 추천!). 시안 `981:18285`. */
-const mockInterestProducts: readonly HomeProductCard[] = [
-  {
-    id: 'interest-1',
-    name: '데체코 스파게티면 1kg',
-    thumbnailUrl: '/images/main-home/card-list-3/3-1.png',
-    participantCount: 50,
-    sellerCount: 3,
-    desiredPriceLabel: '5천원 이하',
-    dday: 2,
-  },
-  {
-    id: 'interest-2',
-    name: '데체코 토마토 파스타 소스 3종',
-    thumbnailUrl: '/images/main-home/card-list-3/3-2.png',
-    participantCount: 600,
-    sellerCount: 1,
-    desiredPriceLabel: '1만원 이하',
-    deadline: hoursFromNow(14),
-  },
-  {
-    id: 'interest-3',
-    name: '국내산 한돈 삼겹살 3kg',
-    thumbnailUrl: '/images/main-home/card-list-3/3-3.png',
-    participantCount: 450,
-    sellerCount: 2,
-    desiredPriceLabel: '1만원 이하',
-    deadline: hoursFromNow(11),
-  },
-  {
-    id: 'interest-4',
-    name: '비비고 왕교자 1.05kg',
-    thumbnailUrl: '/images/main-home/card-list-3/3-4.png',
-    participantCount: 127,
-    sellerCount: 4,
-    desiredPriceLabel: '2만원 이하',
-    deadline: hoursFromNow(8),
-  },
-  {
-    id: 'interest-5',
-    name: '사세 매콤점보 닭다리 1kg',
-    thumbnailUrl: '/images/main-home/card-list-3/3-5.png',
-    participantCount: 170,
-    sellerCount: 1,
-    desiredPriceLabel: '3만원 이하',
-    deadline: hoursFromNow(0.07),
-  },
-];
+function buildInterestProducts(): readonly HomeProductCard[] {
+  return [
+    {
+      id: 'interest-1',
+      name: '데체코 스파게티면 1kg',
+      thumbnailUrl: '/images/main-home/card-list-3/3-1.png',
+      participantCount: 50,
+      sellerCount: 3,
+      desiredPriceLabel: '5천원 이하',
+      dday: 2,
+    },
+    {
+      id: 'interest-2',
+      name: '데체코 토마토 파스타 소스 3종',
+      thumbnailUrl: '/images/main-home/card-list-3/3-2.png',
+      participantCount: 600,
+      sellerCount: 1,
+      desiredPriceLabel: '1만원 이하',
+      deadline: hoursFromNow(14),
+    },
+    {
+      id: 'interest-3',
+      name: '국내산 한돈 삼겹살 3kg',
+      thumbnailUrl: '/images/main-home/card-list-3/3-3.png',
+      participantCount: 450,
+      sellerCount: 2,
+      desiredPriceLabel: '1만원 이하',
+      deadline: hoursFromNow(11),
+    },
+    {
+      id: 'interest-4',
+      name: '비비고 왕교자 1.05kg',
+      thumbnailUrl: '/images/main-home/card-list-3/3-4.png',
+      participantCount: 127,
+      sellerCount: 4,
+      desiredPriceLabel: '2만원 이하',
+      deadline: hoursFromNow(8),
+    },
+    {
+      id: 'interest-5',
+      name: '사세 매콤점보 닭다리 1kg',
+      thumbnailUrl: '/images/main-home/card-list-3/3-5.png',
+      participantCount: 170,
+      sellerCount: 1,
+      desiredPriceLabel: '3만원 이하',
+      deadline: hoursFromNow(0.07),
+    },
+  ];
+}
 
 export async function mockGetInterestProducts(): Promise<readonly HomeProductCard[]> {
-  return mockInterestProducts;
+  return buildInterestProducts();
 }

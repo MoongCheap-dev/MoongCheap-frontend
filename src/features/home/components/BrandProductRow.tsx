@@ -12,11 +12,11 @@ import type { HomeProductCard } from '@/types/home';
 
 /** 시안: 흰 배경 80% + 테두리 #e6e6e6, radius 4. */
 const TIME_BADGE_CLASS =
-  'border-border-subtle rounded-4 text-label-10 text-content-primary border bg-white px-1 py-0.5 opacity-80 whitespace-nowrap';
+  'border-border-subtle rounded-4 text-label-10 text-content-primary bg-normal-1 border px-1 py-0.5 whitespace-nowrap opacity-80';
 
 /** 시안 `badge/surface/gary` = 회색 20%. */
 const PERSONNEL_BADGE_CLASS =
-  'rounded-4 text-label-10 text-content-primary bg-coolgray-400/20 px-1 py-0.5 whitespace-nowrap';
+  'rounded-4 text-label-10 text-content-primary bg-coolgray-a20 px-1 py-0.5 whitespace-nowrap';
 
 interface BrandProductRowProps {
   product: HomeProductCard;

@@ -18,11 +18,11 @@ import type { HomeProductCard } from '@/types/home';
 
 /** 시안 `badge/surface/brand` = 코랄 20%. 마감 임박 표시. */
 const TIME_BADGE_CLASS =
-  'rounded-4 text-label-10 text-content-brand bg-brand-400/20 px-1 py-0.5 whitespace-nowrap';
+  'rounded-4 text-label-10 text-content-brand bg-brand-a20 px-1 py-0.5 whitespace-nowrap';
 
 /** 시안 `badge/surface/gary` = 회색 20%. */
 const PERSONNEL_BADGE_CLASS =
-  'rounded-4 text-label-10 text-content-primary bg-coolgray-400/20 px-1 py-0.5 whitespace-nowrap';
+  'rounded-4 text-label-10 text-content-primary bg-coolgray-a20 px-1 py-0.5 whitespace-nowrap';
 
 interface ProductRowProps {
   product: HomeProductCard;

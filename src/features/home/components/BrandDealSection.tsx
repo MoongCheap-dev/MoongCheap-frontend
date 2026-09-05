@@ -35,7 +35,7 @@ export function BrandDealSection({ deals }: BrandDealSectionProps) {
                 시안은 배지를 왼쪽 기준(left 213)으로 두었는데, `D-10`처럼 글자가 길어지면
                 오른쪽으로 넘친다. 위 여백과 같은 12로 오른쪽에 붙였다(시안 대비 3px 차이).
               */}
-              <span className="rounded-4 text-label-12 text-content-brand absolute top-3 right-3 flex h-[22px] items-center justify-center bg-white px-2">
+              <span className="rounded-4 text-label-12 text-content-brand bg-normal-1 absolute top-3 right-3 flex h-[22px] items-center justify-center px-2">
                 D-{deal.dday}
               </span>
             </span>

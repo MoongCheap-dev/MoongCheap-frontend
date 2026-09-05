@@ -19,11 +19,10 @@ import type { HomeProductCard } from '@/types/home';
 
 /** 시안: 흰 배경 80% + 테두리 #e6e6e6, radius 4. D-day와 카운트다운이 같은 자리를 쓴다. */
 const TIME_BADGE_CLASS =
-  'border-border-subtle rounded-4 text-label-10 text-content-primary border bg-white px-1 py-0.5 opacity-80';
+  'border-border-subtle rounded-4 text-label-10 text-content-primary bg-normal-1 border px-1 py-0.5 opacity-80';
 
 /** 시안: `badge/surface/sky` = 하늘색 20%. */
-const PERSONNEL_BADGE_CLASS =
-  'rounded-4 text-label-10 text-content-primary bg-sky-400/20 px-1 py-0.5';
+const PERSONNEL_BADGE_CLASS = 'rounded-4 text-label-10 text-content-primary bg-sky-a20 px-1 py-0.5';
 
 type ProductCardVariant = 'demand' | 'succeeded';
 

@@ -49,6 +49,11 @@ export interface HomeBanner {
   title?: string;
   description?: string;
   imageUrl?: string;
+  /**
+   * 문구가 이미지에 인쇄된 배너의 대체 텍스트. 오버레이 문구(`title`)가 있는 배너는 그 문구가
+   * 곧 설명이므로 비워 두고, 인쇄형 배너만 채운다.
+   */
+  imageAltText?: string;
 }
 
 /** 브랜드별 인기 공구 섹션의 브랜드 칩. */
