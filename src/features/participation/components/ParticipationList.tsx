@@ -3,11 +3,13 @@
 import { useMemo, useState } from 'react';
 
 import { PackageOpen, SearchX } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 import { AlertDialog } from '@/components/ui/AlertDialog';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { SegmentControl } from '@/components/ui/SegmentControl';
 import { useToast } from '@/components/ui/Toast';
+import { CANCEL_AWARD_DIALOG } from '@/constants/awardCancel';
 import {
   getParticipationStatusMeta,
   PARTICIPATION_TAB_ALL,
@@ -23,13 +25,6 @@ import type { ParticipationItem } from '@/types/participation';
 // 상태별 카드 액션(시안): **해당 필터 탭에서만** 카드 아래 버튼이 뜬다('전체' 탭엔 없음).
 //  · 확인필요(ACTION_REQUIRED) — '대체상품 확인하기' → 대체상품 확인(B-16). 라우트 부재라 '준비 중' 토스트.
 //  · 배정완료(ALLOCATED)   — '낙찰 취소하기' → 파괴적 확인 다이얼로그. mock은 확인 시 낙관적 제거.
-
-// 낙찰 취소 확인 다이얼로그 문구. 시안 텍스트 기준(최종 카피 확정 시 이 상수만 손본다).
-const CANCEL_AWARD_CONFIRM = {
-  title: '낙찰을 취소하시겠어요?',
-  message: '취소하면 이 공구 참여가 종료되며, 다시 참여하려면 처음부터 신청해야 해요.',
-  confirmLabel: '낙찰 취소',
-} as const;
 
 interface DateGroup {
   date: string;
@@ -69,6 +64,18 @@ export function ParticipationList({ initialItems }: ParticipationListProps) {
   const [items, setItems] = useState<ParticipationItem[]>(initialItems);
   const [cancelTarget, setCancelTarget] = useState<ParticipationItem | null>(null);
   const { showComingSoon, showToast } = useToast();
+  const router = useRouter();
+
+  // 카드 본문 탭 → 상세. 배정완료(낙찰됨)는 낙찰 결과(B-19)로 보낸다. 그 외 상태의 상세는
+  // 수요 상세(B-12)인데 라우트 부재라 '준비 중' 토스트로 둔다. B-19는 아직 mock 단건이라
+  // id 없이 고정 경로로 간다(규격 확정 시 /participation/[id] 형태로 교체 — award-result/page.tsx 주석).
+  function openDetail(item: ParticipationItem) {
+    if (item.status === 'ALLOCATED') {
+      router.push('/award-result');
+      return;
+    }
+    showComingSoon();
+  }
 
   const groups = useMemo(() => {
     const filtered =
@@ -88,7 +95,7 @@ export function ParticipationList({ initialItems }: ParticipationListProps) {
     }
     setItems((prev) => prev.filter((item) => item.id !== cancelTarget.id));
     setCancelTarget(null);
-    showToast('낙찰을 취소했어요');
+    showToast(CANCEL_AWARD_DIALOG.successToast);
   }
 
   return (
@@ -138,8 +145,7 @@ export function ParticipationList({ initialItems }: ParticipationListProps) {
                         onCancel: () => setCancelTarget(item),
                       })}
                       item={item}
-                      // 카드 본문 탭 → 수요 상세(B-12). 라우트 부재라 '준비 중' 토스트.
-                      onOpenDetail={showComingSoon}
+                      onOpenDetail={() => openDetail(item)}
                     />
                   </li>
                 ))}
@@ -150,13 +156,13 @@ export function ParticipationList({ initialItems }: ParticipationListProps) {
       )}
 
       <AlertDialog
-        cancelLabel="돌아가기"
-        confirmLabel={CANCEL_AWARD_CONFIRM.confirmLabel}
+        cancelLabel={CANCEL_AWARD_DIALOG.cancelLabel}
+        confirmLabel={CANCEL_AWARD_DIALOG.confirmLabel}
         isOpen={cancelTarget !== null}
-        message={CANCEL_AWARD_CONFIRM.message}
+        message={CANCEL_AWARD_DIALOG.message}
         onClose={() => setCancelTarget(null)}
         onConfirm={handleConfirmCancel}
-        title={CANCEL_AWARD_CONFIRM.title}
+        title={CANCEL_AWARD_DIALOG.title}
       />
     </div>
   );
