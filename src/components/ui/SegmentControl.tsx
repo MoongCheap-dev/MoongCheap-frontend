@@ -2,14 +2,13 @@
 
 import { cn } from '@/lib/cn';
 
-// 상태·범주를 가로로 전환하는 세그먼트 탭. 시안 B-17의 밑줄형 탭(전체·진행중·대체제안…)에 대응한다.
+// 상태·범주를 가로로 전환하는 세그먼트 탭. 시안 B-17의 **회색 알약(pill) 칩** 탭에 대응한다.
 // 목록 화면들이 공유할 P0 공용 컴포넌트라 특정 화면에 묶지 않고 여기 둔다.
 //
-// 밑줄형(활성 = 코랄 글자 + 하단 바)으로 구현했다. 알약형(segmented pill)이 필요한 화면이 생기면
-// variant를 넓히되 아래 props 계약은 유지한다. 최종 색·간격은 디자인 확정 시 여기만 손본다.
+// 활성 표시는 시안대로 **글자 색·굵기**로만 준다(활성 = 검정 볼드, 비활성 = 회색). 칩 배경은
+// 활성/비활성 동일한 연회색이다. 최종 색·간격은 디자인 확정 시 여기만 손본다.
 //
-// 접근성: 값 하나만 선택되는 필터라 버튼 그룹 + aria-pressed로 표현한다(탭패널을 별도로 두지 않아
-// role="tab"/"tabpanel" 배선은 생략). 옵션이 넘치면 가로 스크롤한다.
+// 접근성: 값 하나만 선택되는 필터라 버튼 그룹 + aria-pressed로 표현한다. 옵션이 넘치면 가로 스크롤.
 
 interface SegmentOption<T extends string> {
   readonly key: T;
@@ -37,8 +36,7 @@ export function SegmentControl<T extends string>({
       aria-label={ariaLabel}
       role="group"
       className={cn(
-        'border-divider-default flex w-full gap-4 overflow-x-auto border-b px-4',
-        // 활성 탭 하단 바가 컨테이너 border 위에 겹쳐 얇아 보이지 않도록 스크롤바만 숨긴다.
+        'flex w-full gap-2 overflow-x-auto px-4 py-3',
         '[scrollbar-width:none] [&::-webkit-scrollbar]:hidden',
         className,
       )}
@@ -52,18 +50,12 @@ export function SegmentControl<T extends string>({
             aria-pressed={isActive}
             onClick={() => onChange(option.key)}
             className={cn(
-              'text-body-15 relative shrink-0 py-3 whitespace-nowrap outline-none',
-              'focus-visible:ring-effect-focus-ring-primary rounded-sm focus-visible:ring-2',
-              isActive ? 'text-content-brand font-semibold' : 'text-content-quarternary',
+              'text-body-14 bg-surface-secondary shrink-0 rounded-full px-4 py-1.5 whitespace-nowrap outline-none',
+              'focus-visible:ring-effect-focus-ring-primary focus-visible:ring-2',
+              isActive ? 'text-content-primary font-bold' : 'text-content-tertiary',
             )}
           >
             {option.label}
-            {isActive && (
-              <span
-                aria-hidden
-                className="bg-content-brand absolute inset-x-0 -bottom-px h-0.5 rounded-full"
-              />
-            )}
           </button>
         );
       })}
