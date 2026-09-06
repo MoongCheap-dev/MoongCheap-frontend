@@ -79,7 +79,7 @@ export function AwardResultView({ result }: AwardResultViewProps) {
         {/* 낙찰 축하 일러스트(경매 망치). #60 exception/일러스트 병합 전까지 lucide placeholder를 쓴다. */}
         <div
           aria-hidden
-          className="bg-surface-brand/10 text-content-brand mx-auto mt-8 flex size-28 items-center justify-center rounded-full"
+          className="bg-surface-brand/10 text-content-brand rounded-round mx-auto mt-8 flex size-28 items-center justify-center"
         >
           <Gavel className="size-14" />
         </div>
