@@ -4,9 +4,14 @@ import type { ParticipationStatus } from '@/constants/participationStatus';
  * 화면 B-17(내 수요 참여 목록) 카드 한 건이 요구하는 타입.
  *
  * `types/payment.ts`와 같은 원칙이다. 백엔드 응답을 옮긴 것이 아니라 **화면이 필요로 하는 모양**이며,
- * 규격이 나오면 API 계층에서 변환해 이 타입으로 맞춘다. B-17은 **도메인 B(거래·공동구매)**라
- * 상세 엔드포인트·DTO·필드명은 아직 미수령이다(BE 담당 부재). 다만 응답 관례는 도메인 A 실측으로
- * 확정됐다 — **래핑 없음, 목록은 배열**(mocks/participation.ts가 이미 배열을 반환한다).
+ * 규격이 나오면 API 계층에서 변환해 이 타입으로 맞춘다.
+ *
+ * 현재 백엔드 Swagger(2026-09-06)에는 B-17이 쓸 **참여 목록 조회·낙찰 취소·대체상품 엔드포인트가
+ * 없다**(수요 `등록`(POST /api/members/me/demand)·수요보드 `존재 확인`만 존재). 그래서 목록은 mock이다.
+ * 다만 응답 관례는 확정됐다 — **래핑 없음, 목록은 배열**(IdResponse `{id}`, 도감만 `{list,totalCount}`).
+ * mocks/participation.ts가 이미 배열을 반환하므로, 조회 엔드포인트가 오면 타입 변경 없이 붙는다.
+ * 참고로 확정된 `DemandCreateRequestDto`는 quantity(1~99)·isSubstitutable·catalogId·desiredPriceMin/Max를
+ * 가지며, 참여 응답 DTO가 도착하면 이 타입을 그 필드에 맞춘다.
  */
 export interface ParticipationItem {
   readonly id: string;
