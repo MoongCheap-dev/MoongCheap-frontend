@@ -4,7 +4,9 @@ import type { ParticipationStatus } from '@/constants/participationStatus';
  * 화면 B-17(내 수요 참여 목록) 카드 한 건이 요구하는 타입.
  *
  * `types/payment.ts`와 같은 원칙이다. 백엔드 응답을 옮긴 것이 아니라 **화면이 필요로 하는 모양**이며,
- * 규격이 나오면 API 계층에서 변환해 이 타입으로 맞춘다(응답 래핑·필드명 미확정).
+ * 규격이 나오면 API 계층에서 변환해 이 타입으로 맞춘다. B-17은 **도메인 B(거래·공동구매)**라
+ * 상세 엔드포인트·DTO·필드명은 아직 미수령이다(BE 담당 부재). 다만 응답 관례는 도메인 A 실측으로
+ * 확정됐다 — **래핑 없음, 목록은 배열**(mocks/participation.ts가 이미 배열을 반환한다).
  */
 export interface ParticipationItem {
   readonly id: string;
