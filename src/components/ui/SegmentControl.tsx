@@ -50,7 +50,7 @@ export function SegmentControl<T extends string>({
             aria-pressed={isActive}
             onClick={() => onChange(option.key)}
             className={cn(
-              'text-body-14 bg-surface-secondary shrink-0 rounded-full px-4 py-1.5 whitespace-nowrap outline-none',
+              'text-body-14 bg-surface-secondary rounded-round shrink-0 px-4 py-1.5 whitespace-nowrap outline-none',
               'focus-visible:ring-effect-focus-ring-primary focus-visible:ring-2',
               isActive ? 'text-content-primary font-bold' : 'text-content-tertiary',
             )}

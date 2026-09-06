@@ -37,7 +37,7 @@ export function ParticipationCard({ item, onOpenDetail, action }: ParticipationC
           <div aria-hidden className="bg-surface-secondary rounded-12 size-20" />
           <span
             className={cn(
-              'text-caption-10 absolute top-1 left-1 rounded-full px-1.5 py-0.5 font-medium',
+              'text-caption-10 rounded-round absolute top-1 left-1 px-1.5 py-0.5',
               meta.badgeClass,
             )}
           >
@@ -47,14 +47,12 @@ export function ParticipationCard({ item, onOpenDetail, action }: ParticipationC
 
         <div className="flex min-w-0 flex-1 flex-col gap-0.5 text-left">
           <div className="flex items-center gap-1.5">
-            <span className="text-label-13 text-content-error font-bold">D-{item.dday}</span>
-            <span className="text-caption-10 bg-surface-visibility text-content-visibility rounded-full px-1.5 py-0.5 font-medium">
+            <span className="text-label-13 text-content-error">D-{item.dday}</span>
+            <span className="text-caption-10 bg-surface-visibility text-content-visibility rounded-round px-1.5 py-0.5">
               {item.participantCount}명 참여
             </span>
           </div>
-          <p className="text-body-15 text-content-primary truncate font-semibold">
-            {item.productName}
-          </p>
+          <p className="text-body-15 text-content-primary truncate">{item.productName}</p>
           <p className="text-caption-12 text-content-quarternary truncate">
             {item.category} <span className="text-content-quinary">|</span> 수량 : {item.quantity}개
           </p>
