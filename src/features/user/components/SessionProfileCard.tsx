@@ -7,8 +7,9 @@ import { useRouter } from 'next/navigation';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { useSession } from '@/features/auth/session';
-import { ProfileCard } from '@/features/user/components/ProfileCard';
+import { ProfileCard, PROFILE_CARD_CONTAINER_CLASS } from '@/features/user/components/ProfileCard';
 import { RoleSwitchButton } from '@/features/user/components/RoleSwitchButton';
+import type { UserRole } from '@/types/auth';
 import type { ActiveRole } from '@/types/user';
 
 // 전역 세션(#70)에서 프로필 카드를 그리는 client 조각. 마이페이지(B-26)·프로필 설정(B-24)이
@@ -28,7 +29,7 @@ interface SessionProfileCardProps {
 /** 세션 role(계정 권한)을 마이페이지의 활성 역할 축으로 옮긴다.
  *  ActiveRole은 원래 "지금 보고 있는 모드"라 세션의 계정 권한과 축이 다르지만, 역할 전환 토글
  *  상태를 담을 client 스토어가 아직 없어 계정 권한으로 대신한다(전환 UI 배선 시 재검토). */
-function toActiveRole(role: 'CONSUMER' | 'SELLER' | 'ADMIN'): ActiveRole {
+function toActiveRole(role: UserRole): ActiveRole {
   return role === 'SELLER' ? 'seller' : 'buyer';
 }
 
@@ -76,10 +77,10 @@ export function SessionProfileCard({ editHref, sellerApplyHref }: SessionProfile
   );
 }
 
-/** ProfileCard와 같은 크기의 로딩 자리표시자(아바타 + 두 줄). */
+/** ProfileCard와 같은 크기의 로딩 자리표시자(아바타 + 두 줄). 컨테이너는 ProfileCard와 공유한다. */
 function ProfileCardSkeleton() {
   return (
-    <section className="bg-background-default rounded-12 flex w-full items-center gap-3 p-4">
+    <section className={PROFILE_CARD_CONTAINER_CLASS}>
       <Skeleton className="rounded-round size-16 shrink-0" />
       <div className="flex min-w-0 flex-1 flex-col gap-2">
         <Skeleton className="h-5 w-24" />

@@ -26,9 +26,13 @@ interface ProfileCardProps {
 export const ROLE_SWITCH_CLASS =
   'bg-surface-quinary text-content-inverse text-label-13 rounded-round flex shrink-0 items-center gap-1 px-2 py-0.5';
 
+/** 카드 바깥 컨테이너의 생김새. 로딩 자리표시자(SessionProfileCard)가 같은 크기를 쓰도록 내보낸다. */
+export const PROFILE_CARD_CONTAINER_CLASS =
+  'bg-background-default rounded-12 flex w-full items-center gap-3 p-4';
+
 export function ProfileCard({ nickname, email, editHref, roleSwitch }: ProfileCardProps) {
   return (
-    <section className="bg-background-default rounded-12 flex w-full items-center gap-3 p-4">
+    <section className={PROFILE_CARD_CONTAINER_CLASS}>
       {/* 프로필 이미지 업로드는 아직 없다. 시안의 기본 아바타를 그대로 쓴다. */}
       <span className="bg-surface-tertiary text-content-quarternary rounded-round flex size-16 shrink-0 items-center justify-center">
         <User aria-hidden className="size-6" />

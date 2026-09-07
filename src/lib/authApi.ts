@@ -95,7 +95,13 @@ export async function getMe(): Promise<SessionUser | null> {
     throw error;
   }
 
-  const data = (await response.json()) as ProfileResponse | null;
+  // 세션 없음을 200+빈 본문으로 돌려주는 서버도 있어(응답 포맷 미확정), 빈 본문에서 response.json()이
+  // 던지지 않도록 텍스트로 먼저 받는다. 비어 있으면 미로그인으로 접고, 본문 null도 마찬가지로 접는다.
+  const body = await response.text();
+  if (body.trim() === '') {
+    return null;
+  }
+  const data = JSON.parse(body) as ProfileResponse | null;
   if (data === null) {
     return null;
   }
