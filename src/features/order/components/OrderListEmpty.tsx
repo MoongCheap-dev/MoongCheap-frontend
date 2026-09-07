@@ -2,6 +2,8 @@ import type { ReactNode } from 'react';
 
 import Image from 'next/image';
 
+import { EXCEPTION_ASSETS } from '@/constants/assets';
+
 // B-21 주문 0건 안내. 시안 `453:26371`.
 //
 // 공용 `ui/EmptyState`를 쓰지 않았다. 그쪽은 제목이 `body-15`에 간격이 gap-2인 작은 인라인
@@ -27,7 +29,7 @@ export function OrderListEmpty({ action }: OrderListEmptyProps) {
           className="absolute -top-[23px] -left-[23px] max-w-none"
           height={246}
           priority
-          src="/images/order-empty-box.png"
+          src={EXCEPTION_ASSETS.emptyHistory}
           width={246}
         />
       </div>
