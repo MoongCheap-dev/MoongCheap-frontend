@@ -1,5 +1,7 @@
 import type { OAuthProvider } from '@/types/auth';
 
+import { getApiBaseUrl } from './api';
+
 /**
  * 소셜 로그인(카카오·구글) 진입 URL 생성.
  *
@@ -12,16 +14,8 @@ import type { OAuthProvider } from '@/types/auth';
  */
 
 // 백엔드 표준 경로. code 교환·세션 발급은 서버가 담당하므로 프론트는 provider 이름만 붙인다.
+// 베이스 URL 해석은 lib/api.ts의 getApiBaseUrl을 공유한다(인가 이동과 REST 호출이 동일 소스).
 const AUTHORIZE_PATH = '/oauth2/authorization';
-
-function getApiBaseUrl(): string | null {
-  const raw = process.env.NEXT_PUBLIC_API_BASE_URL;
-  if (raw === undefined || raw === '') {
-    return null;
-  }
-  // 값 확정 시 뒤에 슬래시가 붙어 와도 이중 슬래시가 되지 않도록 정리한다.
-  return raw.replace(/\/+$/, '');
-}
 
 /**
  * 제공자별 인가 시작 URL. 베이스 URL(env)이 아직 없으면 null.

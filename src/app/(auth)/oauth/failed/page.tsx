@@ -8,15 +8,10 @@ export const metadata: Metadata = {
 };
 
 // 소셜 로그인(카카오·구글) 실패 착지 경로. 백엔드가 실패 시 `/oauth/failed?reason=...`로 리다이렉트한다.
-// reason 값(denied·provider_error·server_error)을 안내 문구로 바꿔 보여주고, 다시 로그인으로 되돌린다.
-// reason은 URLSearchParams 특성상 문자열 배열로도 올 수 있어 첫 값만 취한다. 규약 밖 값은 기본 문구로 떨어진다.
-export default async function OAuthFailedPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ reason?: string | string[] }>;
-}) {
-  const { reason } = await searchParams;
-  const message = getOAuthFailureMessage(Array.isArray(reason) ? reason[0] : reason);
+// reason은 서버 예외 메시지 원문이라(안정 코드 아님) 노출하지 않고 일반 문구로만 안내한다
+// (constants/authMessages 참고). 다시 로그인으로 되돌린다.
+export default function OAuthFailedPage() {
+  const message = getOAuthFailureMessage();
 
   return (
     <div className="flex flex-col items-center gap-8 text-center">

@@ -43,26 +43,15 @@ export const AUTH_SUCCESS_MESSAGES = {
 /**
  * 소셜 로그인 실패 안내 문구.
  *
- * 백엔드는 소셜 로그인 실패 시 `/oauth/failed?reason=...`로 리다이렉트한다. reason 값은 백엔드와
- * 합의한 3종(denied·provider_error·server_error)이다. 규약에 없는 값이나 누락된 경우에도
- * 화면이 깨지지 않도록 기본 문구로 떨어뜨린다.
+ * 백엔드는 실패 시 `/oauth/failed?reason=<예외 메시지 원문(URL 인코딩)>`으로 리다이렉트한다
+ * (jnj3j3/MoongCheap_backend@develop, OAuth2LoginFailureHandler 확인). reason은 안정된 코드가
+ * 아니라 서버 내부 예외 메시지라, 그대로 노출하면 내부 사정이 새고 유저에겐 의미도 없다. 그래서
+ * reason 내용은 화면에 쓰지 않고 항상 하나의 일반 문구로 안내한다(값 유무·형태와 무관).
+ * (백엔드가 나중에 denied/provider_error 같은 안정 코드를 주기로 하면 여기서 매핑을 되살린다.)
  */
-export const OAUTH_FAILURE_MESSAGES = {
-  denied: '로그인이 취소되었어요',
-  provider_error: '소셜 로그인 제공자에서 문제가 발생했어요',
-  server_error: '로그인 처리 중 문제가 발생했어요',
-} as const;
-
-export type OAuthFailureReason = keyof typeof OAUTH_FAILURE_MESSAGES;
-
 const OAUTH_FALLBACK_MESSAGE = '로그인에 실패했어요. 잠시 후 다시 시도해 주세요';
 
-/** reason 쿼리값을 안내 문구로 매핑한다. 규약에 없거나 누락된 값은 기본 문구로 떨어진다. */
-export function getOAuthFailureMessage(reason: string | undefined): string {
-  // Object.hasOwn으로 자체 키만 확인한다. `in`은 프로토타입 키(toString·constructor 등)까지
-  // 매칭돼, `?reason=toString` 같은 값이 함수/객체를 반환하고 렌더에서 깨질 수 있다.
-  if (reason !== undefined && Object.hasOwn(OAUTH_FAILURE_MESSAGES, reason)) {
-    return OAUTH_FAILURE_MESSAGES[reason as OAuthFailureReason];
-  }
+/** 소셜 로그인 실패 안내 문구. 백엔드 reason은 예외 원문이라 노출하지 않고 일반 문구로 통일한다. */
+export function getOAuthFailureMessage(): string {
   return OAUTH_FALLBACK_MESSAGE;
 }
