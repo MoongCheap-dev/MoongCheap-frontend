@@ -6,6 +6,7 @@ import Image from 'next/image';
 
 import { EmptyState } from '@/components/ui/EmptyState';
 import { useToast } from '@/components/ui/Toast';
+import { EXCEPTION_ASSETS } from '@/constants/assets';
 import { PAYMENT_METHOD_MAX } from '@/constants/businessRules';
 import { PaymentMethodCard } from '@/features/user/components/PaymentMethodCard';
 import type { PaymentMethod } from '@/types/payment';
@@ -72,7 +73,7 @@ export function PaymentMethodManager({ initialMethods }: PaymentMethodManagerPro
         description="결제에 사용할 카드를 등록해 주세요."
         icon={
           // B-14 empty 시안의 지갑 일러스트(Figma node 755:16137, 160×146). 장식용이라 alt는 빈 값.
-          <Image alt="" height={146} priority src="/images/payment-empty-wallet.png" width={160} />
+          <Image alt="" height={146} priority src={EXCEPTION_ASSETS.emptyPayment} width={160} />
         }
         title="등록된 카드가 없어요"
       />

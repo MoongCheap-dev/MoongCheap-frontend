@@ -2,6 +2,7 @@ import type { ReactNode } from 'react';
 
 import Image from 'next/image';
 
+import { EXCEPTION_ASSETS } from '@/constants/assets';
 import { ERROR_SCREEN_DESCRIPTION, ERROR_SCREEN_TITLE } from '@/constants/commonMessages';
 
 // 전체화면 오류 공통 레이아웃. 시안 '모든화면 error 페이지'(453:26351).
@@ -51,7 +52,7 @@ export function ErrorScreen({
       {/* 제목이 상태를 설명하므로 삽화는 장식으로 둔다.
           파일은 4x(492×448) 원본이고 width/height는 시안 표시 크기다. next/image가
           srcset으로 화면 배율에 맞춰 내려보낸다. */}
-      <Image src="/images/error-cone.png" alt="" width={123} height={112} priority />
+      <Image src={EXCEPTION_ASSETS.error} alt="" width={123} height={112} priority />
 
       <div className="flex flex-col items-center gap-5">
         <div className="flex flex-col items-center gap-2">
