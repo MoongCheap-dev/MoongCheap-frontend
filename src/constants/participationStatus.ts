@@ -7,8 +7,11 @@
  *    (참고: constants/demandBoardStatus.ts) 여기서는 화면이 필터·배지를 그리기 위한 참조 모델만 둔다.
  *    BE 규격이 확정되면 이 파일에서 변환하고, 카드/탭 계약은 그대로 둔다.
  *
- * badgeClass는 썸네일 위 오버레이 배지 색이다. 시안 색을 팔레트 토큰으로 근사했다(오버레이는 밝은
- * 상품 이미지 위에 얹히므로 고정 색을 쓴다). 상태별 색이 확정되면 이 표 한 곳만 고친다.
+ * badgeClass는 썸네일 위 오버레이 배지 색이다(bg + text). 시안 색을 의미에 맞는 시맨틱 토큰으로
+ * 근사했다 — 컴포넌트에서 primitive 직접 참조를 금지하는 디자인 컨벤션(.agents/design-convention)에
+ * 맞추기 위함이며, 이로써 모드 전환도 배지에 함께 적용된다. 배정완료(원 시안 purple 계열)는 대응하는
+ * 시맨틱 토큰이 아직 없어 가장 가까운 visibility(정보성 파랑)로 둔다 — purple 시맨틱이 추가되면 교체한다.
+ * 상태별 색이 확정되면 이 표 한 곳만 고친다.
  */
 
 export interface ParticipationStatusMeta {
@@ -28,28 +31,28 @@ export const PARTICIPATION_STATUS = {
     tabLabel: '모이는 중',
     badgeLabel: '모이는 중',
     emptyTitle: '모이는 중인 수요가 없어요',
-    badgeClass: 'bg-brand-400 text-normal-1',
+    badgeClass: 'bg-surface-brand text-content-oncolor',
   },
   /** 배정완료 — 낙찰 배정됨(참여자 낙찰 취소 가능). */
   ALLOCATED: {
     tabLabel: '배정완료',
     badgeLabel: '배정완료',
     emptyTitle: '배정된 내 물품이 없어요',
-    badgeClass: 'bg-purple-100 text-purple-700',
+    badgeClass: 'bg-surface-visibility text-content-visibility',
   },
   /** 확인필요 — 참여자 조치 필요(대체상품 확인 등 → B-16). */
   ACTION_REQUIRED: {
     tabLabel: '확인필요',
     badgeLabel: '확인 필요',
     emptyTitle: '확인이 필요한 내역이 없어요',
-    badgeClass: 'bg-red-400 text-normal-1',
+    badgeClass: 'bg-surface-danger text-content-oncolor',
   },
   /** 완료 — 참여 종결. */
   DONE: {
     tabLabel: '완료',
     badgeLabel: '완료',
     emptyTitle: '완료된 참여가 없어요',
-    badgeClass: 'bg-coolgray-200 text-coolgray-600',
+    badgeClass: 'bg-surface-tertiary text-content-tertiary',
   },
 } as const satisfies Record<string, ParticipationStatusMeta>;
 

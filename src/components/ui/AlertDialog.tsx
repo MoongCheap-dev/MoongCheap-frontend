@@ -113,7 +113,7 @@ export function AlertDialog({
         ) : (
           <div className="flex gap-2">
             <button
-              className={`${DIALOG_BUTTON_CLASS} bg-surface-button-quarternary-default hover:bg-surface-button-quarternary-hover active:bg-surface-button-quarternary-pressed text-content-primary`}
+              className={`${DIALOG_BUTTON_CLASS} border-border-button-quarternary bg-background-default hover:bg-surface-button-quarternary-hover active:bg-surface-button-quarternary-pressed text-content-primary border`}
               disabled={isProcessing}
               onClick={onClose}
               type="button"
