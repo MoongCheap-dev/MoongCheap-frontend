@@ -10,9 +10,9 @@
 /** 예외/빈 상태 일러스트. public/images/exception/ 공용. */
 export const EXCEPTION_ASSETS = {
   /** 전체화면 오류(모든 error 페이지) 삽화. ErrorScreen에서 사용. */
-  error: '/images/exception/error.png',
+  error: '/images/exception/error.webp',
   /** 결제수단 미등록 빈 상태의 지갑 일러스트. B-14. */
-  emptyPayment: '/images/exception/empty-payment.png',
+  emptyPayment: '/images/exception/empty-payment.webp',
   /** 주문/참여 내역 빈 상태 일러스트. B-21(화면 구현 시 배선). */
-  emptyHistory: '/images/exception/empty-history.png',
+  emptyHistory: '/images/exception/empty-history.webp',
 } as const;
