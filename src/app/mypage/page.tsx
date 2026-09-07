@@ -29,13 +29,11 @@ export default async function MyPage() {
       </header>
 
       <div className="flex w-full flex-col gap-6 px-4">
-        {/* 판매자 전환(S-01)은 MVP지만 화면이 아직 없다. 다음 작업으로 잡혀 있으니
-            착수하면 roleSwitchHref="/mypage/seller-apply"로 되돌린다. */}
         <ProfileCard
           editHref="/mypage/profile/edit"
           email={overview.email}
           nickname={overview.nickname}
-          roleSwitchComingSoon
+          roleSwitchHref="/mypage/seller-apply"
         />
 
         {/* 주문 내역(B-21)은 도메인 B라 명세도 화면도 아직 없다. */}
