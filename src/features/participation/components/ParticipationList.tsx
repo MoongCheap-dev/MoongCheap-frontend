@@ -92,7 +92,7 @@ export function ParticipationList({ initialItems }: ParticipationListProps) {
   }
 
   return (
-    <div className="flex w-full flex-1 flex-col pb-28">
+    <div className="flex w-full flex-1 flex-col">
       <SegmentControl
         ariaLabel="참여 상태 필터"
         onChange={setTab}

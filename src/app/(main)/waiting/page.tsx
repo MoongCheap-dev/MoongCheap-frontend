@@ -18,7 +18,7 @@ export default async function WaitingPage() {
   const items = await mockGetParticipations();
 
   return (
-    <main className="max-w-mobile bg-background-default mx-auto flex min-h-svh w-full flex-col">
+    <main className="flex w-full flex-1 flex-col">
       <AppBar backHref="/" title="내 뭉치 참여 목록" />
       <ParticipationList initialItems={items} />
     </main>

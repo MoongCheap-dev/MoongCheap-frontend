@@ -165,6 +165,10 @@
           "com.figma.variableId": "VariableID:19:216",
           "com.figma.scopes": ["FONT_SIZE"]
         }
+      },
+      "label-10": {
+        "$type": "number",
+        "$value": 10
       }
     },
     "caption": {
@@ -357,6 +361,10 @@
           "com.figma.variableId": "VariableID:203:728",
           "com.figma.scopes": ["FONT_STYLE"]
         }
+      },
+      "label-10": {
+        "$type": "number",
+        "$value": 600
       }
     },
     "caption": {
@@ -549,6 +557,10 @@
           "com.figma.variableId": "VariableID:64:18",
           "com.figma.scopes": ["LINE_HEIGHT"]
         }
+      },
+      "label-10": {
+        "$type": "number",
+        "$value": 16
       }
     },
     "caption": {
