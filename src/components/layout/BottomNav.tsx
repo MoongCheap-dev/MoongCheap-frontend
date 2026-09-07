@@ -15,8 +15,8 @@ import { cn } from '@/lib/cn';
 // 즉 활성 알약이 탭 사이 간격(19)까지 좌우로 9.5씩 밀고 들어온다. 그래서 알약을 탭 안에
 // 절대 배치로 깔고 내용은 그 위에 올린다 — 탭 자체를 67로 넓히면 전체 폭이 222를 넘는다.
 //
-// `대기`는 B-17(내 뭉치 참여 목록) 화면이 아직 없다. 시안에 있는 탭이라 노출은 하고 탭하면
-// '준비 중' 토스트를 띄운다(미구현 진입점 규칙, 의사결정 기록 2026-08-28).
+// `대기`는 B-17(내 뭉치 참여 목록) → `/waiting`. #65에서 화면이 생겨 이 진입점을 연결했다.
+// (href 없는 탭은 여전히 '준비 중' 토스트 — 아직 화면 없는 향후 탭용, 의사결정 기록 2026-08-28.)
 
 interface NavItem {
   key: string;
@@ -28,7 +28,7 @@ interface NavItem {
 
 const NAV_ITEMS: readonly NavItem[] = [
   { key: 'home', label: '홈', Icon: NavHomeIcon, href: '/' },
-  { key: 'delay', label: '대기', Icon: NavDelayIcon },
+  { key: 'delay', label: '대기', Icon: NavDelayIcon, href: '/waiting' },
   { key: 'my', label: 'MY', Icon: NavMyIcon, href: '/mypage' },
 ];
 
