@@ -11,18 +11,17 @@
  *   SameSite=Lax 쿠키가 그대로 흐른다. 배포에서 도메인이 갈리면 SameSite=None·Secure가 필요하다.
  */
 
-function getApiBaseUrl(): string | null {
+/**
+ * 백엔드 베이스 URL. 미배선(빈 값)이면 null.
+ * 소셜 인가 이동(lib/oauth.ts)과 REST 호출이 같은 소스를 쓰도록 여기서 한 번만 정의해 내보낸다.
+ */
+export function getApiBaseUrl(): string | null {
   const raw = process.env.NEXT_PUBLIC_API_BASE_URL;
   if (raw === undefined || raw === '') {
     return null;
   }
   // 값 뒤에 슬래시가 붙어 와도 이중 슬래시가 되지 않도록 정리한다.
   return raw.replace(/\/+$/, '');
-}
-
-/** 베이스 URL(env)이 배선돼 백엔드 호출이 가능한 상태인지. */
-export function isApiConfigured(): boolean {
-  return getApiBaseUrl() !== null;
 }
 
 /**

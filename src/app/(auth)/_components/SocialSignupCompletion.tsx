@@ -54,6 +54,8 @@ export function SocialSignupCompletion() {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [dialogMessage, setDialogMessage] = useState<string | null>(null);
+  // 세션 만료(401) 안내 다이얼로그를 닫으면 로그인 화면으로 보낸다(완료 화면에 갇히지 않게).
+  const [returnToLoginAfterDialog, setReturnToLoginAfterDialog] = useState(false);
 
   const allAgreed = isAllAgreed(agreements);
   const nicknameFormatValid = signupNicknameSchema.safeParse(nicknameValue).success;
@@ -104,6 +106,7 @@ export function SocialSignupCompletion() {
       // 세션 만료(401)면 다시 로그인부터. 그 외는 일반 안내 후 재시도하게 둔다.
       if (error instanceof ApiError && error.status === 401) {
         setDialogMessage('세션이 만료되었어요. 다시 로그인해 주세요.');
+        setReturnToLoginAfterDialog(true);
         return;
       }
       setDialogMessage('가입 처리 중 문제가 발생했어요. 잠시 후 다시 시도해 주세요.');
@@ -201,7 +204,12 @@ export function SocialSignupCompletion() {
       <AlertDialog
         isOpen={dialogMessage !== null}
         message={dialogMessage ?? ''}
-        onClose={() => setDialogMessage(null)}
+        onClose={() => {
+          setDialogMessage(null);
+          if (returnToLoginAfterDialog) {
+            router.push('/login');
+          }
+        }}
       />
     </>
   );
