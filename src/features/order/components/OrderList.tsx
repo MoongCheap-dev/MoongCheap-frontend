@@ -3,11 +3,12 @@
 import { useState } from 'react';
 
 import { ChevronRight, Search } from 'lucide-react';
+import Link from 'next/link';
 
 import { ComingSoonButton } from '@/components/ui/ComingSoonButton';
 import { ORDER_LIST_TABS, type OrderListTabKey } from '@/constants/orderStatus';
 import { cn } from '@/lib/cn';
-import type { OrderSummary } from '@/types/order';
+import type { OrderListItem } from '@/types/order';
 
 import { OrderCard } from './OrderCard';
 import { OrderListEmpty } from './OrderListEmpty';
@@ -22,20 +23,28 @@ import { OrderListEmpty } from './OrderListEmpty';
 const TAB_CLASS = 'text-label-14 flex h-9 flex-1 items-center justify-center p-2.5';
 
 interface OrderListProps {
-  orders: OrderSummary[];
+  /**
+   * 주문과 그 상세 경로. 도메인 컴포넌트가 라우트 문자열을 갖지 않도록 경로는 호출부가 만든다.
+   *
+   * 콜백(`getDetailHref`)이 아니라 값으로 받는 이유는 서버 컴포넌트가 이 client 조각을
+   * 렌더하기 때문이다. 함수 prop은 서버→클라이언트 경계를 넘지 못한다.
+   */
+  items: OrderListItem[];
 }
 
-export function OrderList({ orders }: OrderListProps) {
+export function OrderList({ items }: OrderListProps) {
   const [tab, setTab] = useState<OrderListTabKey>('all');
 
   const activeTab = ORDER_LIST_TABS.find((item) => item.key === tab) ?? ORDER_LIST_TABS[0];
-  const visibleOrders =
+  const visibleItems =
     activeTab.statuses === null
-      ? orders
-      : orders.filter((order) => (activeTab.statuses as readonly string[]).includes(order.status));
+      ? items
+      : items.filter(({ order }) =>
+          (activeTab.statuses as readonly string[]).includes(order.status),
+        );
 
   // 주문이 하나도 없으면 시안(453:26371)대로 탭·검색을 감추고 빈 상태만 보여 준다.
-  if (orders.length === 0) {
+  if (items.length === 0) {
     return (
       <OrderListEmpty
         action={
@@ -86,21 +95,23 @@ export function OrderList({ orders }: OrderListProps) {
         </ComingSoonButton>
       </div>
 
-      {visibleOrders.length === 0 ? (
+      {visibleItems.length === 0 ? (
         // 탭별 빈 목록은 시안이 없다(명세 `🖌️ 디자인 필요` 2번). 전체 빈 상태의 문구를 그대로
         // 쓰고 CTA는 뺐다. 탭 문구가 확정되면 여기만 고친다.
         <OrderListEmpty />
       ) : (
         <ol className="flex w-full flex-col gap-2 pt-2">
-          {visibleOrders.map((order) => (
+          {visibleItems.map(({ order, detailHref }) => (
             <li className="flex w-full flex-col gap-1" key={order.id}>
               <div className="flex w-full items-center justify-between px-4 py-2">
                 <p className="text-label-16 text-content-primary">{order.orderedAt}</p>
-                {/* B-28 주문상세는 다음 이슈다. 화면이 생기면 Link로 바꾼다. */}
-                <ComingSoonButton className="text-caption-12 text-content-primary flex shrink-0 items-center gap-0.5">
+                <Link
+                  className="text-caption-12 text-content-primary flex shrink-0 items-center gap-0.5"
+                  href={detailHref}
+                >
                   주문상세
                   <ChevronRight aria-hidden className="size-4.5" />
-                </ComingSoonButton>
+                </Link>
               </div>
 
               <div className="w-full px-4">

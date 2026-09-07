@@ -43,3 +43,41 @@ export interface OrderSummary {
    */
   items: OrderItem[];
 }
+
+/**
+ * 주문 목록(B-21)이 카드 한 장을 그리는 데 필요한 것.
+ *
+ * 상세 경로를 함께 담는다. 라우팅은 `app/`이 정하고 도메인 컴포넌트는 받은 값만 쓴다.
+ */
+export interface OrderListItem {
+  order: OrderSummary;
+  detailHref: string;
+}
+
+/** B-28 결제내역 한 줄. 시안이 항목을 고정하지 않고 나열만 해 배열로 받는다. */
+export interface OrderPaymentLine {
+  label: string;
+  /** 원 단위. 할인·사용 금액은 음수로 담아 그대로 표시한다(시안 `-5,400원`). */
+  amount: number;
+}
+
+/** 주문 상세(B-28)가 필요로 하는 데이터. */
+export interface OrderDetail extends OrderSummary {
+  /** 주문번호. 시안 표기는 `12012348371629`. */
+  orderNumber: string;
+  /** 결제일. 시안은 주문일자가 아니라 `26.08.26 결제`로 결제일을 쓴다. */
+  paidAt: string;
+  shipping: {
+    recipient: string;
+    /** 마스킹된 휴대폰 번호(`BR-B28-01` 배송 정보 마스킹). 서버가 마스킹해 내려준다. */
+    phoneMasked: string;
+    address: string;
+  };
+  payment: {
+    /** 상품 금액 · 쿠폰 할인 · 포인트 사용 · 배송비. 시안 순서를 그대로 따른다. */
+    lines: OrderPaymentLine[];
+    total: number;
+    /** 결제수단 표기. 시안 `카드결제`. */
+    method: string;
+  };
+}
