@@ -1,64 +1,104 @@
-import { Clock, Home, User } from 'lucide-react';
-import Link from 'next/link';
+'use client';
 
+import type { ComponentType } from 'react';
+
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+
+import { NavDelayIcon, NavHomeIcon, NavMyIcon } from '@/components/layout/BottomNavIcons';
+import { useToast } from '@/components/ui/Toast';
 import { cn } from '@/lib/cn';
 
-// 하단 GNB(글로벌 내비게이션). 시안 B-17 등 루트 화면 하단의 플로팅 3탭에 대응한다.
-// 탭 구성은 businessRules.ts GNB_TABS(홈 · 내 대기 · 마이페이지 → B-03 / B-17 / B-24)를 따른다.
+// 하단 탭바. 시안 `834:9240`(222×64 알약, 화면 하단 중앙 고정).
 //
-// ⚠️ App Router 경로 규약이 미확정이라 href는 현재 존재하는 라우트로 임시 배선한다
-//    (홈=/ · 대기=/waiting · MY=/mypage). 규약 확정 시 이 표만 고친다.
-// mypage 셸 주석대로, 하단탭이 확정되면 라우트 그룹 레이아웃으로 올려 공용화한다.
+// 활성 표시는 폭 67·높이 53의 회색 알약인데, 탭 하나의 폭은 48이다(좌우 12 + 아이콘 24).
+// 즉 활성 알약이 탭 사이 간격(19)까지 좌우로 9.5씩 밀고 들어온다. 그래서 알약을 탭 안에
+// 절대 배치로 깔고 내용은 그 위에 올린다 — 탭 자체를 67로 넓히면 전체 폭이 222를 넘는다.
+//
+// `대기`는 B-17(내 뭉치 참여 목록) → `/waiting`. #65에서 화면이 생겨 이 진입점을 연결했다.
+// (href 없는 탭은 여전히 '준비 중' 토스트 — 아직 화면 없는 향후 탭용, 의사결정 기록 2026-08-28.)
 
-type NavKey = 'home' | 'waiting' | 'my';
-
-const ITEMS: readonly { key: NavKey; label: string; href: string; Icon: typeof Home }[] = [
-  { key: 'home', label: '홈', href: '/', Icon: Home },
-  { key: 'waiting', label: '대기', href: '/waiting', Icon: Clock },
-  { key: 'my', label: 'MY', href: '/mypage', Icon: User },
-];
-
-interface BottomNavProps {
-  active: NavKey;
+interface NavItem {
+  key: string;
+  label: string;
+  Icon: ComponentType<{ className?: string }>;
+  /** 화면이 아직 없는 탭은 href를 비운다. */
+  href?: string;
 }
 
-export function BottomNav({ active }: BottomNavProps) {
+const NAV_ITEMS: readonly NavItem[] = [
+  { key: 'home', label: '홈', Icon: NavHomeIcon, href: '/' },
+  { key: 'delay', label: '대기', Icon: NavDelayIcon, href: '/waiting' },
+  { key: 'my', label: 'MY', Icon: NavMyIcon, href: '/mypage' },
+];
+
+/** 탭 하나의 내부. 활성 알약과 내용의 쌓임 순서를 여기서 고정한다. */
+const ITEM_CLASS =
+  'relative flex flex-col items-center justify-center gap-0.5 px-3 py-1 rounded-round';
+
+function NavItemBody({ item, active }: { item: NavItem; active: boolean }) {
+  return (
+    <>
+      {/* 시안의 활성 알약(67×53). 탭 폭(48)보다 넓어 간격을 파고든다. */}
+      {active && (
+        <span
+          aria-hidden
+          className="bg-surface-tertiary rounded-32 absolute top-1/2 left-1/2 h-[53px] w-[67px] -translate-x-1/2 -translate-y-1/2"
+        />
+      )}
+      <item.Icon
+        className={cn(
+          'relative size-6',
+          active ? 'text-content-brand' : 'text-content-quarternary',
+        )}
+      />
+      <span
+        className={cn(
+          'text-label-10 relative whitespace-nowrap',
+          active ? 'text-content-brand' : 'text-content-quarternary',
+        )}
+      >
+        {item.label}
+      </span>
+    </>
+  );
+}
+
+export function BottomNav() {
+  const pathname = usePathname();
+  const { showComingSoon } = useToast();
+
   return (
     <nav
       aria-label="주요 메뉴"
-      className="max-w-mobile pointer-events-none fixed inset-x-0 bottom-0 z-40 mx-auto w-full px-4 pb-4"
+      className="fixed inset-x-0 bottom-[env(safe-area-inset-bottom)] z-40 flex justify-center"
     >
-      <ul className="bg-background-default shadow-effect-shadow-primary pointer-events-auto flex items-center justify-around rounded-full px-2 py-2 shadow-lg">
-        {ITEMS.map(({ key, label, href, Icon }) => {
-          const isActive = key === active;
+      <div className="bg-surface-primary rounded-round flex h-16 w-[222px] items-center gap-[19px] px-5 drop-shadow-[0px_2px_10px_rgba(0,0,0,0.1)]">
+        {NAV_ITEMS.map((item) => {
+          const active =
+            item.href !== undefined &&
+            (item.href === '/' ? pathname === '/' : pathname.startsWith(item.href));
+
+          if (item.href === undefined) {
+            return (
+              <button key={item.key} type="button" onClick={showComingSoon} className={ITEM_CLASS}>
+                <NavItemBody item={item} active={false} />
+              </button>
+            );
+          }
+
           return (
-            <li key={key}>
-              <Link
-                aria-current={isActive ? 'page' : undefined}
-                className="flex w-16 flex-col items-center gap-1 py-1"
-                href={href}
-              >
-                <span
-                  className={cn(
-                    'flex size-9 items-center justify-center rounded-full',
-                    isActive ? 'bg-surface-brand text-content-oncolor' : 'text-content-tertiary',
-                  )}
-                >
-                  <Icon aria-hidden className="size-5" />
-                </span>
-                <span
-                  className={cn(
-                    'text-caption-10',
-                    isActive ? 'text-content-brand font-medium' : 'text-content-tertiary',
-                  )}
-                >
-                  {label}
-                </span>
-              </Link>
-            </li>
+            <Link
+              key={item.key}
+              href={item.href}
+              aria-current={active ? 'page' : undefined}
+              className={ITEM_CLASS}
+            >
+              <NavItemBody item={item} active={active} />
+            </Link>
           );
         })}
-      </ul>
+      </div>
     </nav>
   );
 }

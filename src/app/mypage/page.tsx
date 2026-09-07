@@ -3,6 +3,7 @@ import type { Metadata } from 'next';
 import { LinkButton } from '@/features/user/components/LinkButton';
 import { OrderProgressSummary } from '@/features/user/components/OrderProgressSummary';
 import { ProfileCard } from '@/features/user/components/ProfileCard';
+import { RoleSwitchButton } from '@/features/user/components/RoleSwitchButton';
 import { SettingsList } from '@/features/user/components/SettingsList';
 import { SettingsRow } from '@/features/user/components/SettingsRow';
 import { SettingsSection } from '@/features/user/components/SettingsSection';
@@ -29,17 +30,21 @@ export default async function MyPage() {
       </header>
 
       <div className="flex w-full flex-col gap-6 px-4">
-        {/* 판매자 전환(S-01)은 MVP지만 화면이 아직 없다. 다음 작업으로 잡혀 있으니
-            착수하면 roleSwitchHref="/mypage/seller-apply"로 되돌린다. */}
+        {/* 전환 버튼은 시트를 여는 client 조각이 맡는다. 시트의 '판매자' 선택은 S-01로 보낸다
+            (기능명세 FN-B26-01이 판매자 전환을 미확정으로 남겨, IA의 판매자 전환 → S-01 매핑을 따랐다). */}
         <ProfileCard
           editHref="/mypage/profile/edit"
           email={overview.email}
           nickname={overview.nickname}
-          roleSwitchComingSoon
+          roleSwitch={
+            <RoleSwitchButton currentRole={overview.role} sellerApplyHref="/mypage/seller-apply" />
+          }
         />
 
-        {/* 주문 내역(B-21)은 도메인 B라 명세도 화면도 아직 없다. */}
-        <SettingsSection actionLabel="자세히보기" title="진행중인 주문내역">
+        {/* 진행 단계 숫자를 탭하면 해당 상태로 필터된 B-21로 가야 한다(BR-B21-01-09). 다만 명세가
+            "세부 상태까지 필터할지"를 [⚠️ 기능·화면 미확정] 11번으로 남겨 둬 숫자는 아직 링크가 아니다.
+            취소/교환/반품 조회는 MVP 미구현이라 준비 중 토스트를 유지한다(BR-B21-01-09). */}
+        <SettingsSection actionHref="/orders" actionLabel="자세히보기" title="진행중인 주문내역">
           <div className="flex w-full flex-col gap-1.5">
             <OrderProgressSummary counts={overview.orderProgress} />
             <LinkButton label="취소/교환/반품 조회" />
