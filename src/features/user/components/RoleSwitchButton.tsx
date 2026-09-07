@@ -6,6 +6,7 @@ import { ArrowLeftRight } from 'lucide-react';
 
 import { ROLE_SWITCH_CLASS } from '@/features/user/components/ProfileCard';
 import { RoleSwitchSheet } from '@/features/user/components/RoleSwitchSheet';
+import type { ActiveRole } from '@/types/user';
 
 // 마이페이지 프로필 카드의 역할 전환 버튼(B-26). 시트 열림 상태만 들고 있는 얇은 client 조각이라
 // `mypage/page.tsx`는 서버 컴포넌트로 남는다(ComingSoonButton·ConfirmActionRow와 같은 방식).
@@ -14,10 +15,14 @@ import { RoleSwitchSheet } from '@/features/user/components/RoleSwitchSheet';
 // 시안 `453:25351`(판매자 현재상태)의 pill은 '판매자 전환'으로 그려져 있으나, S-01 전환완료
 // 화면의 미리보기(`453:25144`)는 판매자 계정에 '구매자 전환'을 달고 있다. 뒤쪽을 따랐다.
 
-const SWITCH_LABELS = { buyer: '판매자 전환', seller: '구매자 전환' } as const;
+// Record로 두면 역할이 늘었을 때 라벨 누락을 컴파일러가 잡는다.
+const SWITCH_LABELS: Record<ActiveRole, string> = {
+  buyer: '판매자 전환',
+  seller: '구매자 전환',
+};
 
 interface RoleSwitchButtonProps {
-  currentRole: 'buyer' | 'seller';
+  currentRole: ActiveRole;
   /** 판매자 전환(S-01) 경로. 시트가 '판매자' 선택 시 쓴다. */
   sellerApplyHref: string;
 }

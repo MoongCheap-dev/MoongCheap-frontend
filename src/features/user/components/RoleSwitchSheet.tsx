@@ -5,6 +5,7 @@ import { useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 
 import { cn } from '@/lib/cn';
+import type { ActiveRole } from '@/types/user';
 
 // B-26 구매자·판매자 전환 바텀시트. 시안 `453:25295`(구매자 현재상태) · `453:25351`(판매자 현재상태).
 //
@@ -35,7 +36,7 @@ const ROW_CLASS =
 interface RoleSwitchSheetProps {
   isOpen: boolean;
   /** 지금 쓰고 있는 역할. 이 행에 '현재상태' 배지와 채워진 라디오가 붙는다. */
-  currentRole: 'buyer' | 'seller';
+  currentRole: ActiveRole;
   /**
    * 판매자 전환(S-01) 경로. 아직 판매자가 아닐 때 '판매자'를 고르면 여기로 간다.
    * 도메인 컴포넌트가 라우트 문자열을 들지 않도록 호출부가 넘긴다.
@@ -68,7 +69,7 @@ export function RoleSwitchSheet({
   }, [isOpen]);
 
   // 라디오 값이 실제로 바뀔 때만 불린다. 현재 역할 재선택은 위 input의 onClick이 맡는다.
-  function handleSelect(role: 'buyer' | 'seller') {
+  function handleSelect(role: ActiveRole) {
     if (role === 'seller') {
       // 판매자 계정이 없으면 승격 화면부터 거친다. 이미 판매자인 경우의 분기는 시안·명세에
       // 근거가 없어 두지 않았다(승격 화면이 상태를 판단한다).
