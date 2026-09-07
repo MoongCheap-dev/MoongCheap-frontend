@@ -593,6 +593,9 @@
   --text-heading-24: 24px;
   --text-heading-24--line-height: 38px;
   --text-heading-24--font-weight: 700;
+  --text-label-10: 10px;
+  --text-label-10--line-height: 16px;
+  --text-label-10--font-weight: 600;
   --text-label-12: 12px;
   --text-label-12--line-height: 20px;
   --text-label-12--font-weight: 600;
