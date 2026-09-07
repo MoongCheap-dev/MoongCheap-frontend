@@ -33,13 +33,14 @@ const ROW_CLASS = 'text-body-15 text-content-primary flex w-full items-center px
 
 // 눌림 피드백은 실제로 반응하는 행에만 붙인다. 아무 일도 안 일어나는 행에 넣으면
 // 눌렸다는 신호만 주고 끝나서 오히려 고장으로 보인다.
-const PRESSABLE_CLASS = `${ROW_CLASS} active:bg-surface-secondary`;
+// 실제 동작을 직접 붙이는 행(LogoutRow 등)이 같은 생김새를 쓰도록 내보낸다.
+export const SETTINGS_ROW_PRESSABLE_CLASS = `${ROW_CLASS} active:bg-surface-secondary`;
 
 export function SettingsRow({ label, href, comingSoon = false, confirm }: SettingsRowProps) {
   if (href !== undefined) {
     return (
       <li className="w-full">
-        <Link className={PRESSABLE_CLASS} href={href}>
+        <Link className={SETTINGS_ROW_PRESSABLE_CLASS} href={href}>
           {label}
         </Link>
       </li>
@@ -49,7 +50,7 @@ export function SettingsRow({ label, href, comingSoon = false, confirm }: Settin
   if (comingSoon) {
     return (
       <li className="w-full">
-        <ComingSoonButton className={PRESSABLE_CLASS}>{label}</ComingSoonButton>
+        <ComingSoonButton className={SETTINGS_ROW_PRESSABLE_CLASS}>{label}</ComingSoonButton>
       </li>
     );
   }
@@ -57,7 +58,7 @@ export function SettingsRow({ label, href, comingSoon = false, confirm }: Settin
   if (confirm !== undefined) {
     return (
       <li className="w-full">
-        <ConfirmActionRow className={PRESSABLE_CLASS} label={label} {...confirm} />
+        <ConfirmActionRow className={SETTINGS_ROW_PRESSABLE_CLASS} label={label} {...confirm} />
       </li>
     );
   }

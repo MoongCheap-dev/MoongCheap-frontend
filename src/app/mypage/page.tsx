@@ -2,8 +2,7 @@ import type { Metadata } from 'next';
 
 import { LinkButton } from '@/features/user/components/LinkButton';
 import { OrderProgressSummary } from '@/features/user/components/OrderProgressSummary';
-import { ProfileCard } from '@/features/user/components/ProfileCard';
-import { RoleSwitchButton } from '@/features/user/components/RoleSwitchButton';
+import { SessionProfileCard } from '@/features/user/components/SessionProfileCard';
 import { SettingsList } from '@/features/user/components/SettingsList';
 import { SettingsRow } from '@/features/user/components/SettingsRow';
 import { SettingsSection } from '@/features/user/components/SettingsSection';
@@ -30,15 +29,13 @@ export default async function MyPage() {
       </header>
 
       <div className="flex w-full flex-col gap-6 px-4">
-        {/* 전환 버튼은 시트를 여는 client 조각이 맡는다. 시트의 '판매자' 선택은 S-01로 보낸다
+        {/* 프로필 카드는 전역 세션(GET /api/members/me)을 소비하는 client 조각이다(#70). 조회 중·
+            실패·미로그인 처리를 이 안에서 하고, 나머지(주문 요약 등)는 서버 렌더로 남는다.
+            전환 버튼(시트)은 그 안에서 함께 그린다 — 시트의 '판매자' 선택은 S-01로 보낸다
             (기능명세 FN-B26-01이 판매자 전환을 미확정으로 남겨, IA의 판매자 전환 → S-01 매핑을 따랐다). */}
-        <ProfileCard
+        <SessionProfileCard
           editHref="/mypage/profile/edit"
-          email={overview.email}
-          nickname={overview.nickname}
-          roleSwitch={
-            <RoleSwitchButton currentRole={overview.role} sellerApplyHref="/mypage/seller-apply" />
-          }
+          sellerApplyHref="/mypage/seller-apply"
         />
 
         {/* 진행 단계 숫자를 탭하면 해당 상태로 필터된 B-21로 가야 한다(BR-B21-01-09). 다만 명세가

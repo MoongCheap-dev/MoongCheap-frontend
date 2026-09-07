@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next';
 
 import { ToastProvider } from '@/components/ui/Toast';
 
+import { Providers } from './providers';
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -27,8 +28,11 @@ export default function RootLayout({
   return (
     <html lang="ko" className="h-full antialiased">
       <body className="bg-background-default min-h-svh">
-        {/* 전역 토스트. children은 server 컴포넌트로 유지된다(client Provider의 자식 slot이라 경계를 넘지 않음). */}
-        <ToastProvider>{children}</ToastProvider>
+        {/* 전역 상태 경계. Providers(TanStack Query)·ToastProvider 모두 client지만 children은
+            server 컴포넌트로 유지된다(client Provider의 자식 slot이라 경계를 넘지 않음). */}
+        <Providers>
+          <ToastProvider>{children}</ToastProvider>
+        </Providers>
       </body>
     </html>
   );
