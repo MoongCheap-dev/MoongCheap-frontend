@@ -79,9 +79,15 @@ export function SocialSignupCompletion() {
     try {
       const available = await checkNicknameAvailability(trimmed);
       setNicknameCheck({ state: available ? 'available' : 'taken', forValue: trimmed });
-    } catch {
-      // 네트워크·서버 오류. 통과 상태로 두면 안 되므로 idle로 되돌리고 안내한다.
+    } catch (error) {
+      // 네트워크·서버 오류. 통과 상태로 두면 안 되므로 idle로 되돌린다.
       setNicknameCheck({ state: 'idle', forValue: '' });
+      // 세션 만료(401)면 완료 요청과 동일하게 로그인 화면으로 되돌린다(완료 화면에 갇히지 않게).
+      if (error instanceof ApiError && error.status === 401) {
+        setDialogMessage('세션이 만료되었어요. 다시 로그인해 주세요.');
+        setReturnToLoginAfterDialog(true);
+        return;
+      }
       setDialogMessage('닉네임 확인 중 문제가 발생했어요. 잠시 후 다시 시도해 주세요.');
     }
   };
