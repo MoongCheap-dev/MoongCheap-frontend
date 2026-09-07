@@ -2,10 +2,11 @@
 
 import { useState } from 'react';
 
-import { Gavel } from 'lucide-react';
+import Image from 'next/image';
 
 import { AlertDialog } from '@/components/ui/AlertDialog';
 import { useToast } from '@/components/ui/Toast';
+import { AWARD_RESULT_ASSETS } from '@/constants/assets';
 import { CANCEL_AWARD_DIALOG } from '@/constants/awardCancel';
 import type { AwardResult } from '@/types/awardResult';
 
@@ -76,13 +77,17 @@ export function AwardResultView({ result }: AwardResultViewProps) {
   return (
     <div className="flex w-full flex-1 flex-col">
       <div className="flex flex-1 flex-col px-4">
-        {/* 낙찰 축하 일러스트(경매 망치). #60 exception/일러스트 병합 전까지 lucide placeholder를 쓴다. */}
-        <div
-          aria-hidden
-          className="bg-surface-brand/10 text-content-brand rounded-round mx-auto mt-8 flex size-28 items-center justify-center"
-        >
-          <Gavel className="size-14" />
-        </div>
+        {/* 낙찰 축하 일러스트. 제목이 상태를 설명하므로 삽화는 장식으로 둔다(alt="").
+            파일은 4x(476×480) 원본이고 width/height는 표시 크기다. next/image가
+            srcset으로 화면 배율에 맞춰 내려보낸다. */}
+        <Image
+          src={AWARD_RESULT_ASSETS.celebrate}
+          alt=""
+          width={119}
+          height={120}
+          priority
+          className="mx-auto mt-8"
+        />
 
         <h2 className="text-heading-22 text-content-primary mt-4 text-center">{HEADLINE}</h2>
         <p className="text-body-14 text-content-quarternary mt-1 text-center">{SUBHEAD}</p>
