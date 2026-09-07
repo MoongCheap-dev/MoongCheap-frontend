@@ -113,7 +113,7 @@ export function AwardResultView({ result }: AwardResultViewProps) {
           <SummaryRow label="최종 응찰" value={`${result.finalBidCount}건`} />
           <SummaryRow
             label="참여 뭉치단"
-            value={`${result.participantGroupCount.toLocaleString('ko-KR')}개`}
+            value={`${result.participantGroupCount.toLocaleString('ko-KR')}명`}
           />
         </div>
 
