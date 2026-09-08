@@ -43,13 +43,13 @@ const goldDetail: ProductDetail = {
   brandName: '종근당건강',
   spec: '프로바이오틱스 80포 160g',
   listPrice: 29900,
-  thumbnailUrl: '/images/main-home/card-list-1/1-1.png',
+  thumbnailUrl: '/images/main-home/card-list-1/1-1.webp',
   description:
     '대한민국 1등 유산균 락토핏 생유산균 골드입니다.\n건강한 장 건강을 위한 프로바이오틱스와 아연을 함께 담았습니다.\n하루 한 포, 간편하게 챙기는 유산균 습관을 시작해보세요.\n\n[주요 특징]\n· 프로바이오틱스 100억 CFU 보장\n· 아연 함유로 정상적인 면역기능에 도움\n· 장 건강과 면역 건강을 한 번에\n· 80포 대용량 구성으로 온 가족이 함께\n\n[섭취 방법]\n1일 1회, 1회 1포를 물과 함께 섭취하세요.\n\n[보관 방법]\n직사광선을 피해 서늘하고 건조한 곳에 보관하세요.\n\n※ 실제 상품설명은 백엔드 GET /api/product-catalog/{id}의 description에서 내려옵니다. 이 문구는 미로그인·미배선 시 보여줄 mock입니다.',
   viewingCount: 504,
   similarThumbnails: [
-    '/images/main-home/card-list-1/1-2.png',
-    '/images/main-home/card-list-1/1-4.png',
+    '/images/main-home/card-list-1/1-2.webp',
+    '/images/main-home/card-list-1/1-4.webp',
   ],
   quickDeals: [],
   infoSections: SHARED_INFO_SECTIONS,
@@ -62,13 +62,13 @@ const coreMaxDetail: ProductDetail = {
   brandName: '종근당건강',
   spec: '프로바이오틱스 80포 160g',
   listPrice: 33900,
-  thumbnailUrl: '/images/main-home/card-list-1/1-3.png',
+  thumbnailUrl: '/images/main-home/card-list-1/1-3.webp',
   description:
     '락토핏 생유산균 코어맥스, 더 강력해진 유산균 케어.\n장 건강이 걱정된다면 코어맥스로 시작하세요.\n\n[주요 특징]\n· 고함량 프로바이오틱스 배합\n· 아연 함유로 면역 건강까지\n· 장까지 살아서 도달하는 코팅 유산균\n· 80포 대용량 구성\n\n[섭취 방법]\n1일 1회, 1회 1포를 물과 함께 섭취하세요.\n\n[보관 방법]\n직사광선을 피해 서늘하고 건조한 곳에 보관하세요.\n\n※ 실제 상품설명은 백엔드 GET /api/product-catalog/{id}의 description에서 내려옵니다. 이 문구는 미로그인·미배선 시 보여줄 mock입니다.',
   viewingCount: 231,
   similarThumbnails: [
-    '/images/main-home/card-list-1/1-1.png',
-    '/images/main-home/card-list-1/1-2.png',
+    '/images/main-home/card-list-1/1-1.webp',
+    '/images/main-home/card-list-1/1-2.webp',
   ],
   quickDeals: [
     {
