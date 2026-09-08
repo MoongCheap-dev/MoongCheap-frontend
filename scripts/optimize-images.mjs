@@ -23,24 +23,34 @@ const ROOT = path.join(process.cwd(), 'public', 'images');
 const DRY = process.argv.includes('--dry');
 
 /**
- * 목표 폭. 컴포넌트의 `sizes` 실측치를 2배(레티나)한 값이다.
+ * 목표 폭. 각 이미지가 화면에 그려지는 폭을 2배(레티나)한 값이다.
  *
- * 배너 393 · 상품 상세 설명 393 → 786
- * 브랜드딜 260 · 상품카드 121 · 와이드 120 · 브랜드행 106 · 행 65 · 주문 60 → 520
+ * 표시 폭은 컴포넌트에서 두 가지 형태로 나타난다. **둘 다 확인해야 한다.**
+ *   - `fill` + `sizes="NNNpx"`  (홈 카드류)
+ *   - 고정 `width={NNN}`         (일러스트·미리보기류)
  *
- * 상품 사진은 한 장이 여러 카드에 쓰일 수 있어 가장 큰 사용처(브랜드딜 260)에 맞춘다.
- * 더 작게 그리는 카드는 `next/image`가 런타임에 한 번 더 줄인다.
+ * 여기 없는 경로는 `DEFAULT_WIDTH`로 간다. 상품 사진은 한 장이 여러 카드에 쓰일 수 있어
+ * 가장 큰 사용처(브랜드딜 260)에 맞췄다. 더 작게 그리는 카드는 `next/image`가 런타임에
+ * 한 번 더 줄인다.
+ *
+ * 새 화면을 만들 때 표시 폭이 260을 넘는 이미지가 생기면 여기에 추가한다.
+ * 빠뜨리면 고밀도 화면에서 확대돼 흐려진다.
  */
-const FULL_WIDTH = 786;
-const THUMBNAIL_WIDTH = 520;
+const TARGET_WIDTHS = [
+  ['banner-carousel', 786], // BannerCarousel sizes="393px"
+  ['product-description', 786], // 상품 상세 설명, 화면 폭(393) 전체
+  ['seller-apply-preview', 672], // SellerApplyWizard width={336}
+];
+
+/** 브랜드딜 260 · 상품카드 121 · 와이드 120 · 브랜드행 106 · 행 65 · 주문 60 · 빈 상태 246 */
+const DEFAULT_WIDTH = 520;
 
 /** WebP는 한 변이 이 값을 넘을 수 없다. 넘으면 인코딩 자체가 실패한다. */
 const WEBP_MAX_SIDE = 16383;
 
 function targetWidth(relativePath) {
-  if (relativePath.includes('banner-carousel')) return FULL_WIDTH;
-  if (relativePath.includes('product-description')) return FULL_WIDTH;
-  return THUMBNAIL_WIDTH;
+  const match = TARGET_WIDTHS.find(([fragment]) => relativePath.includes(fragment));
+  return match ? match[1] : DEFAULT_WIDTH;
 }
 
 async function collectPngFiles(dir) {
