@@ -28,16 +28,18 @@ type ProductCardVariant = 'demand' | 'succeeded';
 
 interface ProductCardProps {
   product: HomeProductCard;
+  /** 카드가 여는 상세 경로. 라우트는 호출부(features/home 섹션)가 정한다. */
+  href: string;
   variant?: ProductCardVariant;
 }
 
-export function ProductCard({ product, variant = 'demand' }: ProductCardProps) {
+export function ProductCard({ product, href, variant = 'demand' }: ProductCardProps) {
   const isSucceeded = variant === 'succeeded';
   const hasTime = product.dday !== undefined || product.deadline !== undefined;
 
   return (
     <article className="relative flex w-[121px] shrink-0 flex-col gap-2">
-      <Link href={`/products/${product.id}`} className="flex w-full flex-col gap-2 text-left">
+      <Link href={href} className="flex w-full flex-col gap-2 text-left">
         <span
           className={cn(
             'rounded-8 bg-surface-tertiary relative block aspect-square w-full overflow-hidden',

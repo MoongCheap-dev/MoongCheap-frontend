@@ -114,7 +114,7 @@ export function ProductDetailView({ product: initialProduct }: ProductDetailView
           <div className="absolute inset-x-0 top-3 flex justify-center">
             <span className="bg-background-default border-border-subtle text-body-14 rounded-full border px-2.5 py-1">
               <span className="text-content-secondary">{PRODUCT_DETAIL.viewingPrefix}</span>
-              <span className="text-content-brand font-semibold">
+              <span className="text-button-14 text-content-brand">
                 {PRODUCT_DETAIL.viewingCount(product.viewingCount)}
               </span>
               <span className="text-content-secondary">{PRODUCT_DETAIL.viewingSuffix}</span>

@@ -56,7 +56,7 @@ export function BrandSection({ brands, products }: BrandSectionProps) {
 
         <div className="flex w-full flex-col gap-3">
           {products.map((product) => (
-            <BrandProductRow key={product.id} product={product} />
+            <BrandProductRow key={product.id} product={product} href={`/products/${product.id}`} />
           ))}
         </div>
       </div>

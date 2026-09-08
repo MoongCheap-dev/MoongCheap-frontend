@@ -26,14 +26,13 @@ const PERSONNEL_BADGE_CLASS =
 
 interface ProductRowProps {
   product: HomeProductCard;
+  /** 카드가 여는 상세 경로. 라우트는 호출부(features/home 섹션)가 정한다. */
+  href: string;
 }
 
-export function ProductRow({ product }: ProductRowProps) {
+export function ProductRow({ product, href }: ProductRowProps) {
   return (
-    <Link
-      href={`/products/${product.id}`}
-      className="flex h-[65px] w-full items-center gap-2 text-left"
-    >
+    <Link href={href} className="flex h-[65px] w-full items-center gap-2 text-left">
       <span className="rounded-8 bg-surface-tertiary relative block size-[65px] shrink-0 overflow-hidden">
         {product.thumbnailUrl !== undefined && (
           <Image alt="" className="object-cover" fill sizes="65px" src={product.thumbnailUrl} />
