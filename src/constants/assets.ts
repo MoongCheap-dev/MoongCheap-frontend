@@ -20,5 +20,5 @@ export const EXCEPTION_ASSETS = {
 /** 낙찰 결과(B-19) 화면 전용 일러스트. */
 export const AWARD_RESULT_ASSETS = {
   /** 낙찰 성공 상단 축하 삽화. AwardResultView에서 사용. */
-  celebrate: '/images/bid-result/1-1.png',
+  celebrate: '/images/bid-result/1-1.webp',
 } as const;
