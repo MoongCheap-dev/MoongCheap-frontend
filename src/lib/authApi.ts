@@ -63,7 +63,8 @@ export async function checkNicknameAvailability(nickname: string): Promise<boole
  * seller는 판매자 등록을 마친 계정에만 있고, 그 밖엔 null이다.
  */
 interface ProfileResponse {
-  loginId: string;
+  /** 로그인 아이디. 소셜 전용 계정은 로컬 아이디가 없어 null이다(로컬 백엔드 실측 확인). */
+  loginId: string | null;
   nickname: string;
   phoneNumberMasked: string;
   email: string;
@@ -76,11 +77,12 @@ interface ProfileResponse {
 /**
  * 현재 세션의 회원 정보. 로그인 상태면 SessionUser, 미로그인이면 null을 돌린다.
  *
- * 세션은 SID httpOnly 쿠키로 붙는다(credentials는 apiFetch가 처리). 미로그인 응답 포맷(401 vs
- * 200+null)은 백엔드와 아직 확정되지 않아 양쪽 모두 "미로그인"으로 접는다 — 401이면 null을,
- * 본문이 비어 오면(null) null을 돌린다. 그 외 오류(네트워크·5xx)는 로그아웃이 아니므로 던진다.
+ * 세션은 SID httpOnly 쿠키로 붙는다(credentials는 apiFetch가 처리). 미로그인은 백엔드가 401을
+ * 준다(로컬 실측 확인). 만약을 대비해 200+빈 본문(null)도 함께 "미로그인"으로 접는다 — 401이면
+ * null을, 본문이 비어 오면(null) null을 돌린다. 그 외 오류(네트워크·5xx)는 로그아웃이 아니므로 던진다.
  *
  * 백엔드 원형(ProfileResponseDto)을 화면 타입(SessionUser)으로 여기서 변환한다(types/auth.ts 원칙).
+ * id는 loginId에서 오는데 소셜 전용 계정은 loginId가 null이라 id도 null이 될 수 있다(실측 확인).
  * role은 isSeller로부터 만든다(ADMIN은 이 앱에 진입 자체가 없어 프로필로 오지 않는다).
  * `GET /api/members/me`
  */

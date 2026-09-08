@@ -11,7 +11,8 @@ export type UserRole = 'CONSUMER' | 'SELLER' | 'ADMIN';
 
 /** 로그인 이후 화면이 사용하는 최소 정보. */
 export interface SessionUser {
-  id: string;
+  /** 로그인 아이디(백엔드 loginId). 소셜 전용 계정은 로컬 아이디가 없어 null이다. */
+  id: string | null;
   nickname: string;
   email: string;
   role: UserRole;
