@@ -199,7 +199,7 @@ export function SellerApplyWizard({ exitHref }: SellerApplyWizardProps) {
               className="absolute top-19.75 left-1/2 -translate-x-1/2"
               height={261}
               priority
-              src="/images/seller-apply-preview.png"
+              src="/images/seller-apply-preview.webp"
               width={336}
             />
           </div>
