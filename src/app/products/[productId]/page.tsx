@@ -22,5 +22,7 @@ export default async function ProductDetailPage({
   const { productId } = await params;
   const product = await mockGetProductDetail(productId);
 
-  return <ProductDetailView product={product} />;
+  // key로 상품이 바뀔 때 뷰를 리마운트한다. ProductDetailView가 초기 prop을 state로 복사하고
+  // 실데이터를 그 위에 덮는 구조라, 리마운트 없이 상세→상세로 이동하면 이전 상품 state가 남는다.
+  return <ProductDetailView key={productId} product={product} />;
 }

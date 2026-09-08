@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import { ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react';
 import Image from 'next/image';
@@ -12,6 +12,7 @@ import { PRODUCT_DETAIL } from '@/constants/productMessages';
 import { WishButton } from '@/features/home/components/WishButton';
 import { QuickDealCard } from '@/features/product/components/QuickDealCard';
 import { cn } from '@/lib/cn';
+import { fetchProductCatalogDetail } from '@/lib/productApi';
 import type { ProductDetail } from '@/types/product';
 
 // B-08 상품 상세 화면 본문. 시안 node 1153:72748(퀵 참여 0건) / 1153:73735(3건).
@@ -20,16 +21,64 @@ import type { ProductDetail } from '@/types/product';
 //       상품명/규격 · 진행중인 뭉치 퀵 참여 · 상품설명(자세히 보기 펼침) · 정보 아코디언 3종 ·
 //       하단 고정 CTA(뭉치 참여하기).
 //
+// 데이터: 상품 도감 상세(name·규격·썸네일·상품설명·정가)는 `GET /api/product-catalog/{id}`로
+// **client에서** 실데이터를 받아 mock 위에 덮는다(세션 쿠키가 필요해 서버 컴포넌트에서 못 부름,
+// [[lib/productApi]]). 미로그인/미배선/숫자 아닌 id(홈 목)면 조회가 실패하고 mock을 그대로 쓴다.
+// 브랜드·실시간 열람수·퀵참여딜·비슷한상품·정보 아코디언은 BE 규격이 없어 계속 mock이다.
+//
 // 미구현 진입점은 노출하되 탭 시 '준비 중' 토스트다(ComingSoonButton).
 //  - 비슷한 상품(Full) · 찜(시안 전용) · 퀵 참여 딜 카드→수요 상세(B-12) · CTA→수요 참여(B-09)
-// 화면들이 생기면 각 진입점을 Link/router로 교체한다.
+
+/** 상품설명 접힘 높이(px). 이보다 길면 자세히 보기 버튼과 하단 페이드를 노출한다. */
+const DESCRIPTION_COLLAPSED_MAX = 240;
 
 interface ProductDetailViewProps {
   product: ProductDetail;
 }
 
-export function ProductDetailView({ product }: ProductDetailViewProps) {
+export function ProductDetailView({ product: initialProduct }: ProductDetailViewProps) {
+  const [product, setProduct] = useState(initialProduct);
   const [descriptionExpanded, setDescriptionExpanded] = useState(false);
+  const [descriptionOverflows, setDescriptionOverflows] = useState(false);
+  const descriptionRef = useRef<HTMLParagraphElement>(null);
+
+  // 상품 도감 상세를 실데이터로 덮는다. 실패(미로그인·미배선·네트워크)면 mock 유지.
+  useEffect(() => {
+    // 백엔드 id는 숫자 Long이다. 홈 목의 문자열 id(demand-1 등)는 확정 400이 나므로 호출을 건너뛴다.
+    if (!/^\d+$/.test(initialProduct.id)) {
+      return;
+    }
+    let active = true;
+    fetchProductCatalogDetail(initialProduct.id)
+      .then((dto) => {
+        if (!active) return;
+        setProduct((prev) => ({
+          ...prev,
+          name: dto.name,
+          spec: dto.specSummary ?? prev.spec,
+          thumbnailUrl: dto.thumbnailUrl,
+          listPrice: dto.listPrice ?? prev.listPrice,
+          // 조회 성공 시 description은 서버 값을 그대로 반영한다. null이면 undefined로 두어
+          // 상품설명 섹션을 숨긴다(mock 설명으로 대체하지 않는다 — 다른 상품 문구 노출 방지).
+          description: dto.description ?? undefined,
+        }));
+      })
+      .catch(() => {
+        // 조회 실패는 정상 경로(로그인 전·백엔드 미기동). mock 그대로 보여준다.
+      });
+    return () => {
+      active = false;
+    };
+  }, [initialProduct.id]);
+
+  // 상품설명이 접힘 높이를 넘는지 측정해 자세히 보기 노출을 결정한다(짧으면 버튼/페이드 없음).
+  useEffect(() => {
+    const el = descriptionRef.current;
+    setDescriptionOverflows(el !== null && el.scrollHeight > DESCRIPTION_COLLAPSED_MAX + 1);
+  }, [product.description]);
+
+  const hasDescription = product.description !== undefined && product.description !== '';
+  const clampDescription = descriptionOverflows && !descriptionExpanded;
 
   return (
     <>
@@ -138,62 +187,58 @@ export function ProductDetailView({ product }: ProductDetailViewProps) {
           )}
         </section>
 
-        {/* 상품설명 */}
-        <section className="flex w-full flex-col gap-2">
-          <div className="flex items-center px-4 py-2.5">
-            <h2 className="text-title-17 text-content-secondary">
-              {PRODUCT_DETAIL.descriptionHeading}
-            </h2>
-          </div>
-
-          <div className="px-4">
-            <div
-              className={cn(
-                'relative w-full overflow-hidden',
-                descriptionExpanded ? 'h-[600px]' : 'h-[360px]',
-              )}
-            >
-              {product.descriptionImageUrl !== undefined ? (
-                <Image
-                  alt=""
-                  className="object-cover object-top"
-                  fill
-                  sizes="361px"
-                  src={product.descriptionImageUrl}
-                />
-              ) : (
-                <div aria-hidden className="bg-surface-tertiary size-full" />
-              )}
-
-              {!descriptionExpanded && (
-                <div
-                  aria-hidden
-                  className="to-background-default pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-b from-transparent"
-                />
-              )}
+        {/* 상품설명. BE description(TEXT). 없으면 섹션을 숨긴다. */}
+        {hasDescription && (
+          <section className="flex w-full flex-col gap-2">
+            <div className="flex items-center px-4 py-2.5">
+              <h2 className="text-title-17 text-content-secondary">
+                {PRODUCT_DETAIL.descriptionHeading}
+              </h2>
             </div>
-          </div>
 
-          <div className="p-4">
-            <button
-              type="button"
-              aria-expanded={descriptionExpanded}
-              onClick={() => setDescriptionExpanded((prev) => !prev)}
-              className="border-border-tertiary rounded-8 focus-visible:ring-effect-focus-ring-primary flex h-12 w-full items-center justify-center gap-2 border px-3 outline-none focus-visible:ring-2"
-            >
-              <span className="text-button-15 text-content-tertiary">
-                {descriptionExpanded ? PRODUCT_DETAIL.collapse : PRODUCT_DETAIL.viewMore}
-              </span>
-              <ChevronDown
-                aria-hidden
-                className={cn(
-                  'text-content-tertiary size-6 transition-transform',
-                  descriptionExpanded && 'rotate-180',
+            <div className="px-4">
+              {/* 접힘 높이는 max-h-[240px]로, 오버플로 측정 기준 DESCRIPTION_COLLAPSED_MAX(240)와
+                  값이 일치해야 한다. */}
+              <div className={cn('relative overflow-hidden', clampDescription && 'max-h-[240px]')}>
+                <p
+                  ref={descriptionRef}
+                  className="text-body-15 text-content-secondary whitespace-pre-line"
+                >
+                  {product.description}
+                </p>
+
+                {clampDescription && (
+                  <div
+                    aria-hidden
+                    className="to-background-default pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-gradient-to-b from-transparent"
+                  />
                 )}
-              />
-            </button>
-          </div>
-        </section>
+              </div>
+            </div>
+
+            {descriptionOverflows && (
+              <div className="p-4">
+                <button
+                  type="button"
+                  aria-expanded={descriptionExpanded}
+                  onClick={() => setDescriptionExpanded((prev) => !prev)}
+                  className="border-border-tertiary rounded-8 focus-visible:ring-effect-focus-ring-primary flex h-12 w-full items-center justify-center gap-2 border px-3 outline-none focus-visible:ring-2"
+                >
+                  <span className="text-button-15 text-content-tertiary">
+                    {descriptionExpanded ? PRODUCT_DETAIL.collapse : PRODUCT_DETAIL.viewMore}
+                  </span>
+                  <ChevronDown
+                    aria-hidden
+                    className={cn(
+                      'text-content-tertiary size-6 transition-transform',
+                      descriptionExpanded && 'rotate-180',
+                    )}
+                  />
+                </button>
+              </div>
+            )}
+          </section>
+        )}
 
         {/* 정보 아코디언 3종. 얇은 상단 구분선으로 섹션을 나눈다. */}
         <section className="flex w-full flex-col">
