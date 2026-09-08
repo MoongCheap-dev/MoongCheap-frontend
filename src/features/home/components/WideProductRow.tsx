@@ -1,6 +1,6 @@
 import Image from 'next/image';
+import Link from 'next/link';
 
-import { ComingSoonButton } from '@/components/ui/ComingSoonButton';
 import { HOME_CARD } from '@/constants/homeMessages';
 import { TimeBadge } from '@/features/home/components/TimeBadge';
 import type { HomeProductCard } from '@/types/home';
@@ -26,7 +26,7 @@ export function WideProductRow({ product }: WideProductRowProps) {
   const hasTime = product.dday !== undefined || product.deadline !== undefined;
 
   return (
-    <ComingSoonButton className="flex w-[310px] items-start gap-2 text-left">
+    <Link href={`/products/${product.id}`} className="flex w-[310px] items-start gap-2 text-left">
       <span className="rounded-8 bg-surface-tertiary relative block size-[120px] shrink-0 overflow-hidden">
         {product.thumbnailUrl !== undefined && (
           <Image alt="" className="object-cover" fill sizes="120px" src={product.thumbnailUrl} />
@@ -72,6 +72,6 @@ export function WideProductRow({ product }: WideProductRowProps) {
           </span>
         </span>
       </span>
-    </ComingSoonButton>
+    </Link>
   );
 }

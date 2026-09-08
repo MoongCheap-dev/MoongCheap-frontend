@@ -1,6 +1,6 @@
 import Image from 'next/image';
+import Link from 'next/link';
 
-import { ComingSoonButton } from '@/components/ui/ComingSoonButton';
 import { HOME_CARD } from '@/constants/homeMessages';
 import { TimeBadge } from '@/features/home/components/TimeBadge';
 import type { HomeProductCard } from '@/types/home';
@@ -14,7 +14,7 @@ import type { HomeProductCard } from '@/types/home';
 //   - 찜 버튼이 없다
 // 그래서 한 컴포넌트로 합치지 않고 따로 둔다.
 //
-// 상품 상세(B-08)가 아직 없어 행 전체가 '준비 중' 토스트다.
+// 행 전체가 상품 상세(B-08, /products/[id])로 가는 링크다.
 
 /** 시안 `badge/surface/brand` = 코랄 20%. 마감 임박 표시. */
 const TIME_BADGE_CLASS =
@@ -30,7 +30,10 @@ interface ProductRowProps {
 
 export function ProductRow({ product }: ProductRowProps) {
   return (
-    <ComingSoonButton className="flex h-[65px] w-full items-center gap-2 text-left">
+    <Link
+      href={`/products/${product.id}`}
+      className="flex h-[65px] w-full items-center gap-2 text-left"
+    >
       <span className="rounded-8 bg-surface-tertiary relative block size-[65px] shrink-0 overflow-hidden">
         {product.thumbnailUrl !== undefined && (
           <Image alt="" className="object-cover" fill sizes="65px" src={product.thumbnailUrl} />
@@ -67,6 +70,6 @@ export function ProductRow({ product }: ProductRowProps) {
           </span>
         </span>
       </span>
-    </ComingSoonButton>
+    </Link>
   );
 }

@@ -1,6 +1,6 @@
 import Image from 'next/image';
+import Link from 'next/link';
 
-import { ComingSoonButton } from '@/components/ui/ComingSoonButton';
 import { HOME_CARD } from '@/constants/homeMessages';
 import { TimeBadge } from '@/features/home/components/TimeBadge';
 import type { HomeProductCard } from '@/types/home';
@@ -24,7 +24,7 @@ interface BrandProductRowProps {
 
 export function BrandProductRow({ product }: BrandProductRowProps) {
   return (
-    <ComingSoonButton className="flex w-full items-center gap-2 text-left">
+    <Link href={`/products/${product.id}`} className="flex w-full items-center gap-2 text-left">
       <span className="rounded-8 bg-surface-tertiary relative block size-[106px] shrink-0 overflow-hidden">
         {product.thumbnailUrl !== undefined && (
           <Image alt="" className="object-cover" fill sizes="106px" src={product.thumbnailUrl} />
@@ -66,6 +66,6 @@ export function BrandProductRow({ product }: BrandProductRowProps) {
           </span>
         </span>
       </span>
-    </ComingSoonButton>
+    </Link>
   );
 }

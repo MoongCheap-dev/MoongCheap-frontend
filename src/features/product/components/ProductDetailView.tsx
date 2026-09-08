@@ -1,0 +1,216 @@
+'use client';
+
+import { useState } from 'react';
+
+import { ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react';
+import Image from 'next/image';
+
+import { Accordion } from '@/components/ui/Accordion';
+import { ComingSoonButton } from '@/components/ui/ComingSoonButton';
+import { GoBackButton } from '@/components/ui/GoBackButton';
+import { PRODUCT_DETAIL } from '@/constants/productMessages';
+import { WishButton } from '@/features/home/components/WishButton';
+import { QuickDealCard } from '@/features/product/components/QuickDealCard';
+import { cn } from '@/lib/cn';
+import type { ProductDetail } from '@/types/product';
+
+// B-08 상품 상세 화면 본문. 시안 node 1153:72748(퀵 참여 0건) / 1153:73735(3건).
+//
+// 구성: 뒤로가기 헤더 · 상품 이미지(실시간 열람 배지 + '비슷한 상품' 칩) · 브랜드 행(찜) ·
+//       상품명/규격 · 진행중인 뭉치 퀵 참여 · 상품설명(자세히 보기 펼침) · 정보 아코디언 3종 ·
+//       하단 고정 CTA(뭉치 참여하기).
+//
+// 미구현 진입점은 노출하되 탭 시 '준비 중' 토스트다(ComingSoonButton).
+//  - 비슷한 상품(Full) · 찜(시안 전용) · 퀵 참여 딜 카드→수요 상세(B-12) · CTA→수요 참여(B-09)
+// 화면들이 생기면 각 진입점을 Link/router로 교체한다.
+
+interface ProductDetailViewProps {
+  product: ProductDetail;
+}
+
+export function ProductDetailView({ product }: ProductDetailViewProps) {
+  const [descriptionExpanded, setDescriptionExpanded] = useState(false);
+
+  return (
+    <>
+      <header className="border-divider-default flex h-13 w-full shrink-0 items-center border-b">
+        <GoBackButton className="text-content-tertiary flex h-13 w-10 shrink-0 items-center px-2">
+          <ChevronLeft aria-hidden className="size-6" />
+          <span className="sr-only">뒤로 가기</span>
+        </GoBackButton>
+      </header>
+
+      <div className="flex flex-1 flex-col">
+        {/* 상품 이미지 + 실시간 열람 배지 + '비슷한 상품' 칩 */}
+        <section className="relative flex h-[322px] w-full flex-col justify-end overflow-hidden px-4 py-[19px]">
+          <div
+            aria-hidden
+            className="bg-background-default absolute inset-0 flex items-center justify-center p-8"
+          >
+            {product.thumbnailUrl !== undefined && (
+              <div className="relative size-full">
+                <Image
+                  alt=""
+                  className="object-contain"
+                  fill
+                  priority
+                  sizes="393px"
+                  src={product.thumbnailUrl}
+                />
+              </div>
+            )}
+          </div>
+
+          {/* 실시간 열람 배지(상단 중앙). 인원 수만 코랄 강조. */}
+          <div className="absolute inset-x-0 top-3 flex justify-center">
+            <span className="bg-background-default border-border-subtle text-body-14 rounded-full border px-2.5 py-1">
+              <span className="text-content-secondary">{PRODUCT_DETAIL.viewingPrefix}</span>
+              <span className="text-content-brand font-semibold">
+                {PRODUCT_DETAIL.viewingCount(product.viewingCount)}
+              </span>
+              <span className="text-content-secondary">{PRODUCT_DETAIL.viewingSuffix}</span>
+            </span>
+          </div>
+
+          {/* 비슷한 상품 칩(좌하단). Full 기능이라 진입점만 노출. */}
+          <ComingSoonButton className="relative flex w-fit items-center">
+            {product.similarThumbnails?.slice(0, 2).map((thumb, index) => (
+              <span
+                key={thumb}
+                className={cn(
+                  'border-border-subtle rounded-4 bg-surface-tertiary relative size-[30px] shrink-0 overflow-hidden border',
+                  index > 0 && '-ml-3.5',
+                )}
+              >
+                <Image alt="" className="object-cover" fill sizes="30px" src={thumb} />
+              </span>
+            ))}
+            <span className="bg-background-default border-border-subtle rounded-4 -ml-2 flex items-center gap-1 border px-2.5 py-1">
+              <span className="text-body-14 text-content-secondary whitespace-nowrap">
+                {PRODUCT_DETAIL.similarProducts}
+              </span>
+              <ChevronRight aria-hidden className="text-content-tertiary size-5" />
+            </span>
+          </ComingSoonButton>
+        </section>
+
+        {/* 브랜드 행 + 상품명/규격 */}
+        <section className="border-border-subtle flex w-full flex-col gap-4 border-b p-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-1 py-1">
+              <span className="bg-surface-tertiary relative size-6 shrink-0 overflow-hidden rounded-full">
+                {product.brandLogoUrl !== undefined && (
+                  <Image
+                    alt=""
+                    className="object-cover"
+                    fill
+                    sizes="24px"
+                    src={product.brandLogoUrl}
+                  />
+                )}
+              </span>
+              <span className="text-body-15 text-content-tertiary">{product.brandName}</span>
+            </div>
+            <WishButton />
+          </div>
+
+          <div className="flex flex-col gap-1">
+            <h1 className="text-heading-20 text-content-primary">{product.name}</h1>
+            <p className="text-title-17 text-content-quarternary">{product.spec}</p>
+          </div>
+        </section>
+
+        {/* 진행중인 뭉치 퀵 참여 */}
+        <section className="flex w-full flex-col px-4 py-3">
+          <div className="flex h-[46px] items-center">
+            <p className="text-button-14 text-content-tertiary">
+              {PRODUCT_DETAIL.quickDealsLead(product.quickDeals.length)}
+              <span className="text-content-primary">{PRODUCT_DETAIL.quickDealsUnit}</span>
+            </p>
+          </div>
+
+          {product.quickDeals.length > 0 && (
+            <div className="flex gap-2 overflow-x-auto py-2">
+              {product.quickDeals.map((deal) => (
+                <QuickDealCard key={deal.id} deal={deal} />
+              ))}
+            </div>
+          )}
+        </section>
+
+        {/* 상품설명 */}
+        <section className="flex w-full flex-col gap-2">
+          <div className="flex items-center px-4 py-2.5">
+            <h2 className="text-title-17 text-content-secondary">
+              {PRODUCT_DETAIL.descriptionHeading}
+            </h2>
+          </div>
+
+          <div className="px-4">
+            <div
+              className={cn(
+                'relative w-full overflow-hidden',
+                descriptionExpanded ? 'h-[600px]' : 'h-[360px]',
+              )}
+            >
+              {product.descriptionImageUrl !== undefined ? (
+                <Image
+                  alt=""
+                  className="object-cover object-top"
+                  fill
+                  sizes="361px"
+                  src={product.descriptionImageUrl}
+                />
+              ) : (
+                <div aria-hidden className="bg-surface-tertiary size-full" />
+              )}
+
+              {!descriptionExpanded && (
+                <div
+                  aria-hidden
+                  className="to-background-default pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-b from-transparent"
+                />
+              )}
+            </div>
+          </div>
+
+          <div className="p-4">
+            <button
+              type="button"
+              aria-expanded={descriptionExpanded}
+              onClick={() => setDescriptionExpanded((prev) => !prev)}
+              className="border-border-tertiary rounded-8 focus-visible:ring-effect-focus-ring-primary flex h-12 w-full items-center justify-center gap-2 border px-3 outline-none focus-visible:ring-2"
+            >
+              <span className="text-button-15 text-content-tertiary">
+                {descriptionExpanded ? PRODUCT_DETAIL.collapse : PRODUCT_DETAIL.viewMore}
+              </span>
+              <ChevronDown
+                aria-hidden
+                className={cn(
+                  'text-content-tertiary size-6 transition-transform',
+                  descriptionExpanded && 'rotate-180',
+                )}
+              />
+            </button>
+          </div>
+        </section>
+
+        {/* 정보 아코디언 3종. 얇은 상단 구분선으로 섹션을 나눈다. */}
+        <section className="flex w-full flex-col">
+          {product.infoSections.map((info) => (
+            <Accordion key={info.id} title={info.title} className="border-border-subtle border-t">
+              {info.body}
+            </Accordion>
+          ))}
+        </section>
+      </div>
+
+      {/* 하단 고정 CTA. 수요 참여(B-09)가 아직 없어 '준비 중' 토스트. */}
+      <footer className="bg-background-default sticky bottom-0 w-full p-4 pb-[calc(16px+env(safe-area-inset-bottom))]">
+        <ComingSoonButton className="bg-surface-button-primary-default text-content-oncolor text-button-15 active:bg-surface-button-primary-pressed rounded-8 flex h-12 w-full items-center justify-center">
+          {PRODUCT_DETAIL.participateCta}
+        </ComingSoonButton>
+      </footer>
+    </>
+  );
+}

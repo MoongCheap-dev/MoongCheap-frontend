@@ -1,6 +1,6 @@
 import Image from 'next/image';
+import Link from 'next/link';
 
-import { ComingSoonButton } from '@/components/ui/ComingSoonButton';
 import { HOME_CARD } from '@/constants/homeMessages';
 import { TimeBadge } from '@/features/home/components/TimeBadge';
 import { WishButton } from '@/features/home/components/WishButton';
@@ -14,8 +14,8 @@ import type { HomeProductCard } from '@/types/home';
 //
 // 정보 구조가 같아 한 컴포넌트로 두고 다른 곳만 분기했다.
 //
-// 상품 상세(B-08)가 아직 없어 카드 전체가 '준비 중' 토스트다. 찜 버튼은 카드 안에 겹쳐
-// 있지만 별개 동작이라, 버튼 중첩(HTML 위반)을 피하려고 형제로 두고 절대 배치했다.
+// 카드 전체가 상품 상세(B-08, /products/[id])로 가는 링크다. 찜 버튼은 카드 안에 겹쳐
+// 있지만 별개 동작이라, 링크와의 중첩(HTML 위반)을 피하려고 형제로 두고 절대 배치했다.
 
 /** 시안: 흰 배경 80% + 테두리 #e6e6e6, radius 4. D-day와 카운트다운이 같은 자리를 쓴다. */
 const TIME_BADGE_CLASS =
@@ -37,7 +37,7 @@ export function ProductCard({ product, variant = 'demand' }: ProductCardProps) {
 
   return (
     <article className="relative flex w-[121px] shrink-0 flex-col gap-2">
-      <ComingSoonButton className="flex w-full flex-col gap-2 text-left">
+      <Link href={`/products/${product.id}`} className="flex w-full flex-col gap-2 text-left">
         <span
           className={cn(
             'rounded-8 bg-surface-tertiary relative block aspect-square w-full overflow-hidden',
@@ -98,7 +98,7 @@ export function ProductCard({ product, variant = 'demand' }: ProductCardProps) {
             </span>
           </span>
         </span>
-      </ComingSoonButton>
+      </Link>
 
       {/*
         찜 버튼. 시안에서는 이미지 박스 안쪽 아래에 오른쪽 정렬로 얹혀 있다(px-8 py-4).
