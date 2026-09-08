@@ -56,9 +56,12 @@ function groupByDate(items: ParticipationItem[]): DateGroup[] {
 
 interface ParticipationListProps {
   initialItems: ParticipationItem[];
+  /** 배정완료(낙찰) 카드 탭 시 이동할 낙찰 결과(B-19) 경로. 라우트 문자열은 페이지가 주입한다
+   *  (features/ 컴포넌트는 경로를 직접 들지 않는다 — exitHref·editHref 등과 같은 방침). */
+  awardResultHref: string;
 }
 
-export function ParticipationList({ initialItems }: ParticipationListProps) {
+export function ParticipationList({ initialItems, awardResultHref }: ParticipationListProps) {
   const [tab, setTab] = useState<ParticipationTab>(PARTICIPATION_TAB_ALL);
   // 낙찰 취소는 목록을 바꾸므로(낙관적 제거) 목록을 상태로 들고 있는다.
   const [items, setItems] = useState<ParticipationItem[]>(initialItems);
@@ -71,7 +74,7 @@ export function ParticipationList({ initialItems }: ParticipationListProps) {
   // id 없이 고정 경로로 간다(규격 확정 시 /participation/[id] 형태로 교체 — award-result/page.tsx 주석).
   function openDetail(item: ParticipationItem) {
     if (item.status === 'ALLOCATED') {
-      router.push('/award-result');
+      router.push(awardResultHref);
       return;
     }
     showComingSoon();
