@@ -16,3 +16,9 @@ export const EXCEPTION_ASSETS = {
   /** 주문/참여 내역 빈 상태 일러스트. B-21(화면 구현 시 배선). */
   emptyHistory: '/images/exception/empty-history.webp',
 } as const;
+
+/** 낙찰 결과(B-19) 화면 전용 일러스트. */
+export const AWARD_RESULT_ASSETS = {
+  /** 낙찰 성공 상단 축하 삽화. AwardResultView에서 사용. */
+  celebrate: '/images/bid-result/1-1.webp',
+} as const;
