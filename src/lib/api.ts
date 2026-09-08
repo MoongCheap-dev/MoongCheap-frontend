@@ -25,17 +25,91 @@ export function getApiBaseUrl(): string | null {
 }
 
 /**
+ * 400 유효성 실패 시 실려 오는 필드별 사유. 폼의 해당 입력에 그대로 붙일 수 있다.
+ * 백엔드 규격상 400이 아닌 응답에서는 빈 배열이다.
+ */
+export interface ApiFieldError {
+  field: string;
+  message: string;
+}
+
+/** 백엔드 실패 응답 본문. `docs/api-error-responses.md`의 공통 형식. */
+interface ApiErrorBody {
+  code?: unknown;
+  message?: unknown;
+  fieldErrors?: unknown;
+}
+
+/**
  * 실패한 응답(비 2xx)·네트워크 오류·미배선을 하나의 타입으로 올린다.
- * `status`는 HTTP 상태 코드(네트워크 오류·미배선은 0)라 호출부가 401(미로그인) 등을 분기할 수 있다.
+ *
+ * - `status`  HTTP 상태 코드. 네트워크 오류·미배선은 0이라 호출부가 401(미로그인) 등을 분기할 수 있다.
+ * - `code`    백엔드 비즈니스 에러 코드(`SHIP_002` 등). 본문이 없거나 규격을 벗어나면 null이다.
+ * - `message` 백엔드가 준 사용자용 문구를 그대로 쓴다. 없으면 상태 코드 기반 기본 문구.
+ *
+ * 같은 400이라도 `code`로 갈린다. 예를 들어 배송지 등록의 400은 `SHIP_002`(상한 5개)와
+ * `COMMON_400`(입력값 오류)이 다른 화면 반응을 요구한다. status만으로는 구분할 수 없다.
  */
 export class ApiError extends Error {
   readonly status: number;
+  readonly code: string | null;
+  readonly fieldErrors: readonly ApiFieldError[];
 
-  constructor(message: string, status: number) {
+  constructor(
+    message: string,
+    status: number,
+    code: string | null = null,
+    fieldErrors: readonly ApiFieldError[] = [],
+  ) {
     super(message);
     this.name = 'ApiError';
     this.status = status;
+    this.code = code;
+    this.fieldErrors = fieldErrors;
   }
+}
+
+/** `fieldErrors` 배열에서 규격에 맞는 항목만 추린다. 형태가 어긋난 원소는 버린다. */
+function parseFieldErrors(value: unknown): ApiFieldError[] {
+  if (!Array.isArray(value)) {
+    return [];
+  }
+  return value.flatMap((item): ApiFieldError[] => {
+    if (typeof item !== 'object' || item === null) {
+      return [];
+    }
+    const { field, message } = item as Record<string, unknown>;
+    if (typeof field !== 'string' || typeof message !== 'string') {
+      return [];
+    }
+    return [{ field, message }];
+  });
+}
+
+/**
+ * 실패 응답 본문을 읽어 ApiError로 만든다.
+ *
+ * 본문이 규격대로 오지 않는 경우가 실제로 있다. 게이트웨이 502가 HTML을 주거나, 본문이 비어
+ * 있거나, JSON이지만 필드가 없을 수 있다. 그래서 어느 단계에서 실패하든 상태 코드만으로도
+ * 던질 수 있게 만든다. 여기서 예외가 나면 원래 에러가 통째로 묻힌다.
+ */
+async function toApiError(response: Response): Promise<ApiError> {
+  const fallback = `요청이 실패했습니다(HTTP ${response.status}).`;
+
+  let body: ApiErrorBody | null = null;
+  try {
+    body = (await response.json()) as ApiErrorBody;
+  } catch {
+    return new ApiError(fallback, response.status);
+  }
+
+  if (typeof body !== 'object' || body === null) {
+    return new ApiError(fallback, response.status);
+  }
+
+  const message = typeof body.message === 'string' && body.message !== '' ? body.message : fallback;
+  const code = typeof body.code === 'string' && body.code !== '' ? body.code : null;
+  return new ApiError(message, response.status, code, parseFieldErrors(body.fieldErrors));
 }
 
 /**
@@ -60,7 +134,7 @@ export async function apiFetch(path: string, init?: RequestInit): Promise<Respon
   }
 
   if (!response.ok) {
-    throw new ApiError(`요청이 실패했습니다(HTTP ${response.status}).`, response.status);
+    throw await toApiError(response);
   }
   return response;
 }
