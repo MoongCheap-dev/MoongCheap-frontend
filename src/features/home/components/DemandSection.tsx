@@ -20,7 +20,7 @@ export function DemandSection({ products }: DemandSectionProps) {
         <SectionHeader title={HOME_SECTIONS.demand.title} />
         <HorizontalScroller className="gap-5">
           {products.map((product) => (
-            <ProductCard key={product.id} product={product} />
+            <ProductCard key={product.id} product={product} href={`/products/${product.id}`} />
           ))}
         </HorizontalScroller>
       </div>

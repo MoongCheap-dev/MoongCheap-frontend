@@ -28,7 +28,7 @@ export function PopularSection({ products }: PopularSectionProps) {
         {columns.map((column) => (
           <div className="flex shrink-0 flex-col gap-4" key={column[0]?.id}>
             {column.map((product) => (
-              <WideProductRow key={product.id} product={product} />
+              <WideProductRow key={product.id} product={product} href={`/products/${product.id}`} />
             ))}
           </div>
         ))}

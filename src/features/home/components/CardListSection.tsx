@@ -20,7 +20,12 @@ export function CardListSection({ title, products, variant }: CardListSectionPro
       <SectionHeader title={title} />
       <HorizontalScroller className="gap-5">
         {products.map((product) => (
-          <ProductCard key={product.id} product={product} variant={variant} />
+          <ProductCard
+            key={product.id}
+            product={product}
+            href={`/products/${product.id}`}
+            variant={variant}
+          />
         ))}
       </HorizontalScroller>
     </section>

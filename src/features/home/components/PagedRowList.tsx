@@ -56,7 +56,7 @@ export function PagedRowList({ products }: PagedRowListProps) {
             key={rows[0]?.id ?? 'empty'}
           >
             {rows.map((product) => (
-              <ProductRow key={product.id} product={product} />
+              <ProductRow key={product.id} product={product} href={`/products/${product.id}`} />
             ))}
           </div>
         ))}
