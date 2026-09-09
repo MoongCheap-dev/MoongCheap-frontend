@@ -55,50 +55,59 @@ const goldDetail: ProductDetail = {
   infoSections: SHARED_INFO_SECTIONS,
 };
 
-/** 시나리오 2 — 퀵 참여 3건. 홈 card-list-1 '락토핏 코어'(demand-3)에 대응. */
-const coreMaxDetail: ProductDetail = {
-  id: 'demand-3',
-  name: '[종근당건강] 락토핏 생유산균 코어맥스',
-  brandName: '종근당건강',
-  spec: '프로바이오틱스 80포 160g',
-  listPrice: 33900,
-  thumbnailUrl: '/images/main-home/card-list-1/1-3.webp',
-  description:
-    '락토핏 생유산균 코어맥스, 더 강력해진 유산균 케어.\n장 건강이 걱정된다면 코어맥스로 시작하세요.\n\n[주요 특징]\n· 고함량 프로바이오틱스 배합\n· 아연 함유로 면역 건강까지\n· 장까지 살아서 도달하는 코팅 유산균\n· 80포 대용량 구성\n\n[섭취 방법]\n1일 1회, 1회 1포를 물과 함께 섭취하세요.\n\n[보관 방법]\n직사광선을 피해 서늘하고 건조한 곳에 보관하세요.\n\n※ 실제 상품설명은 백엔드 GET /api/product-catalog/{id}의 description에서 내려옵니다. 이 문구는 미로그인·미배선 시 보여줄 mock입니다.',
-  viewingCount: 231,
-  similarThumbnails: [
-    '/images/main-home/card-list-1/1-1.webp',
-    '/images/main-home/card-list-1/1-2.webp',
-  ],
-  quickDeals: [
-    {
-      id: 'deal-1',
-      deadline: hoursFromNow(0.15),
-      participantCount: 1200,
-      desiredPriceLabel: '1만원 이하',
-      sellerCount: 3,
-    },
-    {
-      id: 'deal-2',
-      dday: 1,
-      participantCount: 150,
-      desiredPriceLabel: '2만원 이하',
-      sellerCount: 2,
-    },
-    {
-      id: 'deal-3',
-      dday: 2,
-      participantCount: 150,
-      desiredPriceLabel: '3만원 이하',
-      sellerCount: 1,
-    },
-  ],
-  infoSections: SHARED_INFO_SECTIONS,
-};
+/**
+ * 시나리오 2 — 퀵 참여 3건. 홈 card-list-1 '락토핏 코어'(demand-3)에 대응.
+ *
+ * `deadline`은 `TimeBadge`가 실시간 카운트다운으로 그리므로 조회 시점 기준이어야 한다.
+ * 모듈 초기화 때 한 번만 계산하면 오래 켜둔 dev 서버에서 굳어 `00:00:00`이 되므로,
+ * 값이 아니라 팩터리로 두고 `mockGetProductDetail`가 부를 때마다 새로 만든다.
+ */
+function createCoreMaxDetail(): ProductDetail {
+  return {
+    id: 'demand-3',
+    name: '[종근당건강] 락토핏 생유산균 코어맥스',
+    brandName: '종근당건강',
+    spec: '프로바이오틱스 80포 160g',
+    listPrice: 33900,
+    thumbnailUrl: '/images/main-home/card-list-1/1-3.webp',
+    description:
+      '락토핏 생유산균 코어맥스, 더 강력해진 유산균 케어.\n장 건강이 걱정된다면 코어맥스로 시작하세요.\n\n[주요 특징]\n· 고함량 프로바이오틱스 배합\n· 아연 함유로 면역 건강까지\n· 장까지 살아서 도달하는 코팅 유산균\n· 80포 대용량 구성\n\n[섭취 방법]\n1일 1회, 1회 1포를 물과 함께 섭취하세요.\n\n[보관 방법]\n직사광선을 피해 서늘하고 건조한 곳에 보관하세요.\n\n※ 실제 상품설명은 백엔드 GET /api/product-catalog/{id}의 description에서 내려옵니다. 이 문구는 미로그인·미배선 시 보여줄 mock입니다.',
+    viewingCount: 231,
+    similarThumbnails: [
+      '/images/main-home/card-list-1/1-1.webp',
+      '/images/main-home/card-list-1/1-2.webp',
+    ],
+    quickDeals: [
+      {
+        id: 'deal-1',
+        deadline: hoursFromNow(0.15),
+        participantCount: 1200,
+        desiredPriceLabel: '1만원 이하',
+        sellerCount: 3,
+      },
+      {
+        id: 'deal-2',
+        dday: 1,
+        participantCount: 150,
+        desiredPriceLabel: '2만원 이하',
+        sellerCount: 2,
+      },
+      {
+        id: 'deal-3',
+        dday: 2,
+        participantCount: 150,
+        desiredPriceLabel: '3만원 이하',
+        sellerCount: 1,
+      },
+    ],
+    infoSections: SHARED_INFO_SECTIONS,
+  };
+}
 
-const PRODUCT_DETAILS: Readonly<Record<string, ProductDetail>> = {
-  [goldDetail.id]: goldDetail,
-  [coreMaxDetail.id]: coreMaxDetail,
+/** demand-3(코어맥스)만 실시간 deadline이 있어 팩터리로, 나머지는 값으로 등록한다. */
+const PRODUCT_DETAILS: Readonly<Record<string, () => ProductDetail>> = {
+  [goldDetail.id]: () => goldDetail,
+  'demand-3': createCoreMaxDetail,
 };
 
 /**
@@ -106,9 +115,9 @@ const PRODUCT_DETAILS: Readonly<Record<string, ProductDetail>> = {
  * 시나리오 2(퀵 참여 있는 상세)를 기본값으로 돌려 화면이 항상 채워지게 한다.
  */
 export async function mockGetProductDetail(productId: string): Promise<ProductDetail> {
-  const found = PRODUCT_DETAILS[productId];
-  if (found !== undefined) {
-    return found;
+  const create = PRODUCT_DETAILS[productId];
+  if (create !== undefined) {
+    return create();
   }
-  return { ...coreMaxDetail, id: productId };
+  return { ...createCoreMaxDetail(), id: productId };
 }
