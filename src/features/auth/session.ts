@@ -51,6 +51,12 @@ export function useLogout() {
 
   return useMutation({
     mutationFn: logout,
+    onMutate: async () => {
+      // 진행 중인 세션 조회를 먼저 취소한다. setQueryData는 in-flight 요청을 막지 못해,
+      // 유효 쿠키로 이미 떠난 getMe가 로그아웃 뒤 늦게 도착하면 null 캐시를 예전 유저로
+      // 되돌릴 수 있다(경합). 취소로 그 응답이 캐시에 반영되지 않게 한다.
+      await queryClient.cancelQueries({ queryKey: SESSION_QUERY_KEY });
+    },
     onSuccess: () => {
       // 세션을 null로 바꿔 전역 상태를 미로그인으로 만든다. 재요청(invalidate)이 아니라 직접
       // 세팅하는 이유는, 쿠키가 이미 폐기돼 재조회해도 결과가 null이라 왕복이 불필요하기 때문이다.
