@@ -25,7 +25,12 @@ function PlusIcon() {
   );
 }
 
-export function AddressListView() {
+interface AddressListViewProps {
+  /** 등록 화면 경로. 라우트는 호출부(page)가 정한다. */
+  createHref: string;
+}
+
+export function AddressListView({ createHref }: AddressListViewProps) {
   const { addresses, isLoading, error, refetch } = useAddresses();
 
   if (error !== null) {
@@ -63,7 +68,7 @@ export function AddressListView() {
       ) : (
         <Link
           className="bg-surface-secondary text-label-14 text-content-tertiary rounded-8 active:bg-surface-button-quarternary-pressed flex w-full items-center justify-center gap-1 py-3"
-          href="/mypage/addresses/new"
+          href={createHref}
         >
           <PlusIcon />
           {isEmpty ? '신규 배송지 추가' : '새 배송지 추가'}
@@ -73,11 +78,10 @@ export function AddressListView() {
       {!isEmpty && (
         <ul className="flex w-full flex-col gap-5">
           {addresses.map((address) => (
-            <AddressCard
-              address={address}
-              editHref={`/mypage/addresses/${address.id}/edit`}
-              key={address.id}
-            />
+            // `editHref`를 넘기지 않아 '수정'은 삭제와 같이 그려지기만 한다. 수정 저장이
+            // 배선되기 전에 링크를 살리면, 폼을 채우고 확인을 눌러도 저장 없이 목록으로
+            // 돌아가 저장된 것처럼 보인다(조회 응답에 원본 전화번호가 없어 아직 못 붙인다).
+            <AddressCard address={address} key={address.id} />
           ))}
         </ul>
       )}
