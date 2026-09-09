@@ -79,13 +79,16 @@ export function SearchResultCard({ product, href }: SearchResultCardProps) {
               {product.dday === undefined ? (
                 SEARCH_RESULT_CARD.noDemand
               ) : (
-                <>
-                  {SEARCH_RESULT_CARD.deadlinePrefix}
+                // 한 겹 더 감싼다. 이 배지가 inline-flex라 `마감 `과 `D-1`을 나란히 두면 각각
+                // flex item이 되고, 그 과정에서 `마감 ` 끝의 공백이 잘려 `마감D-1`로 붙는다.
+                // 안쪽을 보통 inline 흐름으로 만들어 시안의 공백을 살린다.
+                <span>
                   {/* 시안: `마감 `은 회색이고 `D-1`만 코랄색이다. */}
+                  {SEARCH_RESULT_CARD.deadlinePrefix}
                   <span className="text-content-brand">
                     {SEARCH_RESULT_CARD.dday(product.dday)}
                   </span>
-                </>
+                </span>
               )}
             </span>
           </span>
