@@ -38,6 +38,16 @@ interface ApiErrorBody {
   code?: unknown;
   message?: unknown;
   fieldErrors?: unknown;
+  /**
+   * 한 겹 감싼 모양(`{ success, data, error }`)의 안쪽. 규격은 평면인데 실제로 두 모양이 나온다.
+   *
+   * `@RestControllerAdvice`가 처리하는 응답은 문서대로 평면으로 나가지만, 스프링 시큐리티
+   * 필터가 직접 쓰는 **401·403·소셜가입 미완료**만 감싼 모양으로 나간다(`SecurityConfig`,
+   * `IncompleteSignupFilter`가 문자열로 조립한다). 백엔드 내부 불일치라 통일을 요청해 뒀고,
+   * 정리될 때까지 두 모양을 모두 받는다. 401은 로그인 안 한 모든 화면이 처음 만나는 응답이라
+   * 여기서 놓치면 사유가 통째로 사라진다.
+   */
+  error?: unknown;
 }
 
 /**
@@ -107,9 +117,14 @@ async function toApiError(response: Response): Promise<ApiError> {
     return new ApiError(fallback, response.status);
   }
 
-  const message = typeof body.message === 'string' && body.message !== '' ? body.message : fallback;
-  const code = typeof body.code === 'string' && body.code !== '' ? body.code : null;
-  return new ApiError(message, response.status, code, parseFieldErrors(body.fieldErrors));
+  // 감싼 모양이면 안쪽을 읽는다. 평면이면 본문이 곧 내용이다.
+  const payload: ApiErrorBody =
+    typeof body.error === 'object' && body.error !== null ? (body.error as ApiErrorBody) : body;
+
+  const message =
+    typeof payload.message === 'string' && payload.message !== '' ? payload.message : fallback;
+  const code = typeof payload.code === 'string' && payload.code !== '' ? payload.code : null;
+  return new ApiError(message, response.status, code, parseFieldErrors(payload.fieldErrors));
 }
 
 /**
