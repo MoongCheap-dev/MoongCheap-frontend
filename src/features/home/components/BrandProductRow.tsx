@@ -1,6 +1,6 @@
 import Image from 'next/image';
+import Link from 'next/link';
 
-import { ComingSoonButton } from '@/components/ui/ComingSoonButton';
 import { HOME_CARD } from '@/constants/homeMessages';
 import { TimeBadge } from '@/features/home/components/TimeBadge';
 import type { HomeProductCard } from '@/types/home';
@@ -20,11 +20,13 @@ const PERSONNEL_BADGE_CLASS =
 
 interface BrandProductRowProps {
   product: HomeProductCard;
+  /** 카드가 여는 상세 경로. 라우트는 호출부(features/home 섹션)가 정한다. */
+  href: string;
 }
 
-export function BrandProductRow({ product }: BrandProductRowProps) {
+export function BrandProductRow({ product, href }: BrandProductRowProps) {
   return (
-    <ComingSoonButton className="flex w-full items-center gap-2 text-left">
+    <Link href={href} className="flex w-full items-center gap-2 text-left">
       <span className="rounded-8 bg-surface-tertiary relative block size-[106px] shrink-0 overflow-hidden">
         {product.thumbnailUrl !== undefined && (
           <Image alt="" className="object-cover" fill sizes="106px" src={product.thumbnailUrl} />
@@ -66,6 +68,6 @@ export function BrandProductRow({ product }: BrandProductRowProps) {
           </span>
         </span>
       </span>
-    </ComingSoonButton>
+    </Link>
   );
 }
