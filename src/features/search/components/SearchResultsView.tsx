@@ -2,13 +2,10 @@
 
 import { useCallback, useEffect, useState } from 'react';
 
-import Image from 'next/image';
-
-import { EmptyState } from '@/components/ui/EmptyState';
 import { ERROR_ACTION_CLASS, ErrorScreen } from '@/components/ui/ErrorScreen';
-import { CATALOG_SEARCH_ASSETS } from '@/constants/assets';
 import { ERROR_SCREEN_RETRY_LABEL } from '@/constants/commonMessages';
-import { SEARCH_EMPTY, SEARCH_ERROR_DESCRIPTION } from '@/constants/searchMessages';
+import { SEARCH_ERROR_DESCRIPTION } from '@/constants/searchMessages';
+import { SearchEmptyState } from '@/features/search/components/SearchEmptyState';
 import { SearchFilterTabs } from '@/features/search/components/SearchFilterTabs';
 import { SearchResultCard } from '@/features/search/components/SearchResultCard';
 import { searchProducts } from '@/lib/productSearchApi';
@@ -116,16 +113,18 @@ export function SearchResultsView({ query, productHrefBase }: SearchResultsViewP
       ? loaded.results
       : loaded.results.filter((item) => item.demandStatus === filter);
 
+  // 검색 자체가 0건이면 시안(`1153:72790`)에 필터 칩이 없다. 거를 것이 없으니 맞는 그림이다.
+  //
+  // 다만 **결과는 있는데 필터가 비운 경우**는 시안이 없다. 이때까지 칩을 감추면 '전체'로 돌아갈
+  // 길이 사라져 화면에 갇힌다. 그래서 칩은 검색이 0건일 때만 감춘다.
+  const isSearchEmpty = loaded.results.length === 0;
+
   return (
     <div className="flex w-full flex-1 flex-col">
-      <SearchFilterTabs onChange={setFilter} value={filter} />
+      {!isSearchEmpty && <SearchFilterTabs onChange={setFilter} value={filter} />}
 
       {visible.length === 0 ? (
-        <EmptyState
-          description={SEARCH_EMPTY.description}
-          icon={<Image alt="" height={112} src={CATALOG_SEARCH_ASSETS.emptyResult} width={112} />}
-          title={SEARCH_EMPTY.title}
-        />
+        <SearchEmptyState />
       ) : (
         // 시안: 좌우 여백 16, 카드 사이 20.
         <ul className="flex w-full flex-col gap-5 p-4">

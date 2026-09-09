@@ -36,7 +36,11 @@ export default async function SearchResultsPage({
   }
 
   return (
-    <main className="flex w-full flex-1 flex-col">
+    // 시안의 결과 프레임 배경은 `background/subtle`(#fafafa)이다. 흰 카드가 배경에서 떠 보이게
+    // 하는 값이다. 빈 상태 프레임(`1153:72790`)만 `background/default`(흰색)인데, 같은 화면의
+    // 두 상태에서 배경이 갈릴 이유가 없고 데이터가 도착한 뒤 배경이 바뀌면 깜빡인다.
+    // 카드가 있는 쪽 값으로 통일한다. 디자인 확인 대상.
+    <main className="bg-background-subtle flex w-full flex-1 flex-col">
       <SearchQueryBar query={query} searchHref="/search" />
       {/* key로 검색어가 바뀔 때 뷰를 리마운트한다. 필터 선택이 이전 검색어의 것으로 남지 않게 한다. */}
       <SearchResultsView key={query} productHrefBase="/products" query={query} />

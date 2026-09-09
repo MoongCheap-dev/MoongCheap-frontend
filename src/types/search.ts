@@ -27,7 +27,10 @@ export interface ProductSearchResult {
   name: string;
   /** 규격/용량 부제. BE `specSummary`. 시안 "프로바이오틱스 80포 160g". */
   spec?: string;
-  /** 없으면 카드가 회색 자리를 그린다. */
+  /**
+   * 없거나 앱 바깥 주소면 카드가 이미지 자리를 빈 채로 둔다(시안의 이미지 영역이 흰 바탕이라
+   * 배경만 남는다). 외부 주소를 거르는 이유는 [[lib/imageSource]] 참고.
+   */
   thumbnailUrl?: string;
   /** 정가. BE `listPrice`. 시안 B-06엔 표시 자리가 없어 아직 화면엔 안 쓴다. */
   listPrice?: number;

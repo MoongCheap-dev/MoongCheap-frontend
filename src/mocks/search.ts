@@ -12,8 +12,8 @@ import type { ProductSearchResult } from '@/types/search';
  * 시안의 '수요 없음' 모양으로 그려지고, 목으로 떨어졌을 때만 시안의 두 모양이 다 보인다.
  *
  * ⚠️ 이미지가 3장뿐이다. #60·#73에서 `public/images/catalog-search/`에 반입된 것이
- *    골드(2-1) · 뷰티(2-2) · 코어맥스(2-3)뿐이라 시안의 다이어트 · 당케어 카드는 썸네일 자리가
- *    비어 있다(회색 자리로 그려진다). 에셋 추가 반입 대상.
+ *    골드(2-1) · 뷰티(2-2) · 코어맥스(2-3)뿐이라 시안의 다이어트 · 당케어 카드는 이미지 영역이
+ *    빈 채로(흰 바탕만) 그려진다. 에셋 추가 반입 대상.
  */
 const MOCK_RESULTS: readonly ProductSearchResult[] = [
   {
