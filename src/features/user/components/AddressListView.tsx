@@ -6,6 +6,7 @@ import { ERROR_ACTION_CLASS, ErrorScreen } from '@/components/ui/ErrorScreen';
 import { ADDRESS_MAX } from '@/constants/businessRules';
 import { ERROR_SCREEN_RETRY_LABEL } from '@/constants/commonMessages';
 import { AddressCard } from '@/features/user/components/AddressCard';
+import { AddressListSkeleton } from '@/features/user/components/AddressListSkeleton';
 import { useAddresses } from '@/features/user/hooks/useAddresses';
 
 // B-30 배송지 목록 본문. 페이지(서버 컴포넌트)는 앱바만 조립하고 데이터는 여기서 가져온다.
@@ -13,7 +14,7 @@ import { useAddresses } from '@/features/user/hooks/useAddresses';
 // 조회가 클라이언트인 이유는 `useAddresses` 주석 참고(SID httpOnly 쿠키는 브라우저만 갖고 있다).
 //
 // ⚠️ 로딩·조회 실패 화면은 시안이 없다(FN-B30-01이 '디자인 필요'로 남겨 뒀다). 새로 그리지 않고
-//    공용 `ErrorScreen`을 재사용하고, 로딩은 자리만 비워 둔다. 시안이 나오면 교체한다.
+//    공용 `ErrorScreen`과 공용 `Skeleton`을 재사용한다. 시안이 나오면 교체한다.
 
 // 시안의 + 아이콘(22px 박스 안 14px 글리프). lucide의 Plus는 획이 얇아 시안과 다르게 보여
 // 경로를 그대로 옮겼다. 굵기·둥근 끝이 시안의 채워진 형태와 일치한다.
@@ -43,10 +44,11 @@ export function AddressListView({ createHref }: AddressListViewProps) {
     );
   }
 
-  // 첫 조회 중에는 목록도 추가 버튼도 그리지 않는다. 개수를 알기 전에 버튼을 그리면
-  // '신규/새 배송지 추가' 문구와 상한 안내가 응답 후 바뀌어 깜빡인다.
+  // 첫 조회 중에는 문구가 들어가는 것을 그리지 않는다. 개수를 알기 전에 버튼을 그리면
+  // '신규/새 배송지 추가' 문구와 상한 안내가 응답 후 바뀌어 깜빡인다. 그렇다고 아무것도 안 그리면
+  // 응답이 늦을 때 빈 화면이라 고장으로 보여서, 문구 없이 자리만 잡는 스켈레톤을 둔다.
   if (isLoading || addresses === null) {
-    return null;
+    return <AddressListSkeleton />;
   }
 
   const isEmpty = addresses.length === 0;
