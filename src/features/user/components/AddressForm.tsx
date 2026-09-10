@@ -1,16 +1,20 @@
 'use client';
 
+import { useState } from 'react';
+
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
 import { useForm, useWatch } from 'react-hook-form';
 
 import { Checkbox } from '@/components/ui/Checkbox';
+import { useToast } from '@/components/ui/Toast';
 import {
   ADDRESS_INPUT_CLASS,
   ADDRESS_READONLY_CLASS,
   AddressField,
 } from '@/features/user/components/AddressField';
 import { toFullAddress, useDaumPostcode } from '@/hooks/useDaumPostcode';
+import { ApiError } from '@/lib/api';
 import { cn } from '@/lib/cn';
 import {
   ADDRESS_DETAIL_MAX_LENGTH,
@@ -27,8 +31,8 @@ import {
 // 시안에 오류 문구가 없고 확인 버튼만 비활성/활성 두 상태로 그려져 있다. 그래서 검증 결과를
 // 글로 노출하지 않고 **버튼 잠금**으로만 쓴다(schemas/address.ts 주석 참고).
 //
-// ⚠️ 저장 동작이 없다. 배송지 API 규격을 아직 받지 못해 제출하면 목록으로 되돌아가기만 한다.
-//    규격이 나오면 onSubmit 본문만 채우면 된다.
+// 저장은 `onSave`로 받는다. 폼은 어떤 엔드포인트를 부르는지 모른다(등록·수정이 다른 API다).
+// `onSave`가 없으면 이동만 한다 — 수정 화면이 아직 그 상태다(props 주석 참고).
 
 const EMPTY_VALUES: AddressFormValues = {
   postalCode: '',
@@ -56,15 +60,28 @@ interface AddressFormProps {
    * - 현재 기본배송지 수정: 해제하면 기본배송지가 0건이 된다(`BR-B30-02-06`)
    */
   lockDefault?: boolean;
+  /**
+   * 저장 동작. 넘기지 않으면 저장 없이 `successHref`로 이동만 한다.
+   *
+   * 함수 prop이라 넘기는 쪽도 client여야 한다. 서버 컴포넌트인 페이지가 직접 넘길 수 없어
+   * 등록 화면은 `AddressCreateView`가 중간에서 받는다.
+   *
+   * ⚠️ 수정 화면은 아직 넘기지 않는다. 조회 응답이 마스킹된 전화번호만 주어 기존 값을 폼에
+   *    채울 수 없다(`lib/addressApi.ts` 주석 참고). 백엔드 회신 후 배선한다.
+   */
+  onSave?: (values: AddressFormValues) => Promise<void>;
 }
 
 export function AddressForm({
   successHref,
   defaultValues = EMPTY_VALUES,
   lockDefault = false,
+  onSave,
 }: AddressFormProps) {
   const router = useRouter();
   const { open } = useDaumPostcode();
+  const { showToast } = useToast();
+  const [isSaving, setIsSaving] = useState(false);
 
   const { register, handleSubmit, setValue, control, formState } = useForm<AddressFormValues>({
     resolver: zodResolver(addressSchema),
@@ -95,12 +112,29 @@ export function AddressForm({
     }
   }
 
-  function onSubmit() {
-    // TODO: 배송지 등록·수정 API 연결. 규격 확정 전이라 이동만 한다.
-    router.push(successHref);
+  async function onSubmit(values: AddressFormValues) {
+    if (onSave === undefined) {
+      // 저장이 배선되지 않은 화면(수정)은 이동만 한다.
+      router.push(successHref);
+      return;
+    }
+
+    setIsSaving(true);
+    try {
+      await onSave(values);
+      router.push(successHref);
+      // 목록은 client에서 조회하므로 push만으로는 낡은 데이터가 남는다. 서버 캐시도 함께 버린다.
+      router.refresh();
+    } catch (error) {
+      // 시안에 오류 문구 자리가 없다(검증은 버튼 잠금으로만 표시). 서버가 거절한 사유는
+      // 알려야 하므로 공용 토스트로 띄운다. 백엔드가 사용자용 한국어 문구를 주므로 그대로 쓴다.
+      showToast(error instanceof ApiError ? error.message : '배송지를 저장하지 못했습니다.');
+      setIsSaving(false);
+    }
   }
 
-  const canSubmit = formState.isValid && formState.isDirty;
+  // 저장 중에는 잠근다. 연타하면 같은 배송지가 두 건 등록된다.
+  const canSubmit = formState.isValid && formState.isDirty && !isSaving;
 
   return (
     <form className="flex w-full flex-1 flex-col" onSubmit={handleSubmit(onSubmit)}>

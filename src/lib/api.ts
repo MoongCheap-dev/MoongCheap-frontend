@@ -25,17 +25,106 @@ export function getApiBaseUrl(): string | null {
 }
 
 /**
+ * 400 유효성 실패 시 실려 오는 필드별 사유. 폼의 해당 입력에 그대로 붙일 수 있다.
+ * 백엔드 규격상 400이 아닌 응답에서는 빈 배열이다.
+ */
+export interface ApiFieldError {
+  field: string;
+  message: string;
+}
+
+/** 백엔드 실패 응답 본문. `docs/api-error-responses.md`의 공통 형식. */
+interface ApiErrorBody {
+  code?: unknown;
+  message?: unknown;
+  fieldErrors?: unknown;
+  /**
+   * 한 겹 감싼 모양(`{ success, data, error }`)의 안쪽. 규격은 평면인데 실제로 두 모양이 나온다.
+   *
+   * `@RestControllerAdvice`가 처리하는 응답은 문서대로 평면으로 나가지만, 스프링 시큐리티
+   * 필터가 직접 쓰는 **401·403·소셜가입 미완료**만 감싼 모양으로 나간다(`SecurityConfig`,
+   * `IncompleteSignupFilter`가 문자열로 조립한다). 백엔드 내부 불일치라 통일을 요청해 뒀고,
+   * 정리될 때까지 두 모양을 모두 받는다. 401은 로그인 안 한 모든 화면이 처음 만나는 응답이라
+   * 여기서 놓치면 사유가 통째로 사라진다.
+   */
+  error?: unknown;
+}
+
+/**
  * 실패한 응답(비 2xx)·네트워크 오류·미배선을 하나의 타입으로 올린다.
- * `status`는 HTTP 상태 코드(네트워크 오류·미배선은 0)라 호출부가 401(미로그인) 등을 분기할 수 있다.
+ *
+ * - `status`  HTTP 상태 코드. 네트워크 오류·미배선은 0이라 호출부가 401(미로그인) 등을 분기할 수 있다.
+ * - `code`    백엔드 비즈니스 에러 코드(`SHIP_002` 등). 본문이 없거나 규격을 벗어나면 null이다.
+ * - `message` 백엔드가 준 사용자용 문구를 그대로 쓴다. 없으면 상태 코드 기반 기본 문구.
+ *
+ * 같은 400이라도 `code`로 갈린다. 예를 들어 배송지 등록의 400은 `SHIP_002`(상한 5개)와
+ * `COMMON_400`(입력값 오류)이 다른 화면 반응을 요구한다. status만으로는 구분할 수 없다.
  */
 export class ApiError extends Error {
   readonly status: number;
+  readonly code: string | null;
+  readonly fieldErrors: readonly ApiFieldError[];
 
-  constructor(message: string, status: number) {
+  constructor(
+    message: string,
+    status: number,
+    code: string | null = null,
+    fieldErrors: readonly ApiFieldError[] = [],
+  ) {
     super(message);
     this.name = 'ApiError';
     this.status = status;
+    this.code = code;
+    this.fieldErrors = fieldErrors;
   }
+}
+
+/** `fieldErrors` 배열에서 규격에 맞는 항목만 추린다. 형태가 어긋난 원소는 버린다. */
+function parseFieldErrors(value: unknown): ApiFieldError[] {
+  if (!Array.isArray(value)) {
+    return [];
+  }
+  return value.flatMap((item): ApiFieldError[] => {
+    if (typeof item !== 'object' || item === null) {
+      return [];
+    }
+    const { field, message } = item as Record<string, unknown>;
+    if (typeof field !== 'string' || typeof message !== 'string') {
+      return [];
+    }
+    return [{ field, message }];
+  });
+}
+
+/**
+ * 실패 응답 본문을 읽어 ApiError로 만든다.
+ *
+ * 본문이 규격대로 오지 않는 경우가 실제로 있다. 게이트웨이 502가 HTML을 주거나, 본문이 비어
+ * 있거나, JSON이지만 필드가 없을 수 있다. 그래서 어느 단계에서 실패하든 상태 코드만으로도
+ * 던질 수 있게 만든다. 여기서 예외가 나면 원래 에러가 통째로 묻힌다.
+ */
+async function toApiError(response: Response): Promise<ApiError> {
+  const fallback = `요청이 실패했습니다(HTTP ${response.status}).`;
+
+  let body: ApiErrorBody | null = null;
+  try {
+    body = (await response.json()) as ApiErrorBody;
+  } catch {
+    return new ApiError(fallback, response.status);
+  }
+
+  if (typeof body !== 'object' || body === null) {
+    return new ApiError(fallback, response.status);
+  }
+
+  // 감싼 모양이면 안쪽을 읽는다. 평면이면 본문이 곧 내용이다.
+  const payload: ApiErrorBody =
+    typeof body.error === 'object' && body.error !== null ? (body.error as ApiErrorBody) : body;
+
+  const message =
+    typeof payload.message === 'string' && payload.message !== '' ? payload.message : fallback;
+  const code = typeof payload.code === 'string' && payload.code !== '' ? payload.code : null;
+  return new ApiError(message, response.status, code, parseFieldErrors(payload.fieldErrors));
 }
 
 /**
@@ -60,7 +149,7 @@ export async function apiFetch(path: string, init?: RequestInit): Promise<Respon
   }
 
   if (!response.ok) {
-    throw new ApiError(`요청이 실패했습니다(HTTP ${response.status}).`, response.status);
+    throw await toApiError(response);
   }
   return response;
 }
