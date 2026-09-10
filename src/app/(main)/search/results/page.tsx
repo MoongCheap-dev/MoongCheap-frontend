@@ -36,11 +36,13 @@ export default async function SearchResultsPage({
   }
 
   return (
-    // 시안의 결과 프레임 배경은 `background/subtle`(#fafafa)이다. 흰 카드가 배경에서 떠 보이게
-    // 하는 값이다. 빈 상태 프레임(`1153:72790`)만 `background/default`(흰색)인데, 같은 화면의
-    // 두 상태에서 배경이 갈릴 이유가 없고 데이터가 도착한 뒤 배경이 바뀌면 깜빡인다.
-    // 카드가 있는 쪽 값으로 통일한다. 디자인 확인 대상.
-    <main className="bg-background-subtle flex w-full flex-1 flex-col">
+    // 배경은 셸((main) 레이아웃)의 `background/default`를 그대로 쓴다.
+    //
+    // 시안의 결과 프레임은 `background/subtle`이라 한 번 그렇게 넣었다가 되돌렸다. 두 토큰의
+    // 간격이 테마마다 달라서다. 라이트는 #ffffff 대 #fafafa로 거의 같은 색인데, 다크는
+    // #1a1a1a 대 #303030이라 이 화면만 통째로 떠 보인다. 시안이 라이트 기준이라 '살짝 다른 톤'을
+    // 의도한 것인데, 그 의도가 다크에서는 재현되지 않는다.
+    <main className="flex w-full flex-1 flex-col">
       <SearchQueryBar query={query} searchHref="/search" />
       {/* key로 검색어가 바뀔 때 뷰를 리마운트한다. 필터 선택이 이전 검색어의 것으로 남지 않게 한다. */}
       <SearchResultsView key={query} productHrefBase="/products" query={query} />
