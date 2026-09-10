@@ -66,14 +66,31 @@
   animation-delay: 0.8s;
 }
 
+/*
+ * 달리는 마스코트는 두 장을 겹쳐 두고 골라 보여 준다. 애니메이션 WebP는 이미지 파일 자체가
+ * 움직여서 CSS로 멈출 수 없기 때문에, 정지본을 따로 두는 것 말고는 방법이 없다.
+ *
+ * 기본은 애니메이션 쪽이고, 정지본은 아래 '동작 최소화' 블록에서만 나온다. 정지본이 1.6KB라
+ * 두 장을 다 받아도 부담이 없고, 이 방식이면 JS가 없어 서버 렌더 결과와 어긋날 일도 없다.
+ */
+.splash-mascot-still {
+  display: none;
+}
+
 /* ── 동작 최소화 설정 ── */
 
 /*
- * 기기가 "동작 줄이기"를 켜면 전부 최종 상태로 멈춘다. 달리는 마스코트는 이미지 파일 자체가
- * 애니메이션이라 CSS로 멈출 수 없다. 그건 정지 이미지로 바꿔 끼워야 하는데, 어느 프레임을
- * 쓸지가 시안에 없어 지금은 그대로 둔다.
+ * 기기가 "동작 줄이기"를 켜면 전부 최종 상태로 멈춘다.
  */
 @media (prefers-reduced-motion: reduce) {
+  .splash-mascot-running {
+    display: none;
+  }
+
+  .splash-mascot-still {
+    display: block;
+  }
+
   .splash-progress-fill {
     animation: none;
     transform: scaleX(1);

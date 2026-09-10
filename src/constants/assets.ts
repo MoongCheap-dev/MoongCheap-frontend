@@ -38,4 +38,14 @@ export const SPLASH_ASSETS = {
    * ⚠️ 원본이 393x240 1배수뿐이라 고밀도 화면에서 흐려진다. 2배수 요청 대상.
    */
   mascotRunning: '/images/splash/mascot-running.webp',
+  /**
+   * 위 애니메이션의 **첫 프레임**을 뽑아 둔 정지본. 기기가 '동작 줄이기'를 켰을 때 대신 그린다.
+   *
+   * 애니메이션 WebP는 이미지 파일 자체가 움직여서 CSS로 멈출 수 없다. 그래서 두 장을 다 두고
+   * `prefers-reduced-motion`으로 골라 보여 준다(`app/animations.css`).
+   *
+   * 첫 프레임을 고른 이유는 두 가지다. 강아지가 오른쪽을 보고 달리는 자세라 진행 방향(왼→오)과
+   * 맞고, 임의로 고른 게 아니라 '애니메이션의 시작점'이라는 규칙으로 설명된다.
+   */
+  mascotRunningStill: '/images/splash/mascot-running-still.webp',
 } as const;

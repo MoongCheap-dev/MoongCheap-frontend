@@ -32,6 +32,9 @@ const LAYOUT = {
   wordmarkLift: { default: '-translate-y-[57px]', loading: '-translate-y-[112px]' },
 } as const;
 
+/** 달리는 마스코트 두 장(움직이는 것·정지본)이 같은 자리에 놓이도록 위치를 공유한다. */
+const MASCOT_RUNNING_CLASS = 'absolute bottom-35.25 left-0 w-full';
+
 interface SplashScreenProps {
   /**
    * 어느 시안을 그릴지.
@@ -63,14 +66,28 @@ export function SplashScreen({ variant = 'default' }: SplashScreenProps) {
         <>
           {/* 시안: 393x240을 화면 폭 전체에 깔고 아래에서 141 띄운다. 강아지가 프레임 안에서
               좌우로 뛰는 모션이 이미지 파일 자체에 들어 있어 CSS로 옮길 게 없다.
+
+              같은 자리에 두 장을 둔다. 움직이는 쪽이 기본이고, 기기가 '동작 줄이기'를 켰을 때만
+              정지본이 나온다. 애니메이션 WebP는 CSS로 멈출 수 없어 이 방법뿐이다. 고르는 것은
+              전부 CSS가 한다(`app/animations.css`) — JS로 매체 질의를 읽으면 서버 렌더 결과와
+              어긋난다.
+
               `unoptimized`는 애니메이션 WebP라 필요하다(안 붙이면 경고만 남고 동작은 같다). */}
           <Image
             alt=""
-            className="absolute bottom-35.25 left-0 w-full"
+            className={cn(MASCOT_RUNNING_CLASS, 'splash-mascot-running')}
             height={240}
             priority
             src={SPLASH_ASSETS.mascotRunning}
             unoptimized
+            width={393}
+          />
+          <Image
+            alt=""
+            className={cn(MASCOT_RUNNING_CLASS, 'splash-mascot-still')}
+            height={240}
+            priority
+            src={SPLASH_ASSETS.mascotRunningStill}
             width={393}
           />
           {/* 시안: 묶음 아래쪽이 803.85 → 화면 아래에서 48. */}
