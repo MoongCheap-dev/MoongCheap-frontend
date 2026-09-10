@@ -69,7 +69,9 @@ export function SearchResultsView({ query, productHrefBase }: SearchResultsViewP
         results = toResults(response.products);
       } catch {
         // 조회 실패는 정상 경로(로그인 전 · 백엔드 미기동 · 색인 없음). 목으로 화면을 채운다.
-        results = await mockSearchProducts();
+        // 검색어를 그대로 넘겨 목도 검색처럼 걸러지게 한다. 안 그러면 어떤 검색어를 넣어도 같은
+        // 상품 5장이 나와, 실패했다는 사실이 화면에서 드러나지 않는다.
+        results = await mockSearchProducts(query);
       }
       if (active) {
         setLoaded({ query, results });
@@ -108,20 +110,23 @@ export function SearchResultsView({ query, productHrefBase }: SearchResultsViewP
     return null;
   }
 
+  // 필터를 그릴 수 있는지. 검색 응답에 수요보드 정보가 없어 **실데이터에는 `demandStatus`가
+  // 하나도 없다**([[types/search]]). 그 상태로 칩을 그리면 '모집중'을 눌렀을 때 결과가 통째로
+  // 사라지고 '찾는 상품이 없어요'가 뜬다. 검색은 성공했는데 검색어를 바꾸라고 안내하는 셈이라
+  // 거를 근거가 하나도 없으면 칩을 아예 감춘다.
+  //
+  // 검색이 0건일 때도 감춘다. 빈 상태 시안(`1153:72790`)에 칩이 없고, 거를 대상도 없다.
+  const canFilter = loaded.results.some((item) => item.demandStatus !== undefined);
+
+  // 칩을 감춘 상태에서는 이전에 고른 필터가 남아 있어도 무시한다(재조회로 값이 사라진 경우).
   const visible =
-    filter === 'all'
+    !canFilter || filter === 'all'
       ? loaded.results
       : loaded.results.filter((item) => item.demandStatus === filter);
 
-  // 검색 자체가 0건이면 시안(`1153:72790`)에 필터 칩이 없다. 거를 것이 없으니 맞는 그림이다.
-  //
-  // 다만 **결과는 있는데 필터가 비운 경우**는 시안이 없다. 이때까지 칩을 감추면 '전체'로 돌아갈
-  // 길이 사라져 화면에 갇힌다. 그래서 칩은 검색이 0건일 때만 감춘다.
-  const isSearchEmpty = loaded.results.length === 0;
-
   return (
     <div className="flex w-full flex-1 flex-col">
-      {!isSearchEmpty && <SearchFilterTabs onChange={setFilter} value={filter} />}
+      {canFilter && <SearchFilterTabs onChange={setFilter} value={filter} />}
 
       {visible.length === 0 ? (
         <SearchEmptyState />

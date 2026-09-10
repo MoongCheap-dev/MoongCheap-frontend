@@ -54,7 +54,24 @@ const MOCK_RESULTS: readonly ProductSearchResult[] = [
   },
 ];
 
-/** 검색 결과 목. 연동 실패 시에만 쓰인다. */
-export async function mockSearchProducts(): Promise<readonly ProductSearchResult[]> {
-  return MOCK_RESULTS;
+/**
+ * 검색 결과 목. 연동 실패 시에만 쓰인다.
+ *
+ * 검색어로 거른다. 검색어와 무관하게 늘 같은 5장을 돌려주면 `안녕하세요`로 검색해도 락토핏이
+ * 나와, 조회가 실패했다는 사실이 화면에서 드러나지 않는다. 이름·규격에 검색어가 들어간 것만
+ * 남기면 실제 검색과 비슷하게 보이고, 없는 검색어에서는 빈 상태 화면도 확인할 수 있다.
+ *
+ * 서버 검색은 OpenSearch 형태소 분석을 쓰므로 이 단순 부분일치와 결과가 다를 수 있다. 목의
+ * 목적은 화면 검수라 여기까지만 맞춘다.
+ */
+export async function mockSearchProducts(query: string): Promise<readonly ProductSearchResult[]> {
+  const needle = query.trim().toLowerCase();
+  if (needle === '') {
+    return [];
+  }
+  return MOCK_RESULTS.filter(
+    (product) =>
+      product.name.toLowerCase().includes(needle) ||
+      (product.spec?.toLowerCase().includes(needle) ?? false),
+  );
 }
