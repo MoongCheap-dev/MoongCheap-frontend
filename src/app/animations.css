@@ -46,11 +46,11 @@
   60%,
   100% {
     transform: translateY(0);
-    background-color: #e6e6e6;
+    background-color: var(--color-coolgray-200);
   }
   30% {
     transform: translateY(-3px);
-    background-color: #ffffff;
+    background-color: var(--content-oncolor);
   }
 }
 
@@ -102,6 +102,6 @@
   }
 
   .splash-dot:first-child {
-    background-color: #ffffff;
+    background-color: var(--content-oncolor);
   }
 }
