@@ -2,6 +2,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 
 import { SEARCH_RESULT_CARD } from '@/constants/searchMessages';
+import { cn } from '@/lib/cn';
 import { isRenderableImageSrc } from '@/lib/imageSource';
 import type { ProductSearchResult } from '@/types/search';
 
@@ -98,7 +99,7 @@ export function SearchResultCard({ product, href }: SearchResultCardProps) {
               {product.name}
             </span>
             {status !== null && (
-              <span className={`${STATUS_BADGE_CLASS} ${status.className}`}>{status.label}</span>
+              <span className={cn(STATUS_BADGE_CLASS, status.className)}>{status.label}</span>
             )}
           </span>
 
