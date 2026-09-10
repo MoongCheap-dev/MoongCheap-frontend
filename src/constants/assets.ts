@@ -22,3 +22,20 @@ export const AWARD_RESULT_ASSETS = {
   /** 낙찰 성공 상단 축하 삽화. AwardResultView에서 사용. */
   celebrate: '/images/bid-result/1-1.webp',
 } as const;
+
+/**
+ * 수요 상세(B-12) '뭉치 진행 과정' 5단계 아이콘. Figma node 981:15479에서 내보낸 SVG.
+ * confirm(48시간)은 링 2개 + '48h' 텍스트를 단일 SVG로 합친 것이다.
+ */
+export const DEMAND_GUIDE_ASSETS = {
+  /** 1. 수요신청. */
+  request: '/images/demand-guide/step1-request.svg',
+  /** 2. 마감. */
+  close: '/images/demand-guide/step2-close.svg',
+  /** 3. 낙찰 판정. */
+  award: '/images/demand-guide/step3-award.svg',
+  /** 4. 48시간 확인. */
+  confirm: '/images/demand-guide/step4-confirm.svg',
+  /** 5. 결제. */
+  payment: '/images/demand-guide/step5-payment.svg',
+} as const;

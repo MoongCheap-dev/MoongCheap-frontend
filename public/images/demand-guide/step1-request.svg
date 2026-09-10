@@ -1,0 +1,15 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Asset / Deadline">
+<rect id="Rectangle 38" x="4" y="6.45402" width="23.7017" height="34" rx="2" transform="rotate(-8.37948 4 6.45402)" fill="#DFECEF"/>
+<line id="Line 1" x1="7.6952" y1="10.4621" x2="13.1365" y2="9.6606" stroke="#7A9095" stroke-width="1.5" stroke-linecap="round"/>
+<line id="Line 2" x1="8.6952" y1="14.7746" x2="23.0404" y2="12.6615" stroke="#7A9095" stroke-width="1.5" stroke-linecap="round"/>
+<g id="fa6-solid:pen" clip-path="url(#clip0_0_99)">
+<path id="Vector" d="M38.0016 20.9047L35.7328 23.1734L41.8266 29.2672L44.0953 26.9984C45.2672 25.8266 45.2672 23.9281 44.0953 22.7563L42.2484 20.9047C41.0766 19.7328 39.1781 19.7328 38.0062 20.9047H38.0016ZM34.6734 24.2328L23.7469 35.1641C23.2594 35.6516 22.9031 36.2563 22.7062 36.9172L21.0469 42.5563C20.9297 42.9547 21.0375 43.3813 21.3281 43.6719C21.6187 43.9625 22.0453 44.0703 22.4391 43.9578L28.0781 42.2984C28.7391 42.1016 29.3437 41.7453 29.8312 41.2578L40.7672 30.3266L34.6734 24.2328Z" fill="#707070"/>
+</g>
+</g>
+<defs>
+<clipPath id="clip0_0_99">
+<rect width="24" height="24" fill="white" transform="translate(21 20)"/>
+</clipPath>
+</defs>
+</svg>
