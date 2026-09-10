@@ -1,7 +1,5 @@
 import type { ReactNode } from 'react';
 
-import { cn } from '@/lib/cn';
-
 // B-09 수요 등록/참여 폼의 섹션 껍데기. 제목 + 흰 카드 한 벌이다.
 //
 // 섹션이 6개(제품 상세 · 배송지 등록 · 희망가격 · 결제수단 · 대체 상품 동의 · 약관)인데 모양이
@@ -26,10 +24,6 @@ interface DemandFormSectionProps {
   titleAction?: ReactNode;
   /** 카드 아래에 붙는 회색 안내문. `최대 48시간 동안 낙찰대기돼요!` 같은 것. */
   note?: string;
-  /**
-   * 카드 없이 내용만 그린다. 약관 섹션은 제목도 카드도 없이 체크 목록만 있다.
-   */
-  bare?: boolean;
   children: ReactNode;
 }
 
@@ -38,7 +32,6 @@ export function DemandFormSection({
   titleId,
   titleAction,
   note,
-  bare = false,
   children,
 }: DemandFormSectionProps) {
   return (
@@ -50,9 +43,7 @@ export function DemandFormSection({
         {titleAction}
       </div>
 
-      <div className={cn('flex w-full flex-col', !bare && 'bg-background-default rounded-12 p-4')}>
-        {children}
-      </div>
+      <div className="bg-background-default rounded-12 flex w-full flex-col p-4">{children}</div>
 
       {note !== undefined && <p className="text-caption-12 text-content-tertiary">{note}</p>}
     </section>

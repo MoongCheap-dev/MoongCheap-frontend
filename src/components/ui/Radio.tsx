@@ -2,7 +2,7 @@ import type { ComponentPropsWithRef, ReactNode } from 'react';
 
 import { cn } from '@/lib/cn';
 
-// 라벨이 붙은 라디오 버튼. Figma DS `radio` 컴포넌트(20x20)에 대응한다.
+// Figma DS `radio` 컴포넌트(20x20).
 //
 // B-09 수요 등록/참여 한 화면에서만 세 번 쓰인다(희망가격 7 · 결제수단 4 · 대체 상품 동의 2).
 // 그 전에도 라디오 마크업이 세 군데 흩어져 있었다.

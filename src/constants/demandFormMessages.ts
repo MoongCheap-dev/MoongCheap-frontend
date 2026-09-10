@@ -6,7 +6,6 @@
  * 박으면 같은 뜻을 다르게 쓰게 된다.
  */
 
-/** 섹션 제목. `DemandFormSection`의 `title`과 `titleId`에 그대로 쓴다. */
 export const DEMAND_FORM_SECTIONS = {
   product: { id: 'demand-product', title: '제품 상세' },
   address: { id: 'demand-address', title: '배송지 등록' },

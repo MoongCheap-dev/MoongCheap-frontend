@@ -4,9 +4,8 @@ import { DemandFormSection } from '@/features/demand/components/DemandFormSectio
 
 // B-09 희망가격 섹션. 시안 `1153:71254`.
 //
-// 담을 것: `PRICE_BANDS` 7종 라디오. 시장가보다 높게 고르면 토스트가 뜬다(`1153:71594`).
-//
-// TODO: 안혜진 담당. 지금은 자리만 잡아 둔다.
+// TODO: 안혜진 담당. 선택지는 `PRICE_BANDS`(FN-B09-01)가 단일 출처라 여기서 새로 만들지 않는다.
+// 시장가보다 높게 고른 경우의 토스트는 별도 시안(`1153:71594`)에 있다.
 
 interface PriceBandSectionProps {
   priceBand: PriceBandKey | null;
