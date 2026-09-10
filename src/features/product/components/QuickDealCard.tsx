@@ -24,7 +24,7 @@ interface QuickDealCardProps {
 export function QuickDealCard({ deal }: QuickDealCardProps) {
   return (
     <Link
-      href={`/demands/${deal.id}`}
+      href={`/demands/${encodeURIComponent(deal.id)}`}
       className="border-border-subtle bg-background-default rounded-12 flex w-[188px] shrink-0 flex-col gap-2 border px-3 pt-3 pb-4 text-left"
     >
       <span className="flex h-[22px] w-full items-center justify-between">

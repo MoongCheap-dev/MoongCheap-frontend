@@ -1,9 +1,11 @@
 import type { Metadata } from 'next';
 
+import { DEMAND_GUIDE } from '@/constants/demandGuide';
 import { DemandGuideView } from '@/features/demand/components/DemandGuideView';
 
+// 탭 타이틀은 화면에 보이는 제목과 일치시킨다(단일 소스 DEMAND_GUIDE.title).
 export const metadata: Metadata = {
-  title: '수요 상세',
+  title: DEMAND_GUIDE.title,
 };
 
 // B-12 수요 상세. B-08 상품 상세의 퀵 참여 딜 카드에서 `/demands/[demandId]`로 진입한다.

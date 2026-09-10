@@ -43,9 +43,15 @@ export function DemandGuideView() {
         </ol>
       </div>
 
-      {/* 하단 고정 CTA. 검정 tertiary 버튼, 탭 시 뒤로가기로 화면을 닫는다. */}
+      {/* 하단 고정 CTA. 검정 tertiary 버튼, 탭 시 뒤로가기로 화면을 닫는다.
+          hover·active·focus 상태 클래스는 다른 tertiary CTA(StepFooter·LoginForm·ErrorScreen)의
+          인라인 컨벤션에 맞춘다(버튼 variant 규약이 생기면 그때 공용화 — ErrorScreen 주석 참조).
+          첫 진입(공유 링크·새 탭)엔 돌아갈 히스토리가 없어 '확인'이 죽지 않도록 홈으로 폴백한다. */}
       <footer className="bg-background-default sticky bottom-0 w-full p-4 pb-[calc(16px+env(safe-area-inset-bottom))]">
-        <GoBackButton className="bg-surface-button-tertiary-default text-content-inverse text-button-15 active:bg-surface-button-tertiary-pressed rounded-8 flex h-12 w-full items-center justify-center">
+        <GoBackButton
+          fallbackHref="/"
+          className="bg-surface-button-tertiary-default hover:bg-surface-button-tertiary-hover active:bg-surface-button-tertiary-pressed text-content-inverse focus-visible:ring-effect-focus-ring-primary text-button-15 rounded-8 flex h-12 w-full items-center justify-center outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
+        >
           {DEMAND_GUIDE.confirm}
         </GoBackButton>
       </footer>
