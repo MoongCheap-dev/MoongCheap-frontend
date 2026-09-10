@@ -1,0 +1,90 @@
+/*
+ * 손으로 쓰는 애니메이션 정의. `globals.css`는 design/tokens/build-tokens.mjs 생성물이라
+ * @keyframes를 넣을 수 없어서 이 파일을 따로 두고 layout.tsx에서 함께 불러온다.
+ *
+ * 여기 있는 시간 값은 전부 **연출**이다. 화면이 언제 바뀌는지 같은 동작 값은 코드 쪽
+ * `src/constants/splashTiming.ts`가 갖는다.
+ *
+ * 모든 애니메이션은 `prefers-reduced-motion: reduce`에서 멈춘다. 파일 맨 아래에 한 번에 끈다.
+ */
+
+/* ── 스플래쉬(B-01 세션 확인) ── */
+
+/*
+ * 진행바가 왼쪽에서 오른쪽으로 차오른다. 시안 「후보2」의 의도가 "강아지가 왼쪽에서 오른쪽으로
+ * 뛰어가는 걸 따라 로딩창도 차오르는 느낌"이라, 달리는 마스코트 WebP 한 바퀴(6.8초)와 같은
+ * 길이로 맞췄다. 끝까지 차면 그대로 멈춘다(forwards).
+ *
+ * ⚠️ 실제 진행률이 아니다. 세션 확인은 요청 한 건이라 퍼센트를 계산할 근거가 없다. 진행률로
+ *    바꾸기로 정해지면 이 애니메이션을 지우고 폭을 상태로 준다.
+ *
+ * width가 아니라 scaleX를 움직인다. width는 매 프레임 레이아웃을 다시 잡지만 transform은
+ * 합성만 해서 저사양 기기에서도 프레임이 덜 튄다.
+ */
+@keyframes splash-progress {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+.splash-progress-fill {
+  transform-origin: left center;
+  animation: splash-progress 6.8s linear forwards;
+}
+
+/*
+ * 점 3개가 차례로 튄다(시안 컴포넌트 `3 Dots/Jumping`).
+ *
+ * 시안은 정지 상태라 첫 점만 흰색이고 나머지 둘은 #e6e6e6다. 그 한 장을 "튀어 오른 점이 흰색"
+ * 으로 읽고, 세 점이 같은 동작을 지연만 다르게 돌도록 만들었다. 지연은 주기(1.2초)의 1/3씩이다.
+ */
+@keyframes splash-dot-jump {
+  0%,
+  60%,
+  100% {
+    transform: translateY(0);
+    background-color: #e6e6e6;
+  }
+  30% {
+    transform: translateY(-3px);
+    background-color: #ffffff;
+  }
+}
+
+.splash-dot {
+  animation: splash-dot-jump 1.2s ease-in-out infinite;
+}
+
+.splash-dot:nth-child(2) {
+  animation-delay: 0.4s;
+}
+
+.splash-dot:nth-child(3) {
+  animation-delay: 0.8s;
+}
+
+/* ── 동작 최소화 설정 ── */
+
+/*
+ * 기기가 "동작 줄이기"를 켜면 전부 최종 상태로 멈춘다. 달리는 마스코트는 이미지 파일 자체가
+ * 애니메이션이라 CSS로 멈출 수 없다. 그건 정지 이미지로 바꿔 끼워야 하는데, 어느 프레임을
+ * 쓸지가 시안에 없어 지금은 그대로 둔다.
+ */
+@media (prefers-reduced-motion: reduce) {
+  .splash-progress-fill {
+    animation: none;
+    transform: scaleX(1);
+  }
+
+  /* 점은 시안의 정지 상태로 둔다. 첫 점만 흰색이고 나머지는 회색이다. */
+  .splash-dot {
+    animation: none;
+  }
+
+  .splash-dot:first-child {
+    background-color: #ffffff;
+  }
+}

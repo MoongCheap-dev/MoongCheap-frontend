@@ -22,3 +22,20 @@ export const AWARD_RESULT_ASSETS = {
   /** 낙찰 성공 상단 축하 삽화. AwardResultView에서 사용. */
   celebrate: '/images/bid-result/1-1.webp',
 } as const;
+
+/** 스플래쉬(B-01 세션 확인) 전용 에셋. public/images/splash/. */
+export const SPLASH_ASSETS = {
+  /** 워드마크 `뭉치`. 144x66 벡터라 리사이즈 대상이 아니다. */
+  wordmark: '/images/splash/wordmark.svg',
+  /** 기본 스플래쉬의 마스코트. 원본 4960x4960 PNG를 684x684로 줄인 것(표시 342의 2배수). */
+  mascot: '/images/splash/mascot.webp',
+  /**
+   * 로딩 지연 화면의 달리는 마스코트. **애니메이션 WebP**(54프레임 · 한 바퀴 6.8초)다.
+   *
+   * `next/image`는 애니메이션 이미지를 최적화에서 제외하므로 `unoptimized`를 붙여 쓴다.
+   * 안 붙이면 동작은 같고 개발 서버에 경고만 남는다.
+   *
+   * ⚠️ 원본이 393x240 1배수뿐이라 고밀도 화면에서 흐려진다. 2배수 요청 대상.
+   */
+  mascotRunning: '/images/splash/mascot-running.webp',
+} as const;
