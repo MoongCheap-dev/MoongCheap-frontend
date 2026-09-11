@@ -3,6 +3,7 @@ import Image from 'next/image';
 import { DEMAND_FORM_MESSAGES, DEMAND_FORM_SECTIONS } from '@/constants/demandFormMessages';
 import { DemandFormSection } from '@/features/demand/components/DemandFormSection';
 import { QuantityStepper } from '@/features/demand/components/QuantityStepper';
+import { isRenderableImageSrc } from '@/lib/imageSource';
 import type { ProductDetail } from '@/types/product';
 
 // B-09 제품 상세 섹션. 시안 컴포넌트 `product-summary-card`(`I1153:71245`).
@@ -15,23 +16,6 @@ import type { ProductDetail } from '@/types/product';
 //
 // ⚠️ 시장평균가에 해당하는 서버 필드가 없다. 지금은 정가(`listPrice`)가 속한 가격 구간을 그대로
 //    쓴다. 실제 평균가가 내려오면 그 값으로 구간을 다시 고른다.
-
-/**
- * `next/image`로 그릴 수 있는 경로인지.
- *
- * 외부 절대 URL은 `images.remotePatterns`에 없으면 렌더에서 예외를 던져 화면이 통째로 죽는다.
- * 백엔드 시드 썸네일이 `https://example.com/...` 형태라 실제로 걸린다. `//example.com/a.png`
- * (프로토콜 상대)도 외부 주소라 슬래시 하나로 시작하는 것만 통과시킨다.
- *
- * 같은 판정이 #81(검색)에서 `lib/imageSource`로 들어온다. 그쪽이 머지되면 이 함수를 지우고
- * 공용 것을 쓴다.
- */
-function isRenderableImageSrc(src: string | null | undefined): src is string {
-  if (src === null || src === undefined || src === '') {
-    return false;
-  }
-  return src.startsWith('/') && !src.startsWith('//');
-}
 
 interface ProductSummarySectionProps {
   product: ProductDetail;
@@ -54,7 +38,7 @@ export function ProductSummarySection({
       titleId={DEMAND_FORM_SECTIONS.product.id}
     >
       <div className="flex w-full gap-2">
-        {/* 썸네일. 외부 절대 URL은 next/image가 렌더에서 던지므로 걸러 낸다([[lib/imageSource]]). */}
+        {/* 썸네일. 외부 절대 URL은 next/image가 렌더에서 던지므로 `isRenderableImageSrc`로 걸러 낸다. */}
         <span className="bg-background-subtle rounded-8 relative block size-22.5 shrink-0 overflow-hidden">
           {isRenderableImageSrc(product.thumbnailUrl) && (
             <Image alt="" className="object-contain" fill sizes="90px" src={product.thumbnailUrl} />
