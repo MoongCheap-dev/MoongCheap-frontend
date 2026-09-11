@@ -59,7 +59,7 @@ TanStack Query 도입으로 `src/app/providers.tsx`(QueryClientProvider)·`src/f
   - **진입**: 프론트는 `{baseUrl}/oauth2/authorization/kakao`(또는 `.../google`)로 단순 이동(`location.href`/`<a>`, fetch 아님).
   - **콜백**: 백엔드가 provider와 code 교환 → **SID(httpOnly 쿠키)** 세션 발급 후 프론트로 리다이렉트. **쿼리로 토큰을 넘기지 않음** → 프론트는 토큰 저장/파싱 없음([`security-baseline.md`](./security-baseline.md) 요건 1 충족).
   - **착지 URL**: 성공 `https://moongcheap.com/oauth/callback`(`src/app/(auth)/oauth/callback` 라우트 유지) · 실패 `https://moongcheap.com/oauth/failed?reason=denied|provider_error|server_error`.
-  - **가입/연동**: 최초 로그인 = 즉시 가입 완료(추가 입력 UI 불필요, 프로필은 provider 동의화면에서 수집). 동일 이메일이어도 **자동 연동 없이 별개 계정** 신규 가입.
+  - **가입/연동**: 최초 소셜 로그인은 **완료 스텝**을 거친다. 백엔드가 약관 미동의(=최초 유저)를 콜백에 `?status=incomplete`로 되돌리면 프론트는 `/oauth/complete`로 이동해 **약관 동의 + 닉네임**을 받고 `POST /api/auth/social-signup/complete`로 가입을 확정한다(완료 유저 재로그인은 곧장 홈). 동일 이메일이어도 **자동 연동 없이 별개 계정** 신규 가입.
   - **세션**: 일반 로그인과 세션·갱신·로그아웃 구조 동일.
   - **env**: `KAKAO_CLIENT_ID` / `GOOGLE_CLIENT_ID`를 백엔드가 제공 예정(키 이름 확정 후 `.env.local` 배선).
   - **보류**: 로그인 후 "원래 가려던 페이지로 복귀"는 보호 라우트 가드 도입 시 프론트 `sessionStorage` 방식으로 추가 예정(백엔드 지원 불필요, 고정 URL로 충분).
