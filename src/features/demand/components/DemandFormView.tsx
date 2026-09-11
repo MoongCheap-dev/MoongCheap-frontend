@@ -96,10 +96,13 @@ export function DemandFormView({ productId, backHref }: DemandFormViewProps) {
         />
       </div>
 
-      {/* 시안: 화면 하단 고정. 버튼 361x48, 좌우·위아래 여백 16. */}
+      {/* 시안: 화면 하단 고정. 버튼 361x48 · radius 8 · 좌우·위아래 여백 16.
+          필수 동의 전에는 회색으로 잠긴다(바탕 #e6e6e6 · 글자 #767676, 픽셀 직접 확인).
+          활성 상태는 어느 시안에도 없다. 제공된 프레임이 전부 잠긴 상태라, 같은 자리·같은 역할인
+          B-08 하단 CTA(`ProductDetailView`)에 맞췄다. */}
       <div className="max-w-mobile bg-surface-primary fixed inset-x-0 bottom-0 mx-auto w-full p-4 pb-[calc(16px+env(safe-area-inset-bottom))]">
         <Button
-          className="text-button-16 rounded-12 h-12 w-full disabled:opacity-100"
+          className="bg-surface-button-primary-default text-content-oncolor text-button-15 active:bg-surface-button-primary-pressed disabled:bg-surface-disabled-secondary disabled:text-content-disabled-secondary rounded-8 h-12 w-full"
           disabled={!canSubmit}
         >
           {DEMAND_FORM_MESSAGES.submit}
