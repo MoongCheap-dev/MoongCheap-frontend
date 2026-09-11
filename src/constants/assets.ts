@@ -23,6 +23,12 @@ export const AWARD_RESULT_ASSETS = {
   celebrate: '/images/bid-result/1-1.webp',
 } as const;
 
+/** 상품 도감 검색(B-06) 화면 전용 일러스트. */
+export const CATALOG_SEARCH_ASSETS = {
+  /** 검색 결과 0건 삽화. SearchResultsView에서 사용. */
+  emptyResult: '/images/catalog-search/1-1.webp',
+} as const;
+
 /** 스플래쉬(B-01 세션 확인) 전용 에셋. public/images/splash/. */
 export const SPLASH_ASSETS = {
   /** 워드마크 `뭉치`. 144x66 벡터라 리사이즈 대상이 아니다. */
