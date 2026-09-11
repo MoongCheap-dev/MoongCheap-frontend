@@ -23,6 +23,37 @@ export const AWARD_RESULT_ASSETS = {
   celebrate: '/images/bid-result/1-1.webp',
 } as const;
 
+/** 상품 도감 검색(B-06) 화면 전용 일러스트. */
+export const CATALOG_SEARCH_ASSETS = {
+  /** 검색 결과 0건 삽화. SearchResultsView에서 사용. */
+  emptyResult: '/images/catalog-search/1-1.webp',
+} as const;
+
+/** 스플래쉬(B-01 세션 확인) 전용 에셋. public/images/splash/. */
+export const SPLASH_ASSETS = {
+  /** 워드마크 `뭉치`. 144x66 벡터라 리사이즈 대상이 아니다. */
+  wordmark: '/images/splash/wordmark.svg',
+  /** 기본 스플래쉬의 마스코트. 원본 4960x4960 PNG를 684x684로 줄인 것(표시 342의 2배수). */
+  mascot: '/images/splash/mascot.webp',
+  /**
+   * 로딩 지연 화면의 달리는 마스코트. **애니메이션 WebP**(54프레임 · 한 바퀴 6.8초)다.
+   *
+   * `next/image`는 애니메이션 이미지를 최적화에서 제외하므로 `unoptimized`를 붙여 쓴다.
+   * 안 붙이면 동작은 같고 개발 서버에 경고만 남는다.
+   */
+  mascotRunning: '/images/splash/mascot-running.webp',
+  /**
+   * 위 애니메이션의 **첫 프레임**을 뽑아 둔 정지본. 기기가 '동작 줄이기'를 켰을 때 대신 그린다.
+   *
+   * 애니메이션 WebP는 이미지 파일 자체가 움직여서 CSS로 멈출 수 없다. 그래서 두 장을 다 두고
+   * `prefers-reduced-motion`으로 골라 보여 준다(`app/animations.css`).
+   *
+   * 첫 프레임을 고른 이유는 두 가지다. 강아지가 오른쪽을 보고 달리는 자세라 진행 방향(왼→오)과
+   * 맞고, 임의로 고른 게 아니라 '애니메이션의 시작점'이라는 규칙으로 설명된다.
+   */
+  mascotRunningStill: '/images/splash/mascot-running-still.webp',
+} as const;
+
 /**
  * 수요 상세(B-12) '뭉치 진행 과정' 5단계 아이콘. Figma node 981:15479에서 내보낸 SVG.
  * confirm(48시간)은 링 2개 + '48h' 텍스트를 단일 SVG로 합친 것이다.

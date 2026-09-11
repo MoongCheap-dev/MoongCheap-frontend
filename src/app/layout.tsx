@@ -5,6 +5,8 @@ import { ToastProvider } from '@/components/ui/Toast';
 
 import { Providers } from './providers';
 import './globals.css';
+// globals.css는 생성물이라 @keyframes를 넣을 수 없다. 손으로 쓰는 애니메이션은 이 파일에 둔다.
+import './animations.css';
 
 export const metadata: Metadata = {
   title: 'MoongCheap',

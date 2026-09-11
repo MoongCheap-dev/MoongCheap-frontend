@@ -1,8 +1,9 @@
 'use client';
 
+import { CircleXIcon } from '@/components/ui/Icons';
 import { cn } from '@/lib/cn';
 
-import { CircleCheckIcon, CircleExclamationIcon, CircleXIcon } from './SellerApplyIcons';
+import { CircleCheckIcon, CircleExclamationIcon } from './SellerApplyIcons';
 
 // 판매자 전환(S-01) 사업자등록번호 입력칸. 시안의 DS `input` 컴포넌트(212:4710 외)를 옮긴 것으로,
 // 라벨이 칸 위에 뜨는 인증 화면의 StepField와는 다른 부품이다(라벨이 칸 **안** 위쪽에 있다).

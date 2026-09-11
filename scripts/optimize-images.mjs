@@ -40,6 +40,7 @@ const TARGET_WIDTHS = [
   ['banner-carousel', 786], // BannerCarousel sizes="393px"
   ['product-description', 786], // 상품 상세 설명, 화면 폭(393) 전체
   ['seller-apply-preview', 672], // SellerApplyWizard width={336}
+  ['splash/mascot', 684], // SplashScreen 마스코트 342x342
 ];
 
 /** 브랜드딜 260 · 상품카드 121 · 와이드 120 · 브랜드행 106 · 행 65 · 주문 60 · 빈 상태 246 */
