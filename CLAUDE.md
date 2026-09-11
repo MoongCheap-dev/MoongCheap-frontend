@@ -25,21 +25,27 @@ Next.js 16 (App Router) · React 19 · TypeScript · Tailwind CSS v4 · ESLint �
 
 **폼·검증**: react-hook-form · zod · @hookform/resolvers (인증 폼 착수 시 도입, PR #5).
 
-**아직 설치하지 않은 것**: 상태 관리(TanStack Query / Zustand), 테스트 러너(미정). 필요한 시점에 추가합니다. → [`docs/deferred-setup.md`](docs/deferred-setup.md)
+**서버 상태**: @tanstack/react-query (세션 조회 전역 상태 확립 시 도입, #70).
 
-## 지금은 초기 세팅 단계입니다
+**아직 설치하지 않은 것**: 전역 클라이언트 상태(Zustand), 테스트 러너(미정). 필요한 시점에 추가합니다. → [`docs/deferred-setup.md`](docs/deferred-setup.md)
 
-이 저장소에는 **도구 설정만** 들어 있습니다. API 계층·도메인 컨벤션·폴더 세부 규칙은 아직 없습니다.
+## 규격 — 확정된 것과 아직 미정인 것
 
-**임의로 채우지 마세요.** 아래는 백엔드와 합의되지 않았습니다.
+초기 도구 세팅을 지나 API 계층(`src/lib/api.ts`)·인증·여러 화면이 들어와 있습니다. 아래 **미정** 항목은 여전히 추측으로 채우지 말고, 규격이 나온 뒤에 작성합니다.
 
-- **공용 응답 포맷** — 성공/실패 응답의 래핑 여부·필드명 미정
-- **API 베이스 URL** — 도메인 A·B가 단일 게이트웨이인지 분리인지 미정
-- **PWA 채택 여부** — 미정
+**결정됨**
 
-**결정됨** — **인증 방식**: 세션은 **httpOnly 쿠키(SID)**로 확정(소셜/일반 로그인 동일 구조, 토큰을 JS로 저장하지 않음). 백엔드 소셜 로그인 규격 합의 시 확정 → [`docs/deferred-setup.md`](docs/deferred-setup.md) 참고.
+- **인증 방식**: 세션 = **httpOnly 쿠키(SID)**. 소셜/일반 로그인 동일 구조, 토큰을 JS로 저장하지 않음.
+- **공용 응답 포맷**: 성공 = 래퍼 없는 **bare DTO**, 실패만 `{ success:false, data:null, error:{ code, message, fieldErrors } }` 봉투.
+- **API 베이스 URL**: 단일 `NEXT_PUBLIC_API_BASE_URL`(도메인 A·B 구분 없음, 로컬 `http://localhost:8080`). `apiFetch`가 `credentials:'include'`로 붙임.
+- **에러 코드**: HTTP status + 비즈니스 코드(봉투 `error.code`, 예: `COMMON_401`).
 
-관련 코드(`api-client`, 스키마, 환경변수)를 추측으로 작성하지 말고, 규격이 나온 뒤에 만듭니다.
+**미정 (합의/결정 전 — 추측 금지)**
+
+- **PWA 채택 여부** — 미정. 현재 관련 의존성·설정 없음.
+- **도메인 B 거래 흐름** — 장바구니·주문·결제·정산 API 상당수 미확정. 해당 화면은 mock+screen-local 유지.
+
+자세한 근거·해소 이력은 [`docs/deferred-setup.md`](docs/deferred-setup.md) 참고.
 
 ## 문서
 

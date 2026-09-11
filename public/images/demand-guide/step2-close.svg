@@ -1,0 +1,12 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Asset / Deadline">
+<path id="Vector" d="M36.6 8.775H11.4C8.41766 8.775 6 11.1927 6 14.175V36.675C6 39.6573 8.41766 42.075 11.4 42.075H36.6C39.5823 42.075 42 39.6573 42 36.675V14.175C42 11.1927 39.5823 8.775 36.6 8.775Z" fill="#FFDCDC"/>
+<path id="Intersect" d="M36.5996 8.775C39.5819 8.775 41.9999 11.1922 42 14.1744V20.4742H6V14.1744C6.00011 11.1922 8.41812 8.775 11.4004 8.775H36.5996Z" fill="#FF7070"/>
+<path id="Vector_2" d="M15 5.175V12.375M33 5.175V12.375" stroke="#EBEBEB" stroke-width="2.4" stroke-linecap="round"/>
+<g id="Frame 830">
+<circle id="Ellipse 8" cx="35" cy="36" r="11" fill="white"/>
+<path id="Vector_3" d="M35 45C39.9706 45 44 40.9706 44 36C44 31.0294 39.9706 27 35 27C30.0294 27 26 31.0294 26 36C26 40.9706 30.0294 45 35 45Z" fill="#31D390"/>
+<path id="Vector_4" d="M30.875 34.25L33.875 37.25L39.125 30.875L41 32.75L34.1 41L29 35.9L30.875 34.25Z" fill="white"/>
+</g>
+</g>
+</svg>

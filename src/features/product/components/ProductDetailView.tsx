@@ -181,7 +181,11 @@ export function ProductDetailView({ product: initialProduct }: ProductDetailView
           {product.quickDeals.length > 0 && (
             <div className="flex gap-2 overflow-x-auto py-2">
               {product.quickDeals.map((deal) => (
-                <QuickDealCard key={deal.id} deal={deal} />
+                <QuickDealCard
+                  deal={deal}
+                  href={`/demands/${encodeURIComponent(deal.id)}`}
+                  key={deal.id}
+                />
               ))}
             </div>
           )}

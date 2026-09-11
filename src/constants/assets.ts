@@ -40,8 +40,6 @@ export const SPLASH_ASSETS = {
    *
    * `next/image`는 애니메이션 이미지를 최적화에서 제외하므로 `unoptimized`를 붙여 쓴다.
    * 안 붙이면 동작은 같고 개발 서버에 경고만 남는다.
-   *
-   * ⚠️ 원본이 393x240 1배수뿐이라 고밀도 화면에서 흐려진다. 2배수 요청 대상.
    */
   mascotRunning: '/images/splash/mascot-running.webp',
   /**
@@ -54,4 +52,21 @@ export const SPLASH_ASSETS = {
    * 맞고, 임의로 고른 게 아니라 '애니메이션의 시작점'이라는 규칙으로 설명된다.
    */
   mascotRunningStill: '/images/splash/mascot-running-still.webp',
+} as const;
+
+/**
+ * 수요 상세(B-12) '뭉치 진행 과정' 5단계 아이콘. Figma node 981:15479에서 내보낸 SVG.
+ * confirm(48시간)은 링 2개 + '48h' 텍스트를 단일 SVG로 합친 것이다.
+ */
+export const DEMAND_GUIDE_ASSETS = {
+  /** 1. 수요신청. */
+  request: '/images/demand-guide/step1-request.svg',
+  /** 2. 마감. */
+  close: '/images/demand-guide/step2-close.svg',
+  /** 3. 낙찰 판정. */
+  award: '/images/demand-guide/step3-award.svg',
+  /** 4. 48시간 확인. */
+  confirm: '/images/demand-guide/step4-confirm.svg',
+  /** 5. 결제. */
+  payment: '/images/demand-guide/step5-payment.svg',
 } as const;

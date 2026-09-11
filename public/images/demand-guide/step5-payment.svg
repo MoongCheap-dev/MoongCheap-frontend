@@ -1,0 +1,13 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Asset / Payment">
+<path id="Vector" d="M36.3043 10H9.69565C7.10231 10 5 12.3505 5 15.25V32.75C5 35.6495 7.10231 38 9.69565 38H36.3043C38.8977 38 41 35.6495 41 32.75V15.25C41 12.3505 38.8977 10 36.3043 10Z" fill="#DBF0FF"/>
+<path id="Vector_2" d="M9.92773 25.1602H26.1596" stroke="#0095FF" stroke-width="2.17391" stroke-linecap="round"/>
+<path id="Vector_3" d="M9.92773 30.957H17.7538" stroke="#0095FF" stroke-width="2.17391" stroke-linecap="round"/>
+<path id="Intersect" d="M36.3047 10.0859C38.8979 10.0861 41 12.4224 41 15.3037V20.5205H5V15.3037C5 12.4224 7.10213 10.0861 9.69531 10.0859H36.3047Z" fill="#0095FF"/>
+<g id="Frame 830">
+<circle id="Ellipse 8" cx="39" cy="34" r="9" fill="white"/>
+<path id="Vector_4" d="M39 41.3636C43.0668 41.3636 46.3636 38.0668 46.3636 34C46.3636 29.9332 43.0668 26.6364 39 26.6364C34.9332 26.6364 31.6364 29.9332 31.6364 34C31.6364 38.0668 34.9332 41.3636 39 41.3636Z" fill="#1FCA5E"/>
+<path id="Vector_5" d="M35.625 32.5682L38.0795 35.0227L42.375 29.8068L43.9091 31.3409L38.2636 38.0909L34.0909 33.9182L35.625 32.5682Z" fill="white"/>
+</g>
+</g>
+</svg>
