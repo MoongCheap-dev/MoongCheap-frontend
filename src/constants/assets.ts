@@ -22,3 +22,9 @@ export const AWARD_RESULT_ASSETS = {
   /** 낙찰 성공 상단 축하 삽화. AwardResultView에서 사용. */
   celebrate: '/images/bid-result/1-1.webp',
 } as const;
+
+/** 상품 도감 검색(B-06) 화면 전용 일러스트. */
+export const CATALOG_SEARCH_ASSETS = {
+  /** 검색 결과 0건 삽화. SearchResultsView에서 사용. */
+  emptyResult: '/images/catalog-search/1-1.webp',
+} as const;
