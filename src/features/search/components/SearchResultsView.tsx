@@ -8,6 +8,7 @@ import { SEARCH_ERROR_DESCRIPTION } from '@/constants/searchMessages';
 import { SearchEmptyState } from '@/features/search/components/SearchEmptyState';
 import { SearchFilterTabs } from '@/features/search/components/SearchFilterTabs';
 import { SearchResultCard } from '@/features/search/components/SearchResultCard';
+import { ApiError } from '@/lib/api';
 import { searchProducts } from '@/lib/productSearchApi';
 import { mockSearchProducts } from '@/mocks/search';
 import type { ProductSearchResult, SearchFilterKey } from '@/types/search';
@@ -67,10 +68,23 @@ export function SearchResultsView({ query, productHrefBase }: SearchResultsViewP
       try {
         const response = await searchProducts(query);
         results = toResults(response.products);
-      } catch {
-        // 조회 실패는 정상 경로(로그인 전 · 백엔드 미기동 · 색인 없음). 목으로 화면을 채운다.
-        // 검색어를 그대로 넘겨 목도 검색처럼 걸러지게 한다. 안 그러면 어떤 검색어를 넣어도 같은
-        // 상품 5장이 나와, 실패했다는 사실이 화면에서 드러나지 않는다.
+      } catch (cause) {
+        // 실패를 두 종류로 가른다.
+        //
+        //   목으로 채울 실패  미배선·네트워크 끊김(status 0)·미로그인(401). 개발 중에는 늘 나는
+        //                     상황이라 화면을 막으면 검수가 안 된다.
+        //   알려야 할 실패    그 밖(4xx·5xx). 서버가 응답은 했는데 거절·실패한 것이라 사용자가
+        //                     알아야 하고, 다시 시도할 수 있어야 한다.
+        //
+        // 가르지 않고 전부 목으로 삼키면 아래 ErrorScreen 분기에 닿을 길이 없어진다(팀원 리뷰).
+        //
+        // 목에 검색어를 그대로 넘겨 실제 검색처럼 걸러지게 한다. 안 그러면 어떤 검색어를 넣어도
+        // 같은 상품 5장이 나와, 조회가 실패했다는 사실이 화면에서 드러나지 않는다.
+        const recoverable =
+          cause instanceof ApiError && (cause.status === 0 || cause.status === 401);
+        if (!recoverable) {
+          throw cause;
+        }
         results = await mockSearchProducts(query);
       }
       if (active) {
