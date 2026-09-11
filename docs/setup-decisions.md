@@ -166,7 +166,7 @@ builtin → external(react 최우선) → internal(@/) → parent/sibling
 **멘헤링 대비 변경**
 
 - **제거**: Supabase CLI 관련(`supabase/.temp/`, `supabase/.branches/`, `supabase/.env`) — Supabase 미사용
-- **제거**: `!.env.local.example` 예외 — 아직 환경변수가 없어 견본 파일도 없음
+- **유지**: `!.env.local.example` 예외 — 소셜 로그인(#18)에서 `NEXT_PUBLIC_API_BASE_URL` 견본을 추가하며 되살림. `.env*` 전체 차단 중 견본만 예외로 추적
 - **유지**: `.claude/settings.local.json`, `.claude/launch.json`, `CLAUDE.local.md`, `.codex/` — 개발자 개인 설정은 저장소에 올리지 않음
 - **유지**: `checklist.md`, `context-notes.md` — AI 에이전트가 만드는 작업 메모
 
@@ -218,7 +218,7 @@ PR 템플릿의 체크리스트(동작 확인 / 콘솔 오류 / 라우팅 / 빌�
 
 **Supabase 환경변수 참조** — 전수 확인 결과 **없음**. 두 워크플로 모두 환경변수를 전혀 쓰지 않아 제거할 것이 없었다.
 
-⚠️ **`main` 브랜치는 아직 GitHub에 `develop`이 없다.** 워크플로가 `develop`을 트리거로 삼으므로, `develop` 브랜치를 푸시해야 정상 동작한다.
+`develop` 브랜치가 실제 개발 기준선으로 운영 중이며, 모든 기능 PR이 `develop`을 base로 한다. 워크플로도 `develop` push/PR에서 정상 동작한다.
 
 ---
 
@@ -235,4 +235,6 @@ PR 템플릿의 체크리스트(동작 확인 / 콘솔 오류 / 라우팅 / 빌�
 | 이슈·PR 템플릿      | 작성 항목 사전 제시                        | 이슈 트래커가 곧 작업 기록                     |
 | GitHub Actions      | PR마다 lint/type/format + 주간 취약점 감사 | 우회 불가능한 머지 게이트                      |
 
-**아직 정하지 않은 것** — 상태 관리·폼·검증 라이브러리, API 계층, 폴더 컨벤션. 백엔드 API 규격이 나온 뒤 결정합니다. ([`deferred-setup.md`](./deferred-setup.md))
+**이후 도입된 것** — 폼·검증(zod·react-hook-form, #5), 서버 상태(@tanstack/react-query, #70), API 계층(`src/lib/api.ts` 자체 작성). 규격 확정 이력은 [`deferred-setup.md`](./deferred-setup.md) 참고.
+
+**아직 정하지 않은 것** — 전역 클라이언트 상태(Zustand), 테스트 러너, PWA 채택 여부. ([`deferred-setup.md`](./deferred-setup.md))
