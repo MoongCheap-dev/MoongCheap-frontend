@@ -34,7 +34,7 @@ export const DEMAND_GUIDE_STEPS = [
   {
     icon: DEMAND_GUIDE_ASSETS.confirm,
     title: '48시간 확인',
-    description: '낙찰 상품을 확인하고 상품을 취소할수 있어요',
+    description: '낙찰 상품을 확인하고 상품을 취소할 수 있어요',
   },
   {
     icon: DEMAND_GUIDE_ASSETS.payment,

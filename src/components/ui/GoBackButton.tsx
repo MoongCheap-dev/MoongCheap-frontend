@@ -4,6 +4,8 @@ import type { ReactNode } from 'react';
 
 import { useRouter } from 'next/navigation';
 
+import { hasInAppHistoryEntry } from '@/lib/navigationHistory';
+
 // 브라우저 히스토리의 이전 항목으로 돌아가는 버튼. 404(not-found.tsx)·수요 상세(B-12) '확인'이 쓴다.
 //
 // 서버 컴포넌트에서 useRouter를 직접 못 쓰므로 이 얇은 client 래퍼로 감싼다.
@@ -28,16 +30,19 @@ interface NavigationApi {
 }
 
 /**
- * 이 페이지에서 뒤로 갈 앞선 항목이 있는지. Navigation API의 canGoBack이 정확한 신호다
- * (현재가 히스토리의 첫 항목이면 false). 미지원 브라우저(예: Safari)에선 history.length로
- * 근사한다 — length는 교차 출처·빈 탭 항목까지 세어 부정확하므로 폴백으로만 쓴다.
+ * 이 페이지에서 뒤로 갈 **앱 내부** 항목이 있는지. Navigation API의 canGoBack이 정확한 신호라
+ * (현재가 히스토리의 첫 항목이면 false) 지원 브라우저에선 그것을 쓴다.
+ *
+ * 미지원 브라우저(예: Safari)에선 `window.history.length`를 쓰면 안 된다 — 교차 출처·빈 탭 항목까지
+ * 세므로, 외부 링크로 처음 들어와도 length가 2가 되어 back()이 사이트를 벗어난다. 대신 앱이 직접
+ * 센 내부 히스토리를 본다([[navigationHistory]], NavigationHistoryTracker가 갱신).
  */
 function canGoBack(): boolean {
   const nav = (window as unknown as { navigation?: NavigationApi }).navigation;
   if (nav !== undefined && typeof nav.canGoBack === 'boolean') {
     return nav.canGoBack;
   }
-  return window.history.length > 1;
+  return hasInAppHistoryEntry();
 }
 
 export function GoBackButton({ children, className, fallbackHref }: GoBackButtonProps) {

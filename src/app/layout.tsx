@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 
+import { NavigationHistoryTracker } from '@/components/layout/NavigationHistoryTracker';
 import { ToastProvider } from '@/components/ui/Toast';
 
 import { Providers } from './providers';
@@ -28,6 +29,8 @@ export default function RootLayout({
   return (
     <html lang="ko" className="h-full antialiased">
       <body className="bg-background-default min-h-svh">
+        {/* 앱 내부 네비게이션을 세어 GoBackButton의 fallback 판별에 쓴다(화면 없음). */}
+        <NavigationHistoryTracker />
         {/* 전역 상태 경계. Providers(TanStack Query)·ToastProvider 모두 client지만 children은
             server 컴포넌트로 유지된다(client Provider의 자식 slot이라 경계를 넘지 않음). */}
         <Providers>
